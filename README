@@ -1,6 +1,6 @@
 Databases
 ----------------------------------------------------------------
-Copy config/database.yml.example to config/database.yml and enter your information.
+Copy config/database.example.yml to config/database.yml and enter your information.
 
 
 Dependencies
