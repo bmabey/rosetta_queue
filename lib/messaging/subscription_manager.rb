@@ -3,7 +3,7 @@
 # encapsulated in a gateway object so the SubscriptionManager is a container for 
 # gateway objects.  once loaded, the subscriptions can be started by calling
 # the "start" command, which adds each subscription to a thread where the gateway
-# "listen" method is called.  those threads are then monitored for interruptions, 
+# "receive" method is called.  those threads are then monitored for interruptions, 
 # stopped processes, or other errors.  once a thread dies, all threads are stopped.
 #
 module Messaging
@@ -23,20 +23,16 @@ module Messaging
       @running        = true
     end
 
-    # add gateway objects to the manager 
     def add(key, subscription)
       @subscriptions[key] = subscription
     end
 
-    # primary controlling method for the manager
-    # starts all threads, joins, and monitors them
     def start
       start_threads
       join_threads
       monitor_threads
     end
 
-    # stops all threads by unsubscribing and disconnecting each gateway subscription 
     def stop
       stop_threads
     end
@@ -76,12 +72,12 @@ module Messaging
         @threads[name] = Thread.new(name, gateway) do |a_name, a_gateway|
           while @running
             begin
-              a_gateway.listen
+              a_gateway.receive
             rescue StopProcessingException=>e
               e.log_error
               e.send_notification
               puts "#{a_name}: Processing Stopped - receive interrupted"
-            rescue Object=>e
+            rescue Exception=>e
               e.log_error
               e.send_notification
               puts "#{a_name}: Exception from connection.receive: #{$!}\n" + exception.backtrace.join("\n\t")
@@ -97,9 +93,9 @@ module Messaging
       @running = false
 
       @threads.each do |name, thread|
-        puts "Stopping thread and unsubscribing from #{name}" unless ENV["ETL_ENV"] == "test"
+        puts "Stopping thread and unsubscribing from #{name}" unless ENV["MESSAGING_ENV"] == "test"
         @subscriptions[name].unsubscribe
-        puts "Stopping thread and disconnecting from #{name}" unless ENV["ETL_ENV"] == "test"
+        puts "Stopping thread and disconnecting from #{name}" unless ENV["MESSAGING_ENV"] == "test"
         @subscriptions[name].disconnect
         thread.kill
       end

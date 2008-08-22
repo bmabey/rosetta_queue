@@ -10,6 +10,12 @@ module Messaging
       def define
         yield self
       end
+
+      def lookup(queue_name)
+        mapping = queue[queue_name.to_sym]
+        raise "No queue destination mapping for '#{queue_name}' has been defined!" unless mapping
+        return mapping
+      end
       
       def map(key, destination)
         @queue[key] = destination
@@ -17,5 +23,4 @@ module Messaging
     end
 
   end
-
 end

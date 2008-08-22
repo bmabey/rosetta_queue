@@ -1,21 +1,15 @@
 module Messaging
   
   class Base
+    
     class << self
-      attr_reader :destination, :headers
-  
-      def options(args)
-        @headers = args
-      end
-  
-      def subscribes_to(destination)
-        @destination = destination
+      attr_reader :destination, :options_hash
+
+      def options(options = {})
+        @options_hash = options
       end
 
-      def publishes_to(destination)
-        @destination = destination
-      end
-    end  
+    end
 
     def disconnect
       connection.disconnect
@@ -24,15 +18,23 @@ module Messaging
     def unsubscribe
       connection.unsubscribe(queue)
     end
-  
+
     protected
      def connection
-       @conn ||= Stomp::Connection.open(USER, PASSWORD, HOST, PORT, true)
+       @conn ||= Adapter.instance
+     end
+
+     def options
+       unless self.class.options_hash.nil?
+         self.class.options_hash
+       else
+         {}
+       end
      end
 
      def queue
-       raise "Missing queue destination.  Cannot publish message." unless self.class.destination
-       @queue ||= Destinations.queue[self.class.destination.to_sym]
+       raise DestinationNotFound.new("Missing queue destination.  Cannot publish message!") unless self.class.destination
+       @queue ||= Destinations.lookup(self.class.destination.to_sym)
      end
   end
 end

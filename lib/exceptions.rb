@@ -6,11 +6,9 @@ class ActiveRecord::StandardError
   include Notifiable, Loggable
 end
 
-class DimensionError < StandardError; end
-class DimensionNotFound < DimensionError; end
-class IdNotFound < DimensionError; end
-class MessageVariableNotFound < StandardError; end
-class ModelFailedToSave < StandardError; end
-class GatewayError < StandardError; end
-class ObserverError < GatewayError; end
+class MessagingError < StandardError; end
+class DestinationNotFound < MessagingError; end
+class MessagingVariableNotFound < MessagingError; end
+class CallbackNotImplemented < MessagingError; end
+class AdapterException < MessagingError; end
 class StopProcessingException < Interrupt; end

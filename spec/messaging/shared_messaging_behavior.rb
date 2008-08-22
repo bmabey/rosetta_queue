@@ -32,10 +32,14 @@ module Messaging
       @gateway.class.destination.should == :test_queue
     end
 
-    describe "stomp client headers" do
+    describe "stomp client options" do
 
       it "should receive a hash" do
-        @gateway.class.headers.should == @headers
+        @gateway.class.options_hash.should == @options
+      end
+
+      it "should return empty hash if options are never set" do
+        pending
       end
 
     end

@@ -1,3 +1,5 @@
+Messaging::Adapter.type = :stomp
+
 Messaging::Destinations.define do |queue|
   queue.map :test_queue, '/queue/test_queue'
 end

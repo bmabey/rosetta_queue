@@ -1,4 +1,4 @@
-ENV["ETL_ENV"] = "test"
+ENV["MESSAGING_ENV"] = "test"
 
 require 'rubygems'
 require 'spec'
@@ -7,8 +7,6 @@ require File.dirname(__FILE__) + '/../config/loader.rb'
 require File.dirname(__FILE__) + '/fixtures/test_producer.rb'
 require File.dirname(__FILE__) + '/fixtures/test_consumer.rb'
 require File.dirname(__FILE__) + '/messaging/shared_messaging_behavior.rb'
-
-# require File.dirname(__FILE__) + '/model_factory.rb'
 
 alias :running :lambda
 
