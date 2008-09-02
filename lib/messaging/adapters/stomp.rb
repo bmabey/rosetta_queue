@@ -1,3 +1,5 @@
+require 'stomp'
+
 module Messaging
   module Gateway
   

@@ -3,7 +3,6 @@ require 'active_record'
 require 'active_support'
 require 'net/smtp'
 require 'yaml'
-require 'stomp'
 
 #set constants
 ENV["MESSAGING_ENV"]  = "development" unless ENV["MESSAGING_ENV"]
