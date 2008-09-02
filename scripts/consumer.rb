@@ -23,7 +23,7 @@ class Autoresponder < Messaging::Consumer
   end
 
 end
-
+  
 # instantiate subscription manager to handle threading and monitoring of added gateway observers
 Messaging::SubscriptionManager.create do |m|
 

@@ -1,7 +1,7 @@
 module Loggable
 
   def logger
-    @@logger ||= Logger.new(LOG_ROOT + '/etl_errors.log', 'monthly')
+    @@logger ||= Logger.new(LOG_ROOT + '/errors.log', 'monthly')
   end
 
   def log_error
