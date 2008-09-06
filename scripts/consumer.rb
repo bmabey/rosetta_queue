@@ -7,30 +7,25 @@ puts "PRESS CONTROL-C TO SHUT DOWN GRACEFULLY\n\n"
 # on to a strategy object
 
 
-class Autoresponder < Messaging::Consumer
+class Autoresponder
+  include Consumeable
 
   subscribes_to :autoresponder
   options :persistent => false, :ack => "client"
 
-  FROM = 'sales@widgetsRUs.com'
-
   def on_message(message)
      puts "sending email for message '#{message.body}'"
-
-     # Net::SMTP.start('localhost') do |smtp|
-     #   smtp.send_message("Thanks for your order!", FROM, msg["email"])
-     # end
   end
 
 end
+
+ar_consumer = Messaging::Consumer.new
+ar_consumer.add(Autoresponder.new)
   
 # instantiate subscription manager to handle threading and monitoring of added gateway observers
 Messaging::SubscriptionManager.create do |m|
 
-  m.add :autoresponder, Autoresponder.new
-  # m.add :inventory, Inventory.new
-  # m.add :billing, Billing.new
-  # m.add :shipping, Shipping.new
+  m.add :autoresponder, ar_consumer
 
   #start subscriptions
   m.start

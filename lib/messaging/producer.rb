@@ -4,10 +4,6 @@ module Messaging
 
     class << self
 
-      def publishes_to(destination)
-        @destination = destination
-      end
-
       def publish(destination, message, options = {})
         begin
           Messaging::Adapter.instance.send(Destinations.lookup(destination), message, options)
@@ -15,7 +11,7 @@ module Messaging
           raise e.backtrace
         end
       end
-
+    
     end
 
     def publish(message)

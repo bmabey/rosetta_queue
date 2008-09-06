@@ -10,10 +10,6 @@ module Messaging
         conn.unsubscribe(Destinations.lookup(destination))
         msg
       end
-
-      def subscribes_to(destination)
-        @destination = destination
-      end
     end
 
     def receive
@@ -22,7 +18,7 @@ module Messaging
         while true
           puts "listening on queue #{queue}" unless ENV["MESSAGING_ENV"] == "test"
           msg = connection.receive
-          on_message(msg.body)
+          @consumer_strategy.on_message(msg)
           connection.ack(msg.headers["message-id"])
         end
       rescue Exception=>e
@@ -31,11 +27,5 @@ module Messaging
         e.send_notification
       end
     end
-
-    protected
-    
-      def on_message(msg)
-        raise CallbackNotImplemented.new("'on_message' method must be defined!")
-      end
   end
 end

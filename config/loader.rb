@@ -15,6 +15,14 @@ require MESSAGING_ROOT + "/lib/exceptions.rb"
 require MESSAGING_ROOT + "/lib/ext.rb"
 require MESSAGING_ROOT + "/lib/messaging.rb"
 
+Messaging::Adapter.define do |a|
+  a.user      = ""
+  a.password  = ""
+  a.host      = "localhost"
+  a.port      = 61613
+  a.type      = "stomp"
+end
+
 # map queues
 Messaging::Destinations.define do |queue|
   queue.map :autoresponder, '/queue/autoresponder'

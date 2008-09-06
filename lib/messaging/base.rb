@@ -1,14 +1,13 @@
 module Messaging
   
   class Base
+
+    def initialize
+      @consumers = []
+    end
     
-    class << self
-      attr_reader :destination, :options_hash
-
-      def options(options = {})
-        @options_hash = options
-      end
-
+    def add(consumer_strategy)
+      @consumer_strategy = consumer_strategy
     end
 
     def disconnect
@@ -25,16 +24,16 @@ module Messaging
      end
 
      def options
-       unless self.class.options_hash.nil?
-         self.class.options_hash
+       unless @consumer_strategy.options_hash.nil?
+         @consumer_strategy.options_hash
        else
          {}
        end
      end
 
      def queue
-       raise DestinationNotFound.new("Missing queue destination.  Cannot publish message!") unless self.class.destination
-       @queue ||= Destinations.lookup(self.class.destination.to_sym)
+       raise DestinationNotFound.new("Missing queue destination.  Cannot publish message!") unless @consumer_strategy.destination
+       @queue ||= Destinations.lookup(@consumer_strategy.destination.to_sym)
      end
   end
 end
