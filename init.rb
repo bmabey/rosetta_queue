@@ -1,4 +1,7 @@
-%w[exceptions ext messaging modules].each do |file|
+require 'rubygems'
+require 'activesupport'
+
+%w[modules exceptions ext messaging].each do |file|
   require File.join(File.dirname(__FILE__), "lib", file)
 end
 
