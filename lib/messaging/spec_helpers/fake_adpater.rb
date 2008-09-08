@@ -1,0 +1,26 @@
+module Messaging
+  module Gateway
+    
+    class FakeAdapter
+
+      def initialize
+        @messages = []
+      end
+
+      def send(queue, message, headers)
+        @messages << {'queue' => queue, 'message' => message, 'headers' => headers}
+      end
+  
+      def messages_sent_to(queue)
+        (queue ? @messages.select{|message| message['queue'] == queue} : @messages).map{|m| m['message']}
+      end
+  
+      def queues
+        @messages.map {|message| message['queue']}
+      end
+
+    end
+    
+  end
+  
+end
