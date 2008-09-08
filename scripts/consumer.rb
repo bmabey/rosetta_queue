@@ -8,24 +8,42 @@ puts "PRESS CONTROL-C TO SHUT DOWN GRACEFULLY\n\n"
 
 
 class Autoresponder
-  include Consumeable
-
-  subscribes_to :autoresponder
+  include MessageHandler
+  subscribes_to :sale
   options :persistent => false, :ack => "client"
 
   def on_message(message)
-     puts "sending email for message '#{message.body}'"
+     puts "sending email for message '#{message}'"
   end
-
 end
 
-ar_consumer = Messaging::Consumer.new
-ar_consumer.add(Autoresponder.new)
-  
-# instantiate subscription manager to handle threading and monitoring of added gateway observers
-Messaging::SubscriptionManager.create do |m|
+class Billing
+  include MessageHandler
+  subscribes_to :sale
+  options :persistent => false, :ack => "client"
 
-  m.add :autoresponder, ar_consumer
+  def on_message(message)
+     puts "billing for message '#{message}'"
+  end
+end
+
+class Shipping
+  include MessageHandler
+  subscribes_to :sale
+  options :persistent => false, :ack => "client"
+
+  def on_message(message)
+     puts "shipping for message '#{message}'"
+  end
+end
+
+
+# instantiate subscription manager to handle threading and monitoring of added gateway observers
+Messaging::ConsumerManager.create do |m|
+
+  m.add(Autoresponder.new)
+  m.add(Billing.new)
+  m.add(Shipping.new)
 
   #start subscriptions
   m.start

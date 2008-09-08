@@ -1,28 +1,40 @@
 module Messaging
   
   class Producer < Base
+    include MessageHandler
 
-    class << self
-
-      def publish(destination, message, options = {})
-        begin
-          Messaging::Adapter.instance.send(Destinations.lookup(destination), message, options)
-        rescue Exception=>e
-          raise e.backtrace
-        end
+    def self.publish(dest, message, options = {})
+      begin
+        Messaging::Adapter.instance.send(Destinations.lookup(dest), message, options)
+      rescue Exception=>e
+        raise e.backtrace
       end
-    
     end
 
     def publish(message)
       begin
-        connection.send(queue, message, options)
+        connection.send(publish_destination, message, options)
       rescue Exception=>e
         puts "caught exception: #{$!}"
         e.log_error
         e.send_notification
       end
     end
+
+    protected
+
+      def options
+        unless options_hash.nil?
+          options_hash
+        else
+          {}
+        end
+      end
+
+      def publish_destination
+        raise DestinationNotFound.new("Missing destination.  Cannot publish message!") unless destination
+        @dest ||= Destinations.lookup(destination.to_sym)
+      end
 
   end
 end

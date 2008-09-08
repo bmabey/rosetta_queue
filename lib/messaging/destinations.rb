@@ -2,23 +2,23 @@ module Messaging
 
   class Destinations
     
-    @queue = {}
+    @dest = {}
 
     class << self
-      attr_reader :queue
+      attr_reader :dest
 
       def define
         yield self
       end
 
-      def lookup(queue_name)
-        mapping = queue[queue_name.to_sym]
-        raise "No queue destination mapping for '#{queue_name}' has been defined!" unless mapping
+      def lookup(dest_name)
+        mapping = dest[dest_name.to_sym]
+        raise "No destination mapping for '#{dest_name}' has been defined!" unless mapping
         return mapping
       end
       
-      def map(key, destination)
-        @queue[key] = destination
+      def map(key, dest)
+        @dest[key] = dest
       end
     end
 

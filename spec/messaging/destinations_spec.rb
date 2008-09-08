@@ -11,7 +11,7 @@ module Messaging
     end
 
     it "should map destination to hash" do
-      Destinations.queue[:test_queue].should == "/queue/test_queue"
+      Destinations.lookup(:test_queue).should == "/queue/test_queue"
     end
   end
 end

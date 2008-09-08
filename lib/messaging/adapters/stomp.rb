@@ -4,29 +4,29 @@ module Messaging
   module Gateway
   
     class StompAdapter
-
-      class << self
         
-        def open(user, password, host, port)
-          self.new.connect(user, password, host, port)
-        end
-
+      def self.open(user, password, host, port)
+        self.new(user, password, host, port)
       end
 
-      def ack(id)
-        @conn.ack(id)
+      def ack(msg)
+        @conn.ack(msg.headers["message-id"])
       end
 
-      def connect(user, password, host, port)
-        @conn ||= Stomp::Connection.open(user, password, host, port, true)
+      def initialize(user, password, host, port)
+        @conn = Stomp::Connection.open(user, password, host, port, true)
       end
 
       def disconnect
         @conn.disconnect
       end
       
-      def receive
-        @conn.receive
+      def receive(message_handler)
+        running do
+          msg = @conn.receive
+          message_handler.on_message(msg.body)
+          ack(msg)
+        end
       end
       
       def send(queue, message, options)
@@ -36,10 +36,16 @@ module Messaging
       def subscribe(queue, options)
         @conn.subscribe(queue, options)
       end
-      
+          
       def unsubscribe(queue)
         @conn.unsubscribe(queue)
       end
+      
+      private
+      
+        def running(&block)
+          loop(&block)
+        end
 
     end
   end

@@ -20,10 +20,9 @@ module Messaging
       private
       
         def generate_instance
-          case @type
-          when "stomp"
-            Gateway::StompAdapter.open(@user, @password, @host, @port)
-          else
+          begin
+            "Messaging::Gateway::#{@type.to_s.classify}Adapter".constantize.new(@user, @password, @host, @port)
+          rescue Exception=>e
             raise AdapterException.new("Adapter type does not match existing adapters!")
           end
         end

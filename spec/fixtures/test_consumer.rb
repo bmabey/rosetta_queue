@@ -2,7 +2,8 @@ Messaging::Destinations.define do |queue|
   queue.map :test_queue, '/queue/test_queue'
 end
 
-class TestConsumer < Messaging::Consumer
+class TestConsumer
+  include MessageHandler
 
   subscribes_to :test_queue
   options :persistent => false, :ack => "client"
@@ -13,7 +14,8 @@ class TestConsumer < Messaging::Consumer
 end
 
 
-class TestConsumerWithoutOnMessage < Messaging::Consumer
+class TestConsumerWithoutOnMessage
+  include MessageHandler
 
   subscribes_to :test_queue
   options :persistent => false, :ack => "client"

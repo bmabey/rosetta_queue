@@ -4,11 +4,10 @@ module Messaging
   describe Consumer do
   
     before(:each) do
-      @msg      = mock("Stomp::Message", "headers" => "foo", "body" => "bar")
-      @stomp    = mock("Stomp::Connection", :subscribe => true, :unsubscribe => true, :disconnect => true, 
-                                            :receive => @msg, :ack => true)
-      Adapter.stub!(:instance).and_return(@stomp)
-      @gateway  = TestConsumer.new
+      @msg            = mock("Stomp::Message", "headers" => "foo", "body" => "bar")
+      @stomp_adapter  = mock("StompAdapter", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive => @msg, :ack => true)
+      Adapter.stub!(:instance).and_return(@stomp_adapter)
+      @consumer = Consumer.new(@message_handler = TestConsumer.new)
       @options  = {:persistent => false, :ack=>"client"}
     end
   
@@ -19,41 +18,21 @@ module Messaging
       describe ".on_message" do
   
         def do_process
-          @gateway.receive
-          @gateway.disconnect
+          @consumer.receive
         end
-      
-        describe "method not defined on child class" do
-  
-          before do
-            @gateway = TestConsumerWithoutOnMessage.new
-          end
-  
-          it "should raise exception if not defined on child class" do
-            during_process { @gateway.should_receive(:on_message).once.and_raise(CallbackNotImplemented) }
-          end
-  
-        end
-  
-        describe "method defined on child class" do
-  
-          before(:each) do
-            @gateway = TestConsumer.new
-          end
+
+        describe ".receive" do
   
           it "should subscribe to queue" do
-            pending
-            during_process { @stomp.should_receive("subscribe") }
+            during_process { @stomp_adapter.should_receive("subscribe") }
           end
         
           it "should receive messages on queue" do
-            pending
-            during_process { @stomp.should_receive("receive") }
+            during_process { @stomp_adapter.should_receive("receive") }
           end
           
           it "should pass message body to on_message callback" do
-            pending
-            during_process { @cons.should_receive("on_message")  }
+            during_process { @stomp_adapter.should_receive("receive").with(@message_handler) }
           end
         end
       end
@@ -65,16 +44,16 @@ module Messaging
         Consumer.receive(:test_queue, {:persistent => false})
       end
       
-      describe ".listen" do
+      describe ".receive" do
       
         it "should subscribe to queue" do
-          during_process { @stomp.should_receive("subscribe") }
+          during_process { @stomp_adapter.should_receive("subscribe") }
         end
       
         # not sure why message received is nil
         it "should receive messages on queue" do
           pending
-          during_process { @stomp.should_receive("receive") }
+          during_process { @stomp_adapter.should_receive("receive") }
         end
 
         it "should return a message received" do

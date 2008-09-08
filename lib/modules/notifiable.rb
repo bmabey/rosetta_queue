@@ -1,6 +1,6 @@
 module Notifiable
-  TO    = "chriswyckoff@earthlink.net"
-  FROM  = "cwyckoff@alliancehealth.com"
+  TO    = "cwyckoff@alliancehealth.com"
+  FROM  = "errors@alliancehealth.com"
 
   def send_notification(msg = "Here's the backtrace:\n'#{self.backtrace.join("\n")}")
     if(ENV["ETL_ENV"] == "test")

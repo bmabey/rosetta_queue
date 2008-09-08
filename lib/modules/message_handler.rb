@@ -1,8 +1,8 @@
-module Consumeable
+module MessageHandler
   
   module ClassMethods
 
-    attr_accessor :destination, :options_hash
+    attr_reader :destination, :options_hash
 
     def options(options = {})
       @options_hash = options

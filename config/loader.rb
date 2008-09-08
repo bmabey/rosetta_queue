@@ -5,7 +5,7 @@ require 'net/smtp'
 require 'yaml'
 
 #set constants
-ENV["MESSAGING_ENV"]  = "development" unless ENV["MESSAGING_ENV"]
+ENV["MESSAGING_ENV"]  = "test" unless ENV["MESSAGING_ENV"]
 MESSAGING_ROOT        = File.dirname(__FILE__) + "/.." unless defined?(MESSAGING_ROOT)
 LOG_ROOT              = File.dirname(__FILE__) + "/../tmp" unless defined?(LOG_ROOT)
 
@@ -20,10 +20,13 @@ Messaging::Adapter.define do |a|
   a.password  = ""
   a.host      = "localhost"
   a.port      = 61613
-  a.type      = "stomp"
+  a.type      = "stomp"#StompAdapter
 end
 
 # map queues
 Messaging::Destinations.define do |queue|
+  queue.map :sale, '/topic/sale'
   queue.map :autoresponder, '/queue/autoresponder'
+  queue.map :billing, '/queue/billing'
+  queue.map :shipping, '/queue/shipping'
 end
