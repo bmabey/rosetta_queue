@@ -7,6 +7,7 @@ module Messaging
     before(:each) do
       @stomp_adapter = mock("Gateway::StompAdapter")
       Gateway::StompAdapter.stub!(:open).and_return(@stomp_adapter)
+      Stomp::Connection.stub!(:new).and_return(mock("Stomp::Connection"))
     end
     
     describe "missing adapter type" do
@@ -34,7 +35,7 @@ module Messaging
       end
     
       it "should return adapter instance" do
-        Adapter.instance.class.should == Gateway::StompAdapter
+        Adapter.instance.class.should == Messaging::Gateway::StompAdapter
       end
     
       describe "wrong adapter type" do
