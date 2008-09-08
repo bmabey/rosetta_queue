@@ -20,12 +20,11 @@ Messaging::Adapter.define do |a|
   a.password  = ""
   a.host      = "localhost"
   a.port      = 61613
-  a.type      = "stomp"#StompAdapter
+  a.type      = "stomp"
 end
 
 # map queues
 Messaging::Destinations.define do |queue|
-  queue.map :sale, '/topic/sale'
   queue.map :autoresponder, '/queue/autoresponder'
   queue.map :billing, '/queue/billing'
   queue.map :shipping, '/queue/shipping'

@@ -10,13 +10,13 @@ end
 t = TestProducer.new
 t.publish({"foo" => "bar"}.to_json)
 
-# Messaging::Producer.publish(:sale, {"foo" => "bar"}.to_json, :persistent => false)
+Messaging::Producer.publish(:sale, {"foo" => "bar"}.to_json, :persistent => false)
 
-# Messaging::Producer.publish(:autoresponder, {"foo" => "bar"}.to_json, :persistent => false)
-# Messaging::Producer.publish(:autoresponder, {"foo" => "bar"}.to_json, :persistent => false)
-# 
-# Messaging::Producer.publish(:billing, {"baz" => "boo"}.to_json, :persistent => false)
-# Messaging::Producer.publish(:billing, {"baz" => "boo"}.to_json, :persistent => false)
-# 
-# Messaging::Producer.publish(:shipping, {"baz" => "boo"}.to_json, :persistent => false)
-# Messaging::Producer.publish(:shipping, {"baz" => "boo"}.to_json, :persistent => false)
+Messaging::Producer.publish(:autoresponder, {"foo" => "bar"}.to_json, :persistent => false)
+Messaging::Producer.publish(:autoresponder, {"foo" => "bar"}.to_json, :persistent => false)
+
+Messaging::Producer.publish(:billing, {"baz" => "boo"}.to_json, :persistent => false)
+Messaging::Producer.publish(:billing, {"baz" => "boo"}.to_json, :persistent => false)
+
+Messaging::Producer.publish(:shipping, {"baz" => "boo"}.to_json, :persistent => false)
+Messaging::Producer.publish(:shipping, {"baz" => "boo"}.to_json, :persistent => false)

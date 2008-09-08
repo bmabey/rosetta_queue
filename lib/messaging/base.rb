@@ -14,5 +14,6 @@ module Messaging
      def connection
        @conn ||= Adapter.instance
      end
+
   end
 end

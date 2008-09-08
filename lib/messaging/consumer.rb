@@ -1,16 +1,16 @@
 module Messaging
   class Consumer < Base
 
-    def initialize(message_handler)
-      @message_handler = message_handler
-    end
-
     def self.receive(dest, options = {})
       conn = Messaging::Adapter.instance
       conn.subscribe(Destinations.lookup(dest), options)
       msg = conn.receive.body
       conn.unsubscribe(Destinations.lookup(dest))
       msg
+    end
+
+    def initialize(message_handler)
+      @message_handler = message_handler
     end
 
     def receive
