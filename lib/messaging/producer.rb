@@ -3,9 +3,9 @@ module Messaging
   class Producer < Base
     include MessageHandler
 
-    def self.publish(dest, message, options = {})
+    def self.publish(destination, message, options = {})
       begin
-        Messaging::Adapter.instance.send(Destinations.lookup(dest), message, options)
+        Messaging::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
       rescue Exception=>e
         raise e.backtrace
       end
@@ -13,7 +13,7 @@ module Messaging
 
     def publish(message)
       begin
-        connection.send(publish_destination, message, options)
+        connection.send_message(publish_destination, message, options)
       rescue Exception=>e
         puts "caught exception: #{$!}"
         e.log_error

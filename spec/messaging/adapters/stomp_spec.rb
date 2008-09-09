@@ -7,9 +7,24 @@ module Messaging
     describe StompAdapter do
 
       before(:each) do
-        @conn = mock("Stomp::Connection", :ack => true)
+        @conn = mock("Stomp::Connection", :ack => true, :send => true)
         ::Stomp::Connection.stub!(:open).and_return(@conn)    
         @stomp_adapter = StompAdapter.new("user", "password", "host", "port")
+      end
+      
+      describe "#send_message" do
+        it "should delegate to the connection" do
+          # need this hack since the stomp client overrides #send
+          def @connection.send(*args)
+            @args = args
+          end
+          def @connection.sent_args ; @args  end
+    
+          # when
+          @stomp_adapter.send_message('queue', 'message', 'options')
+          # then
+          @connection.sent_args.should == ['queue', 'message', 'options']
+        end
       end
       
       describe "#receive" do

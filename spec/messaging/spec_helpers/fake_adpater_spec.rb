@@ -9,8 +9,8 @@ module Messaging
         it "should return all the queues that messages were delivered to" do
           # given
           adapter = FakeAdapter.new
-          adapter.send('queue 1', 'message 1', 'headers 1')
-          adapter.send('queue 2', 'message 2', 'headers 2')
+          adapter.send_message('queue 1', 'message 1', 'headers 1')
+          adapter.send_message('queue 2', 'message 2', 'headers 2')
           # then
           adapter.queues.should == ['queue 1', 'queue 2']
         end
@@ -20,9 +20,9 @@ module Messaging
         it "should return the message bodies that were delivered to the specified queue" do
           # given
           adapter = FakeAdapter.new
-          adapter.send('queue 1', 'message 1', 'headers 1')
-          adapter.send('queue 2', 'message 2', 'headers 2')
-          adapter.send('queue 1', 'message 3', 'headers 3')
+          adapter.send_message('queue 1', 'message 1', 'headers 1')
+          adapter.send_message('queue 2', 'message 2', 'headers 2')
+          adapter.send_message('queue 1', 'message 3', 'headers 3')
           # when
           results = adapter.messages_sent_to('queue 1')
           # then
@@ -32,8 +32,8 @@ module Messaging
         it "should return all the message's bodies when nil is passed in at the queue" do
           # given
           adapter = FakeAdapter.new
-          adapter.send('queue 1', 'message 1', 'headers 1')
-          adapter.send('queue 2', 'message 2', 'headers 2')
+          adapter.send_message('queue 1', 'message 1', 'headers 1')
+          adapter.send_message('queue 2', 'message 2', 'headers 2')
           # when
           results = adapter.messages_sent_to(nil)
           # then
@@ -43,7 +43,7 @@ module Messaging
         it "should return an empty array when no messages have been delivered" do
           # given
           adapter = FakeAdapter.new
-          adapter.send('queue 1', 'message 1', 'headers 1')
+          adapter.send_message('queue 1', 'message 1', 'headers 1')
           # when
           results = adapter.messages_sent_to('queue 2')
           # then

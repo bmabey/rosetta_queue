@@ -7,7 +7,7 @@ module Messaging
         @messages = []
       end
 
-      def send(queue, message, headers)
+      def send_message(queue, message, headers)
         @messages << {'queue' => queue, 'message' => message, 'headers' => headers}
       end
   

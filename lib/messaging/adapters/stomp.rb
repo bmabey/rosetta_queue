@@ -33,7 +33,7 @@ module Messaging
         end
       end
       
-      def send(queue, message, options)
+      def send_message(queue, message, options)
         @conn.send(queue, message, options)
       end
 

@@ -10,7 +10,11 @@ module Messaging
       def define
         yield self
       end
-
+      
+      def clear
+        @dest.clear
+      end
+      
       def lookup(dest_name)
         mapping = dest[dest_name.to_sym]
         raise "No destination mapping for '#{dest_name}' has been defined!" unless mapping
@@ -19,6 +23,10 @@ module Messaging
       
       def map(key, dest)
         @dest[key] = dest
+      end
+      
+      def queue_names
+        @dest.values
       end
     end
 

@@ -1,12 +1,12 @@
 module Messaging
   class Consumer < Base
 
-    def self.receive(dest, options = {})
-      conn = Messaging::Adapter.instance
-      conn.subscribe(Destinations.lookup(dest), options)
-      msg = conn.receive.body
-      conn.unsubscribe(Destinations.lookup(dest))
-      msg
+    def self.receive(destination, options = {})
+      connection = Messaging::Adapter.instance
+      connection.subscribe(Destinations.lookup(destination), options)
+      message = connection.receive.body
+      connection.unsubscribe(Destinations.lookup(destination))
+      message
     end
 
     def initialize(message_handler)
