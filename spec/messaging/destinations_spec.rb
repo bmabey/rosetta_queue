@@ -27,7 +27,8 @@ module Messaging
         queue.map :bar, "/queue/bar"
       end
       
-      Destinations.queue_names.should == ["/queue/foo", "/queue/bar"]
+      Destinations.queue_names.should include("/queue/foo")
+      Destinations.queue_names.should include("/queue/bar")
     end
   end
 end

@@ -15,6 +15,8 @@ module Messaging
       @adapter = mock("adapter", :send_message => nil)
       Messaging::Adapter.stub!(:instance).and_return(@adapter)
       @gateway  = TestProducer.new
+      
+      Destinations.stub!(:lookup).and_return("/queue/test_queue")
     end
     
     it_should_behave_like "a messaging gateway object"
