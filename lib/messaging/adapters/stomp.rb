@@ -21,11 +21,15 @@ module Messaging
         @conn.disconnect
       end
       
-      def receive(message_handler)
-        running do
-          msg = @conn.receive
-          message_handler.on_message(msg.body)
-          ack(msg)
+      def receive
+        msg = @conn.receive        
+        ack(msg)
+        msg
+      end
+      
+      def receive_with(message_handler)
+        running do          
+          message_handler.on_message(receive.body)
         end
       end
       

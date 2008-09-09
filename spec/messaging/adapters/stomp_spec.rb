@@ -11,8 +11,17 @@ module Messaging
         ::Stomp::Connection.stub!(:open).and_return(@conn)    
         @stomp_adapter = StompAdapter.new("user", "password", "host", "port")
       end
-
+      
       describe "#receive" do
+        it "should return the message from the connection" do
+          # given
+          @conn.stub!(:receive).and_return( message = mock("message", :body => "", :headers => {"message-id" => 2}))
+          # when & then
+          @stomp_adapter.receive.should == message
+        end
+      end
+
+      describe "#receive_with" do
         
         before(:each) do
           @stomp_adapter.stub!(:running).and_yield
@@ -25,10 +34,11 @@ module Messaging
           # expect
           handler.should_receive(:on_message).with("Hello World!")
           # when
-          @stomp_adapter.receive(handler)
+          @stomp_adapter.receive_with(handler)
         end
-    
+      
       end
+      
     end
   end
 end
