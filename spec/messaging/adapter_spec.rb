@@ -6,48 +6,49 @@ module Messaging
 
     before(:each) do
       @stomp_adapter = mock("Gateway::StompAdapter")
-      Gateway::StompAdapter.stub!(:open).and_return(@stomp_adapter)
-      Stomp::Connection.stub!(:new).and_return(mock("Stomp::Connection"))
+      Adapter.reset
     end
     
-    describe "missing adapter type" do
-
-      before(:each) do
-        Adapter.define do |a|
-          a.user = "foo"
-          a.password = "bar"
-          a.host = "localhost"
-          a.port = 61613
-          a.type = ""
-        end
-      end
-      
-      it "should raise error" do
+    describe ".reset" do
+      it "should clear all definitions" do
+        Adapter.define { |a| a.type = "null"  }
+        Adapter.instance.should be_instance_of(Messaging::Gateway::NullAdapter)
+        Adapter.reset
         running { Adapter.instance }.should raise_error(AdapterException)
       end
+    end
+    
+    describe ".type=" do
       
+      it "should raise error when adapter does not exist" do
+        running { 
+          Adapter.define do |a|
+            a.type = "foo"
+          end
+          }.should raise_error(AdapterException)
+      end
+      
+    end
+    
+    describe "adapter not type set" do
+      it "should raise an error when .instance is called" do
+        # given
+        Adapter.define { |a|  }
+        # then & when
+        running { Adapter.instance }.should raise_error(AdapterException)        
+      end
     end
 
     describe "adapter type set" do
     
       before(:each) do
-        Adapter.define { |a| a.type = "stomp" }
+        Adapter.define { |a| a.type = "null" }
       end
     
       it "should return adapter instance" do
-        Adapter.instance.class.should == Messaging::Gateway::StompAdapter
+        Adapter.instance.class.should == Messaging::Gateway::NullAdapter
       end
-    
-      describe "wrong adapter type" do
           
-        before(:each) do
-          Adapter.type = "clap"
-        end
-        
-        it "should raise error" do
-          running { Adapter.instance }.should raise_error("Adapter type does not match existing adapters!")          
-        end
-      end
     end
 
   end

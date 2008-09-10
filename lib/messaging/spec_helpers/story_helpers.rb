@@ -1,12 +1,12 @@
 module Messaging
   # Adds helpful methods when doing application level testing with rspec story runner.
-  # Simply include this module in 'module Spec::Story::World' in your helper.rb.
-  # If you are using cucumber you simply need to include it in your env.rb file.
+  # Include this module in 'module Spec::Story::World' in your helper.rb file.
+  # If you are using cucumber just include it in your env.rb file.
   module StoryHelpers
     require 'open-uri'
     
-    # *Currently* Assumes that ActiveMQ is being used as gateway and it will hit the web interface to clear
-    # all the queues defined in the Messaging::Destinations mapping.
+    # *Currently* only works with ActiveMQ being used as gateway. 
+    # This will clear the queues defined in the Messaging::Destinations mapping.
     def clear_queues
       Messaging::Destinations.queue_names.each do |name| 
         queue = name.gsub('/queue/','')
