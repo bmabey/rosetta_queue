@@ -29,6 +29,7 @@ module Messaging
       end
 
       def publish_destination
+        raise DestinationNotFound.new("Missing destination.  Cannot publish message!") unless destination
         @dest ||= Destinations.lookup(destination.to_sym)
       end
 
