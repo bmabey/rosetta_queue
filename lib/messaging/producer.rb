@@ -4,14 +4,11 @@ module Messaging
     include MessageHandler
 
     def self.publish(destination, message, options = {})
-      begin
-        Messaging::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
-      rescue Exception=>e
-        raise e.backtrace
-      end
+      Messaging::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
     end
 
     def publish(message)
+      #TODO redo how exceptions are handled...
       begin
         connection.send_message(publish_destination, message, options)
       rescue Exception=>e
@@ -32,7 +29,6 @@ module Messaging
       end
 
       def publish_destination
-        raise DestinationNotFound.new("Missing destination.  Cannot publish message!") unless destination
         @dest ||= Destinations.lookup(destination.to_sym)
       end
 
