@@ -29,6 +29,11 @@ module Messaging
     def consume_once_with(consumer)
       consumer.new.on_message(Messaging::Consumer.receive(consumer.destination))
     end
+
+    def consuming_from(destination)
+      sleep 1
+      Messaging::Consumer.receive(destination, :persistent => false).to_hash_from_json
+    end
     
   end
 end
