@@ -67,7 +67,7 @@ module Messaging
 
       def matches?(lambda_to_run)    
         super
-        Spec::Mocks::HashIncludingConstraint.new(@message_subset).matches?(@actual_message) == true
+        Spec::Mocks::ArgumentConstraints::HashIncludingConstraint.new(@message_subset) == @actual_message
       end
 
       def failure_message
