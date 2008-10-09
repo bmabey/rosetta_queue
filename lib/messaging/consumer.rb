@@ -17,7 +17,7 @@ module Messaging
       begin
         puts "listening on queue #{destination}" unless ENV["MESSAGING_ENV"] == "test"
         connection.subscribe(destination, options)
-        connection.receive(@message_handler)
+        connection.receive_with(@message_handler)
       rescue Exception=>e
         puts "caught exception: #{$!}"
         e.log_error
