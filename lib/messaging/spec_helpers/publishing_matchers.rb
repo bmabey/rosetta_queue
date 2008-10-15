@@ -3,7 +3,9 @@ module Messaging
     
     class PublishAMessageTo
 
-      def initialize(expected_queue_name)
+      def initialize(expected_queue_name, options=nil)
+        @options = options || {}
+        @how_many_messages_expected = (@options[:exactly] || 1).to_i
         @expected_queue_name = expected_queue_name
         @expected_queue = expected_queue_name.is_a?(Symbol) ? Messaging::Destinations.lookup(expected_queue_name) : expected_queue_name
       end
@@ -15,19 +17,25 @@ module Messaging
         lambda_to_run.call
         #then
         @actual_queues = fake_adapter.queues      
-        @actual_queues.include?(@expected_queue)
+        @number_of_messages_published = @actual_queues.select{ |q| q == @expected_queue}.size 
+        @number_of_messages_published == @how_many_messages_expected
       end
 
       def failure_message
-        "expected a message published to the #{@expected_queue.inspect} queue but messages were delivered to #{@actual_queues.inspect}"
+        "expected #{message_plural} published to the #{@expected_queue.inspect} queue but #{@number_of_messages_published} messages were"
       end
 
       def negative_failure_message
-        "expected a message NOT to be published to the #{@expected_queue.inspect} queue but was"
+        "expected ##{message_plural} NOT to be published to the #{@expected_queue.inspect} queue but that queue was published to #{@number_of_messages_published} times"
       end
 
       def description
-        "publish a message to the '#{@expected_queue_name}' queue"
+        "publish #{message_plural} to the '#{@expected_queue_name}' queue"
+      end
+      
+    private
+      def message_plural
+        @how_many_messages_expected == 1 ? "a message" : "#{@how_many_messages_expected} messages"
       end
     end
 
@@ -36,6 +44,10 @@ module Messaging
     end
   
     alias :publish_message_to :publish_a_message_to
+    
+    def publish_messages_to(expected_queue, options)
+      PublishAMessageTo.new(expected_queue, options)
+    end
   
     class PublishMessageMatcher
     
