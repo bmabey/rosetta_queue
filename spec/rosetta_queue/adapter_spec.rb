@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-module Messaging
+module RosettaQueue
   
   describe Adapter do
 
@@ -12,7 +12,7 @@ module Messaging
     describe ".reset" do
       it "should clear all definitions" do
         Adapter.define { |a| a.type = "null"  }
-        Adapter.instance.should be_instance_of(Messaging::Gateway::NullAdapter)
+        Adapter.instance.should be_instance_of(RosettaQueue::Gateway::NullAdapter)
         Adapter.reset
         running { Adapter.instance }.should raise_error(AdapterException)
       end
@@ -46,7 +46,7 @@ module Messaging
       end
     
       it "should return adapter instance" do
-        Adapter.instance.class.should == Messaging::Gateway::NullAdapter
+        Adapter.instance.class.should == RosettaQueue::Gateway::NullAdapter
       end
           
     end

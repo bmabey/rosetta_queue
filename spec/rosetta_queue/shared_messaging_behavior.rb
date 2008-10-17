@@ -1,4 +1,4 @@
-module Messaging
+module RosettaQueue
 
   describe "a messaging gateway object", :shared => true do  
     

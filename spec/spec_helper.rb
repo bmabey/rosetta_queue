@@ -4,9 +4,9 @@ require 'rubygems'
 require 'spec'
 
 require File.dirname(__FILE__) + '/../init.rb'
-require File.dirname(__FILE__) + '/messaging/shared_messaging_behavior.rb'
+require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
-Dir[File.join(File.dirname(__FILE__), '..', 'lib', 'messaging', 'spec_helpers/*.rb')].each do |file|
+Dir[File.join(File.dirname(__FILE__), '..', 'lib', 'rosetta_queue', 'spec_helpers/*.rb')].each do |file|
   require file
 end
 

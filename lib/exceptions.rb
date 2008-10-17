@@ -2,9 +2,9 @@ class Exception
   include Notifiable, Loggable
 end
 
-class MessagingError < StandardError; end
-class DestinationNotFound < MessagingError; end
-class MessagingVariableNotFound < MessagingError; end
-class CallbackNotImplemented < MessagingError; end
-class AdapterException < MessagingError; end
+class RosettaQueueError < StandardError; end
+class DestinationNotFound < RosettaQueueError; end
+class RosettaQueueVariableNotFound < RosettaQueueError; end
+class CallbackNotImplemented < RosettaQueueError; end
+class AdapterException < RosettaQueueError; end
 class StopProcessingException < Interrupt; end

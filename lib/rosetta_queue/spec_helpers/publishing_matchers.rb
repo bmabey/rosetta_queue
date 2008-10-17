@@ -1,4 +1,4 @@
-module Messaging
+module RosettaQueue
   module Matchers
     
     class PublishAMessageTo
@@ -7,12 +7,12 @@ module Messaging
         @options = options || {}
         @how_many_messages_expected = (@options[:exactly] || 1).to_i
         @expected_queue_name = expected_queue_name
-        @expected_queue = expected_queue_name.is_a?(Symbol) ? Messaging::Destinations.lookup(expected_queue_name) : expected_queue_name
+        @expected_queue = expected_queue_name.is_a?(Symbol) ? RosettaQueue::Destinations.lookup(expected_queue_name) : expected_queue_name
       end
 
       def matches?(lambda_to_run)    
         #given
-        Messaging::Adapter.stub!(:instance).and_return(fake_adapter = Messaging::Gateway::FakeAdapter.new)
+        RosettaQueue::Adapter.stub!(:instance).and_return(fake_adapter = RosettaQueue::Gateway::FakeAdapter.new)
         #when
         lambda_to_run.call
         #then
@@ -54,7 +54,7 @@ module Messaging
     
       def matches?(lambda_to_run)
         #given
-        Messaging::Adapter.stub!(:instance).and_return(fake_adapter = Messaging::Gateway::FakeAdapter.new)
+        RosettaQueue::Adapter.stub!(:instance).and_return(fake_adapter = RosettaQueue::Gateway::FakeAdapter.new)
         #when
         lambda_to_run.call
         #then
@@ -65,7 +65,7 @@ module Messaging
       protected
       def extract_options(options)
         if (expected_queue_name = options[:to])        
-          @expected_queue = expected_queue_name.is_a?(Symbol) ? Messaging::Destinations.lookup(expected_queue_name) : expected_queue_name
+          @expected_queue = expected_queue_name.is_a?(Symbol) ? RosettaQueue::Destinations.lookup(expected_queue_name) : expected_queue_name
         end
       end
     end

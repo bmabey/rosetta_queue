@@ -3,7 +3,7 @@ Dir[File.join(File.dirname(__FILE__), "adapters/*.rb")].each do |file|
   require file
 end
 
-module Messaging
+module RosettaQueue
   class Adapter
 
     class << self
@@ -18,7 +18,7 @@ module Messaging
       end
       
       def type=(adapter_prefix)
-        @adapter_class = "Messaging::Gateway::#{adapter_prefix.to_s.classify}Adapter".constantize
+        @adapter_class = "RosettaQueue::Gateway::#{adapter_prefix.to_s.classify}Adapter".constantize
         rescue NameError
           raise AdapterException, "Adapter type '#{adapter_prefix}' does not match existing adapters!"
       end

@@ -8,7 +8,7 @@ Dependencies
 Gems you will need:
 gem install rspec, yaml, and stomp
 
-Messaging System:
+RosettaQueue:
 You will also need to install a messaging system with a stomp server.  Our broker of choice
 is Apache's ActiveMQ.  Go to http://activemq.apache.org/download.html to download the latest version,
 and see http://activemq.apache.org/getting-started.html for installation and configuration instructions.
@@ -23,18 +23,18 @@ setup:activemq task in the Rakefile.
 Consumers and Producers
 -----------------------------------------------------------------
 First, you will need to set up a destination to produce messages to and consume messages from.  In your "config/loader.rb" file add
-the destination to the Messaging::Destinations class like so:
+the destination to the RosettaQueue::Destinations class like so:
 
-Messaging::Destinations.define do |queue|
+RosettaQueue::Destinations.define do |queue|
   queue.map :test_queue, '/queue/my_test_queue'
 end
 
-Creating a consumer is also easy (see the example below).  Create a class which inherits from Messaging::Consumer, and indicate the queue or topic
+Creating a consumer is also easy (see the example below).  Create a class which inherits from RosettaQueue::Consumer, and indicate the queue or topic
 you want to consume with the line "subscribes_to" and add any headers you want passed to the stomp client by passing a hash
 to "headers".  Your consumer will receive messages via a callback method "on_message".  Add any logic for processing the message there. 
 
 
-  class MyConsumer < Messaging::Consumer
+  class MyConsumer < RosettaQueue::Consumer
 
     subscribes_to :test_queue
     headers :persistent => false, :ack =>"client"
@@ -51,12 +51,12 @@ After instantiation, your object will consume a specific queue when you call the
   consumer.listen
 
 
-Producers require similar setup (see example below).  Instead of inheriting from Messaging::Consumer, however, the class inherits from Messaging::Producer.
+Producers require similar setup (see example below).  Instead of inheriting from RosettaQueue::Consumer, however, the class inherits from RosettaQueue::Producer.
 Furthermore, since you are publishing a message, you need to indicate the message destination with "publishes_to", not "subscribes_to".  Finally, on 
 instantiation, simply call the ".publish" method, passing the actual message you want to publish as its argument.
 
 
-  class MyProducer < Messaging::Producer
+  class MyProducer < RosettaQueue::Producer
 
     publishes_to :test_queue
     headers :persistent => false

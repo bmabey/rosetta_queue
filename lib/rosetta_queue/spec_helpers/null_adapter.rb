@@ -1,13 +1,13 @@
-module Messaging
+module RosettaQueue
   module Gateway
     
     # The null adapter lets all send messages enter into the ether and so is ideal for modes
     # when you do not want to incur the overhead of a real adapter.  You can not consume with 
     # this adapter however.
     #
-    # In your Messaging definition block, and your using rails, you could base your adapter type on Rails.env:
+    # In your RosettaQueue definition block, and your using rails, you could base your adapter type on Rails.env:
     #
-    # Messaging::Adapter.define do |a|
+    # RosettaQueue::Adapter.define do |a|
     #   if Rails.env == 'production' || ENV["RUNNING_STORIES"] == "true"
     #     a.user = ""
     #     a.password = ""

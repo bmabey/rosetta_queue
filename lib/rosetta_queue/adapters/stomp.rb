@@ -1,6 +1,6 @@
 require 'stomp'
 
-module Messaging
+module RosettaQueue
   module Gateway
   
     class StompAdapter

@@ -9,7 +9,7 @@ class Hash
   def published_to?(destination)
     received_message = nil
     begin
-      Timeout::timeout(2) { received_message = Messaging::Consumer.receive(destination).to_hash_from_json }
+      Timeout::timeout(2) { received_message = RosettaQueue::Consumer.receive(destination).to_hash_from_json }
     rescue Timeout::Error
       raise "#{destination} should have received a message but did not NOTE: make sure there are no other processes which are polling messages"
     end

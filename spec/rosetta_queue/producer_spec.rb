@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-module Messaging
+module RosettaQueue
   
   class TestProducer < Producer
 
@@ -13,7 +13,7 @@ module Messaging
     
     before(:each) do
       @adapter = mock("adapter", :send_message => nil)
-      Messaging::Adapter.stub!(:instance).and_return(@adapter)
+      RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
       @gateway  = TestProducer.new
       
       Destinations.stub!(:lookup).and_return("/queue/test_queue")
@@ -27,7 +27,7 @@ module Messaging
       
       before(:each) do
         @adapter = mock("adpater", :send_message => nil)
-        Messaging::Adapter.stub!(:instance).and_return(@adapter)
+        RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
       end
       
       it "should look up the destination defined on the class" do

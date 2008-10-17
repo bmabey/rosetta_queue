@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-module Messaging
+module RosettaQueue
 
   describe Destinations do
 

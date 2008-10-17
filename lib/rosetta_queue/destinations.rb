@@ -1,4 +1,4 @@
-module Messaging
+module RosettaQueue
 
   class Destinations
     

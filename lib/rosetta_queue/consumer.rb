@@ -1,8 +1,8 @@
-module Messaging
+module RosettaQueue
   class Consumer < Base
 
     def self.receive(destination, options = {})
-      connection = Messaging::Adapter.instance
+      connection = RosettaQueue::Adapter.instance
       connection.subscribe(Destinations.lookup(destination), options)
       message = connection.receive.body
       connection.unsubscribe(Destinations.lookup(destination))

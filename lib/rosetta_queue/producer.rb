@@ -1,10 +1,10 @@
-module Messaging
+module RosettaQueue
   
   class Producer < Base
     include MessageHandler
 
     def self.publish(destination, message, options = {})
-      Messaging::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
+      RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
     end
 
     def publish(message)
