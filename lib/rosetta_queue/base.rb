@@ -3,12 +3,12 @@ module RosettaQueue
   class Base
 
     def disconnect
-      connection.disconnect
+      connection.disconnect(@message_handler)
     end
 
-    def unsubscribe
-      connection.unsubscribe(destination)
-    end
+    # def unsubscribe
+    #   connection.unsubscribe(@message_handler)
+    # end
 
     protected
      def connection

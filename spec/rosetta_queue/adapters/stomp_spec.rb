@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
-
+require File.dirname(__FILE__) + '/shared_adapter_behavior'
 
 module RosettaQueue
   module Gateway
@@ -7,53 +7,98 @@ module RosettaQueue
     describe StompAdapter do
 
       before(:each) do
-        @conn = mock("Stomp::Connection", :ack => true, :send => true)
-        ::Stomp::Connection.stub!(:open).and_return(@conn)    
-        @stomp_adapter = StompAdapter.new("user", "password", "host", "port")
+        @msg = "Hello World!"
+        @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false, :ack => "client"}, :on_message => "")
+        @msg_obj = mock("message", :body => @msg, :headers => {"message-id" => 2})
+        @conn = mock("Stomp::Connection", :ack => true, :send => true, :subscribe => true, :receive => @msg_obj, :unsubscribe => true, :disconnect => true)
+        ::Stomp::Connection.stub!(:open).and_return(@conn)
+        @adapter = StompAdapter.new("user", "password", "host", "port")
+        @adapter.stub!(:running).and_yield
       end
+
+      it_should_behave_like "an adapter"
       
       describe "#send_message" do
         it "should delegate to the connection" do
           # need this hack since the stomp client overrides #send
-          def @connection.send(*args)
+          def @conn.send(*args)
             @args = args
           end
-          def @connection.sent_args ; @args  end
+          def @conn.sent_args ; @args  end
     
-          # when
-          @stomp_adapter.send_message('queue', 'message', 'options')
-          # then
-          @connection.sent_args.should == ['queue', 'message', 'options']
+          after_publishing {
+            @conn.sent_args.should == ['queue', 'message', 'options']          
+          }
         end
       end
-      
-      describe "#receive" do
-        it "should return the message from the connection" do
-          # given
-          @conn.stub!(:receive).and_return( message = mock("message", :body => "", :headers => {"message-id" => 2}))
-          # when & then
-          @stomp_adapter.receive.should == message
+
+      describe "#receive_once" do
+
+        def do_receiving_once
+          @adapter.receive_once("/queue/foo", {:persistent => false})
+        end
+            
+        it "should subscribe to queue" do
+          when_receiving_once { 
+            @conn.should_receive("subscribe").with("/queue/foo", {:persistent => false}) 
+          }
+        end
+        
+        it "should unsubscribe from queue" do
+          when_receiving_once { 
+            @conn.should_receive("unsubscribe").with("/queue/foo") 
+          }
         end
       end
 
       describe "#receive_with" do
-        
-        before(:each) do
-          @stomp_adapter.stub!(:running).and_yield
+
+        it "should subscribe to queue defined by the class with the options defined on the class" do
+          when_receiving_with_handler {
+            @conn.should_receive("subscribe").with('/queue/foo', :persistent => false, :ack => "client")
+          }
         end
 
-        it "should forward the message body onto the handler" do
-          # given
-          handler = mock('handler')
-          @conn.stub!(:receive).and_return( mock("message", :body => "Hello World!", :headers => {"message-id" => 2}))
-          # expect
-          handler.should_receive(:on_message).with("Hello World!")
-          # when
-          @stomp_adapter.receive_with(handler)
-        end
+        it "should acknowledge client" do
+          when_receiving_with_handler {
+            @conn.should_receive(:ack)
+          }
+        end          
       
+        describe "no ack" do
+
+          before(:each) do
+            @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false}, :on_message => "")
+          end
+
+          it "should not acknowledge client" do
+            when_receiving_with_handler {
+              @conn.should_not_receive(:ack)              
+            }
+          end          
+
+        end      
       end
       
+      describe "disconnect" do
+        
+        def do_disconnecting
+          @adapter.disconnect(@handler)
+        end
+
+        it "should unsubscribe connection" do
+          when_disconnecting {
+            @conn.should_receive("unsubscribe").with("/queue/foo")          
+          }
+        end
+
+        it "should disconnect connection" do
+          when_disconnecting {
+            @conn.should_receive("disconnect")
+          }
+        end
+                
+      end      
     end
   end
 end

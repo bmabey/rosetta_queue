@@ -3,11 +3,7 @@ require 'stomp'
 module RosettaQueue
   module Gateway
   
-    class StompAdapter
-        
-      def self.open(user, password, host, port)
-        self.new(user, password, host, port)
-      end
+    class StompAdapter < BaseAdapter
 
       def ack(msg)
         @conn.ack(msg.headers["message-id"])
@@ -17,19 +13,30 @@ module RosettaQueue
         @conn = Stomp::Connection.open(user, password, host, port, true)
       end
 
-      def disconnect
+      def disconnect(message_handler)
+        unsubscribe(destination_for(message_handler))
         @conn.disconnect
       end
-      
-      def receive
-        msg = @conn.receive        
-        ack(msg)
+
+      def receive(options)
+        msg = @conn.receive
+        ack(msg) unless options[:ack].nil?
         msg
       end
       
+      def receive_once(dest, opts)
+        subscribe(dest, opts)
+        msg = receive(opts).body
+        unsubscribe(dest)
+        msg
+      end
+
       def receive_with(message_handler)
+        options = options_for(message_handler)
+        @conn.subscribe(destination_for(message_handler), options)
+
         running do          
-          message_handler.on_message(receive.body)
+          message_handler.on_message(receive(options).body)
         end
       end
       

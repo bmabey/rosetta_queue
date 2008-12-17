@@ -1,7 +1,3 @@
-class Exception
-  include Notifiable, Loggable
-end
-
 class RosettaQueueError < StandardError; end
 class DestinationNotFound < RosettaQueueError; end
 class RosettaQueueVariableNotFound < RosettaQueueError; end

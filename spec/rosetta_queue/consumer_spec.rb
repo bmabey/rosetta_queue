@@ -14,21 +14,12 @@ module RosettaQueue
       end
     end
 
-    # Wasn't being used...  We could probably have the connection manager use this in a spec to see if it quacks like a message handler
-    # class TestConsumerWithoutOnMessage
-    #   include MessageHandler
-    # 
-    #   subscribes_to :test_queue
-    #   options :persistent => false, :ack => "client"
-    # 
-    # end
-    
-    
     before(:each) do
-      @message            = mock("message", "headers" => "foo", "body" => "message body")
-      @adapter  = mock("adpater", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive => @message, :ack => true)
+      @message  = mock("message", "headers" => "foo", "body" => "message body")
+      @adapter  = mock("adpater", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive_with => TestConsumer.new, 
+                                  :receive_once => @message.body, :ack => true)
       Adapter.stub!(:instance).and_return(@adapter)
-      Destinations.stub!(:lookup).and_return("/queue/test_queue")
+      Destinations.stub!(:lookup).and_return("/queue/foo")
     end
     
     it_should_behave_like "a messaging gateway object"
@@ -48,19 +39,10 @@ module RosettaQueue
         @consumer.receive
       end
       
-      it "should look up the destination defined on the class" do
-        Destinations.should_receive(:lookup).with(:test_queue).and_return("/queue/test_queue")
-        when_receiving
-      end
-      
-      
-      it "should subscribe to queue defined by the class with the options defined on the class" do
-        @adapter.should_receive("subscribe").with('/queue/test_queue', :persistent => false, :ack => "client") 
-        when_receiving
-      end
-      
       it "should pass message handler onto the adpater with #receive" do
-        when_receiving { @adapter.should_receive("receive").with(@message_handler) }
+        when_receiving { 
+          @adapter.should_receive("receive_with").with(@message_handler)
+        }
       end
     end
 
@@ -71,18 +53,17 @@ module RosettaQueue
         yield if block_given?
         Consumer.receive(:test_queue_passed_in, {:persistent => false})
       end
-      
+
       it "should look up the destination" do
-        Destinations.should_receive(:lookup).with(:test_queue_passed_in).twice.and_return("/queue/test_queue")
-        when_receiving
+        when_receiving {
+          Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")            
+        }
       end
-    
-      it "should subscribe to queue" do
-        when_receiving { @adapter.should_receive("subscribe").with("/queue/test_queue", {:persistent => false}) }
-      end
-      
-      it "should unsubscribe to queue" do
-        when_receiving { @adapter.should_receive("unsubscribe").with("/queue/test_queue") }
+
+      it "should pass destination and options to adapter" do
+        when_receiving {
+          @adapter.should_receive(:receive_once).with("/queue/foo", {:persistent => false}).and_return(@message)
+        }
       end
 
       it "should return the body of the message received" do
