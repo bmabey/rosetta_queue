@@ -24,32 +24,37 @@ module RosettaQueue
         msg
       end
       
-      def receive_once(dest, opts)
-        subscribe(dest, opts)
+      def receive_once(destination, opts)
+        subscribe(destination, opts)
         msg = receive(opts).body
-        unsubscribe(dest)
+        unsubscribe(destination)
+        RosettaLogger.info("Receiving from #{destination} :: #{msg}")
         msg
       end
 
       def receive_with(message_handler)
         options = options_for(message_handler)
-        @conn.subscribe(destination_for(message_handler), options)
+        destination = destination_for(message_handler)
+        @conn.subscribe(destination, options)
 
-        running do          
-          message_handler.on_message(receive(options).body)
+        running do
+          msg = receive(options).body
+          RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+          message_handler.on_message(msg)
         end
       end
       
-      def send_message(queue, message, options)
-        @conn.send(queue, message, options)
+      def send_message(destination, message, options)
+        RosettaLogger.info("Publishing to #{destination} :: #{message}")        
+        @conn.send(destination, message, options)
       end
 
-      def subscribe(queue, options)
-        @conn.subscribe(queue, options)
+      def subscribe(destination, options)
+        @conn.subscribe(destination, options)
       end
           
-      def unsubscribe(queue)
-        @conn.unsubscribe(queue)
+      def unsubscribe(destination)
+        @conn.unsubscribe(destination)
       end
       
       private

@@ -2,7 +2,11 @@ module RosettaQueue
   class Consumer < Base
 
     def self.receive(destination, options = {})
+      # debugger
       RosettaQueue::Adapter.instance.receive_once(Destinations.lookup(destination), options)
+      
+      rescue Exception=>e
+        RosettaLogger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
     def initialize(message_handler)
@@ -10,12 +14,11 @@ module RosettaQueue
     end
 
     def receive
-      begin
-        connection.receive_with(@message_handler)
+      connection.receive_with(@message_handler)
+      
       rescue Exception=>e
-        puts "caught exception: #{$!}"
-      end
+        RosettaLogger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
-    
+
   end
 end

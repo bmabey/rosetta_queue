@@ -7,11 +7,6 @@ module RosettaQueue
 
         def options_for(message_handler)
           (message_handler.options_hash) || {}
-          # unless message_handler.options_hash.nil?
-          #   message_handler.options_hash
-          # else
-          #   {}
-          # end
         end
 
         def destination_for(message_handler)

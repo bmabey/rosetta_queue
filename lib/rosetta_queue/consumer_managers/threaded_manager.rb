@@ -23,7 +23,6 @@ module RosettaQueue
       @threads.each { |thread| thread.join }
     end
 
-    # checks to make sure each thread is alive.  if not, stops all threads
     def monitor_threads
       while @running
         trap("TERM", "EXIT")
@@ -35,11 +34,12 @@ module RosettaQueue
 
       puts "All connection threads have died..."
       rescue Interrupt=>e
+        RosettaLogger.warn("Interrupt received.  Shutting down...")
         puts "\nInterrupt received\n"
-      rescue Object=>e
-        puts "\n#{e.class.name}: #{e.message}\n\n"
+      rescue Exception=>e
+        RosettaLogger.error("Exception thrown -- #{e.class.name}: #{e.message}")
       ensure
-        puts "Cleaning up threads...\n\n"
+        RosettaLogger.warn("Cleaning up threads...")
         stop_threads
     end
 
@@ -48,11 +48,12 @@ module RosettaQueue
         @threads[key] = Thread.new(key, consumer) do |a_key, a_consumer|
           while @running
             begin
+              RosettaLogger.info("Threading consumer #{a_consumer}...")
               Mutex.new.synchronize { a_consumer.receive }
             rescue StopProcessingException=>e
-              puts "#{a_key}: Processing Stopped - receive interrupted"
+              RosettaLogger.error("#{a_key}: Processing Stopped - receive interrupted")
             rescue Exception=>e
-              puts "#{a_key}: Exception from connection.receive: #{$!}\n" + exception.backtrace.join("\n\t")
+              RosettaLogger.error("#{a_key}: Exception from connection.receive: #{$!}\n" + e.backtrace.join("\n\t"))
             end
             Thread.pass
           end
@@ -63,7 +64,7 @@ module RosettaQueue
     def stop_threads
       @running = false
       @threads.each do |key, thread|
-        puts "Stopping thread and disconnecting from #{key}" unless ENV["MESSAGING_ENV"] == "test"
+        RosettaLogger.info("Stopping thread and disconnecting from #{key}...")
         @consumers[key].disconnect
         thread.kill
       end

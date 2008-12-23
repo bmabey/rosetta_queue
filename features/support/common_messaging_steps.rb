@@ -4,11 +4,18 @@ Given /^RosettaQueue is configured for (\w+)$/ do |adapter_type|
     a.password  = "fuzzbuzz!"
     a.host      = "localhost"
     a.type      = adapter_type
+    a.port      = "61613" if adapter_type =~ /stomp/
   end
 end
 
-Given /^a destination is set$/ do
+Given /^a point-to-point destination is set$/ do
   RosettaQueue::Destinations.define do |dest|
     dest.map :foo, "/queue/bar"
+  end  
+end
+
+Given /^a publish-subscribe destination is set$/ do
+  RosettaQueue::Destinations.define do |dest|
+    dest.map :foo, "/topic/bar"
   end  
 end

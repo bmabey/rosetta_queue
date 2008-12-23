@@ -13,7 +13,7 @@ end
 
 alias :running :lambda
 
-[:process, :receiving_with_handler, :receiving_once, :publishing, :disconnecting].each do |action|
+[:process, :receiving_with_handler, :receiving_once, :publishing, :disconnecting, :receiving_single_exchange, :receiving_exchange].each do |action|
   eval %Q{
     def before_#{action}
       yield

@@ -5,33 +5,18 @@ module RosettaQueue
 
     def self.publish(destination, message, options = {})
       RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
-    end
 
-    def publish(message)
-      #TODO redo how exceptions are handled...
-      begin
-        connection.send_message(publish_destination, message, options)
       rescue Exception=>e
-        puts "caught exception: #{$!}"
-        # e.log_error
-        # e.send_notification
-      end
+        RosettaLogger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
-    # protected
-    # 
-    #   def options
-    #     unless options_hash.nil?
-    #       options_hash
-    #     else
-    #       {}
-    #     end
+    # def publish(message)
+    #   begin
+    #     connection.send_message(publish_destination, message, options)
+    #   rescue Exception=>e
+    #     RosettaLogger.error("Caught exception in Producer#publish: #{$!}\n" + e.backtrace.join("\n\t"))
     #   end
-    # 
-    #   def publish_destination
-    #     raise DestinationNotFound.new("Missing destination.  Cannot publish message!") unless destination
-    #     @dest ||= Destinations.lookup(destination.to_sym)
-    #   end
+    # end
 
   end
 end

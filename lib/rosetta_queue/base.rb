@@ -6,10 +6,6 @@ module RosettaQueue
       connection.disconnect(@message_handler)
     end
 
-    # def unsubscribe
-    #   connection.unsubscribe(@message_handler)
-    # end
-
     protected
      def connection
        @conn ||= Adapter.instance
