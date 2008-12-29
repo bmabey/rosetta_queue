@@ -8,5 +8,5 @@ World do |w|
   
 end
 
-# AMQP.logging = true
+AMQP.logging = true
 # Thread.new {EM.run{}}

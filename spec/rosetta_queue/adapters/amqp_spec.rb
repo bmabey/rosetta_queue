@@ -67,7 +67,7 @@ module RosettaQueue::Gateway
 
 
     describe DirectExchange do
-
+    
       before(:each) do
         AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
         @queue = mock("MQ::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
@@ -79,45 +79,46 @@ module RosettaQueue::Gateway
         EM.stub!(:stop_event_loop)
         @strategy = DirectExchange.new('user', 'pass', 'host')
       end
-
+    
       describe "#do_single_exchange" do
-
+    
         def do_receiving_single_exchange
           @strategy.do_single_exchange("/queue/foo", {:durable => false})
         end
-
+    
         it "should return the message from the connection" do
           @strategy.do_single_exchange("/queue/foo", {:durable => false}).should == @msg
         end
-
+    
         it "should subscribe to queue" do
           when_receiving_single_exchange {
             @queue.should_receive(:pop).and_yield(@msg)
           }
         end
-
-        it "should stop event loop" do
-          pending
-          when_receiving_single_exchange {
-            EM.should_receive(:stop_event_loop)
-          }
-        end
-
+    
+        # it "should stop event loop" do
+        #   pending
+        #   when_receiving_single_exchange {
+        #     EM.should_receive(:stop_event_loop)
+        #   }
+        # end
+    
       end
-
+      
+    
       describe "#do_exchange" do
     
         
         def do_receiving_exchange
           @strategy.do_exchange("/queue/foo", @handler)
         end
-
+    
         it "should forward the message body onto the handler" do
           when_receiving_exchange {
             @handler.should_receive(:on_message).with("Hello World!")
           }
         end
-
+    
         it "should subscribe to queue" do
           when_receiving_exchange {
             @queue.should_receive(:subscribe).and_yield(@msg)
@@ -125,14 +126,18 @@ module RosettaQueue::Gateway
         end
     
       end
-
-
+    
+    
       describe "#publish_to_exchange" do
-
+        
+        before(:each) do
+          EM.stub!(:reactor_running?).and_return(true)
+        end
+    
         def do_publishing
           @strategy.publish_to_exchange('/queue/foo', 'message', {:durable => false})
         end
-
+    
         it "should instantiate queue" do
           when_publishing {
             @channel.should_receive(:queue).and_return(@queue)
@@ -141,22 +146,22 @@ module RosettaQueue::Gateway
         
         it "should publish message to queue" do
           when_publishing {
-            @channel.queue.should_receive(:publish).with('message')
+            @channel.queue.should_receive(:publish).with('message', {:durable => false})
           }
         end
         
-        it "should stop event loop" do
-          when_publishing {
-            EM.should_receive(:stop_event_loop)
-          }
-        end
+        # it "should stop event loop" do
+        #   when_publishing {
+        #     EM.should_receive(:stop_event_loop)
+        #   }
+        # end
       end
-
+    
     end
-
-
+    
+    
     describe FanoutExchange do
-
+    
       before(:each) do
         AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
         @queue = mock("MQ::Queue", :pop => @msg, :bind => @bound_queue = mock("MQ::Queue", :pop => @msg), :publish => true, :unbind => true)
@@ -168,32 +173,32 @@ module RosettaQueue::Gateway
         EM.stub!(:stop_event_loop)
         @strategy = FanoutExchange.new('user', 'pass', 'host')
       end
-
+    
       describe "#do_single_exchange" do
-
+    
         def do_receiving_exchange
           @strategy.do_single_exchange("/topic/foo", {:durable => false})
         end
-
+    
         it_should_behave_like "a fanout exchange adapter"
-
+    
         it "should return the message from the connection" do
           @strategy.do_single_exchange("/topic/foo").should == @msg
         end
-
+    
         it "should subscribe to queue" do
           when_receiving_exchange {
             @bound_queue.should_receive(:pop).and_yield(@msg)
           }
         end
-
+    
         it "should unbind queue from exchange" do
           pending
           when_receiving_single_exchange {
             @queue.should_receive(:unbind)
           }
         end
-
+    
         it "should stop event loop" do
           pending
           when_receiving_single_exchange {
@@ -201,21 +206,21 @@ module RosettaQueue::Gateway
           }
         end
       end
-
+    
       describe "#do_exchange" do
           
         def do_receiving_exchange
           @strategy.do_exchange("/topic/foo", @handler)
         end
-
+    
         it_should_behave_like "a fanout exchange adapter"
-
+    
         it "should forward the message body onto the handler" do
           when_receiving_exchange {
             @handler.should_receive(:on_message).with("Hello World!")
           }
         end
-
+    
         it "should subscribe to queue" do
           when_receiving_exchange {
             @bound_queue.should_receive(:subscribe).and_yield(@msg)
@@ -248,7 +253,7 @@ module RosettaQueue::Gateway
       #     }
       #   end
       # end
-
+    
     end
   end
 end
