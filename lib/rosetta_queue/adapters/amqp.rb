@@ -11,6 +11,9 @@ require 'mq'
 # - :durable => true
 # - :ack => "client" ????
 
+
+
+
 module RosettaQueue
   module Gateway
 
