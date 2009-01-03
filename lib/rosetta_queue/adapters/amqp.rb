@@ -126,7 +126,7 @@ module RosettaQueue
           queue     = channel.queue("queue_#{self.object_id}")
           exchange  = channel.fanout(fanout_name_for(destination))
 
-          queue.bind(exchange, opts).pop do |msg|
+          queue.bind(exchange).pop do |msg|
           # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination)), opts).pop do |msg|
             RosettaLogger.info("Receiving from #{destination} :: #{msg}")
             yield msg
