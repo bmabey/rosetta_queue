@@ -92,7 +92,7 @@ module RosettaQueue::Gateway
     
         it "should subscribe to queue" do
           when_receiving_single_exchange {
-            @queue.should_receive(:pop).and_yield(@msg)
+            @queue.should_receive(:pop)
           }
         end
     
@@ -188,7 +188,7 @@ module RosettaQueue::Gateway
     
         it "should subscribe to queue" do
           when_receiving_exchange {
-            @bound_queue.should_receive(:pop).and_yield(@msg)
+            @bound_queue.should_receive(:pop)
           }
         end
     
