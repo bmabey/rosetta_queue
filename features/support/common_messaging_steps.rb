@@ -16,6 +16,6 @@ end
 
 Given /^a publish-subscribe destination is set$/ do
   RosettaQueue::Destinations.define do |dest|
-    dest.map :foo, "/topic/bar"
+    dest.map :foobar, "/topic/foobar"
   end  
 end

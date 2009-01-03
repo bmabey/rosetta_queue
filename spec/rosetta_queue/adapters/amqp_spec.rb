@@ -168,7 +168,7 @@ module RosettaQueue::Gateway
         @channel = mock("MQ", :queue => @queue, :fanout => 'fanout')
         MQ.stub!(:new).and_return(@channel)
         @bound_queue.stub!(:subscribe).and_yield(@msg)
-        @handler = mock("handler", :on_message => true, :destination => :foo)
+        @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
         EM.stub!(:run).and_yield
         EM.stub!(:stop_event_loop)
         @strategy = FanoutExchange.new('user', 'pass', 'host')
@@ -177,7 +177,7 @@ module RosettaQueue::Gateway
       describe "#do_single_exchange" do
     
         def do_receiving_exchange
-          @strategy.do_single_exchange("/topic/foo", {:durable => false})
+          @strategy.do_single_exchange("/topic/foo")
         end
     
         it_should_behave_like "a fanout exchange adapter"

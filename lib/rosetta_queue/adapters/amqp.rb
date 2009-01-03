@@ -11,9 +11,6 @@ require 'mq'
 # - :durable => true
 # - :ack => "client" ????
 
-
-
-
 module RosettaQueue
   module Gateway
 
@@ -26,7 +23,9 @@ module RosettaQueue
       def disconnect; end
 
       def receive_once(destination, opts={})
-        exchange_strategy_for(destination).do_single_exchange(destination, opts)
+        exchange_strategy_for(destination).do_single_exchange(destination, opts) do |msg|
+          return msg
+        end
       end
 
       def receive_with(message_handler)
@@ -43,11 +42,11 @@ module RosettaQueue
         def exchange_strategy_for(destination)
           case destination
           when /(topic|fanout)/
-            @fanout_exchange ||= FanoutExchange.new(@user, @pass, @host)
+            @exchange ||= FanoutExchange.new(@user, @pass, @host)
           when /queue/
-            @direct_exchange ||= DirectExchange.new(@user, @pass, @host)
+            @exchange ||= DirectExchange.new(@user, @pass, @host)
           else
-            @direct_exchange ||= DirectExchange.new(@user, @pass, @host)
+            @exchange ||= DirectExchange.new(@user, @pass, @host)
           end
         end
     end
@@ -59,12 +58,11 @@ module RosettaQueue
         @user, @pass, @host = user, pass, host
       end
 
-      def publish_to_exchange(destination, message, options={:persistent => true})
+      def publish_to_exchange(destination, message, options={})
         unless EM.reactor_running?
           EM.run do
             publish_message(destination, message, options)
             EM.add_timer(1) { EM.stop_event_loop }
-            # AMQP.stop { EM.stop_event_loop }
           end
         else
           publish_message(destination, message, options)
@@ -78,10 +76,9 @@ module RosettaQueue
         end
 
         def conn
+          # AmqpConnect.connection(@user, @pass, @host)
           @conn ||= AMQP.connect(:user => @user, :pass => @pass, :host => @host)
         end
-
-      private
         
         def publish_message(dest, msg, opts)
           RosettaLogger.info("Publishing to #{dest} :: #{msg}")
@@ -104,7 +101,7 @@ module RosettaQueue
         EM.run do
           channel.queue(destination).pop do |msg|
             RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-            return msg
+            yield msg
           end
         end
       end
@@ -114,7 +111,11 @@ module RosettaQueue
     class FanoutExchange < BaseExchange
 
       def do_exchange(destination, message_handler)
-        channel.queue.bind(channel.fanout(fanout_name_for(destination))).subscribe do |msg|
+        queue     = channel.queue("queue_#{self.object_id}")
+        exchange  = channel.fanout(fanout_name_for(destination))
+
+        queue.bind(exchange).subscribe do |msg|
+        # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination))).subscribe do |msg|
           RosettaLogger.info("Receiving from #{destination} :: #{msg}")
           message_handler.on_message(msg)
         end        
@@ -122,12 +123,25 @@ module RosettaQueue
 
       def do_single_exchange(destination, opts={})
         EM.run do
-          channel.queue.bind(channel.fanout(fanout_name_for(destination))).pop do |msg|
+          queue     = channel.queue("queue_#{self.object_id}")
+          exchange  = channel.fanout(fanout_name_for(destination))
+
+          queue.bind(exchange, opts).pop do |msg|
+          # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination)), opts).pop do |msg|
             RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-            return msg
+            yield msg
           end
         end
       end
+
+      protected
+
+        def publish_message(dest, msg, opts)
+          exchange = channel.fanout(fanout_name_for(dest))
+          exchange.publish(msg, opts)
+          # channel.fanout(fanout_name_for(dest), :durable => true).publish(msg, opts)
+          RosettaLogger.info("Publishing to fanout #{dest} :: #{msg}")
+        end
 
       private
 
@@ -136,7 +150,17 @@ module RosettaQueue
           raise "Unable to discover fanout exchange.  Cannot bind queue to exchange!" unless fanout_name
           fanout_name
         end
+    end
 
+    class AmqpConnect
+
+      class << self
+        
+        def connection(user, pass, host, port=nil)
+          @conn ||= AMQP.connect(:user => user, :pass => pass, :host => host)
+        end
+        
+      end
     end
   end
 end

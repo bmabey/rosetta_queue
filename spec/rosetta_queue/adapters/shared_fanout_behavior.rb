@@ -11,7 +11,7 @@ module RosettaQueue
     
       it "should bind to fanout exchange" do
         when_receiving_exchange {
-          @queue.should_receive(:bind).with('fanout').and_return(@bound_queue)
+          @queue.should_receive(:bind).with('fanout', {}).and_return(@bound_queue)
         }
       end
 
