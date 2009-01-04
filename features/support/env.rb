@@ -7,5 +7,5 @@ World do |w|
   w.extend(RosettaQueue::StoryHelpers)
 end
 
-# AMQP.logging = true
+AMQP.logging = true
 # Thread.new {EM.run{}}

@@ -4,7 +4,7 @@ module RosettaQueue
     include MessageHandler
 
     def self.publish(destination, message, options = {})
-      RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), message, options)
+      RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), Filters.process_sending(message), options)
 
       rescue Exception=>e
         RosettaLogger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))

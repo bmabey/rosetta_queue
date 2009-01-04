@@ -93,7 +93,7 @@ module RosettaQueue
       def do_exchange(destination, message_handler)
         channel.queue(destination).subscribe do |msg|
           RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-          message_handler.on_message(msg)
+          message_handler.on_message(Filters.process_receiving(msg))
         end
       end
 
@@ -101,7 +101,7 @@ module RosettaQueue
         EM.run do
           channel.queue(destination).pop do |msg|
             RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-            yield msg
+            yield Filters.process_receiving(msg)
           end
         end
       end
@@ -117,7 +117,7 @@ module RosettaQueue
         queue.bind(exchange).subscribe do |msg|
         # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination))).subscribe do |msg|
           RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-          message_handler.on_message(msg)
+          message_handler.on_message(Filters.process_receiving(msg))
         end        
       end
 
@@ -129,7 +129,7 @@ module RosettaQueue
           queue.bind(exchange).pop do |msg|
           # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination)), opts).pop do |msg|
             RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-            yield msg
+            yield Filters.process_receiving(msg)
           end
         end
       end

@@ -20,14 +20,21 @@ module RosettaQueue
     # The :options will be passed to the publisher and are optional.
     def publish_message(message, options)
       options[:options] ||= {:persistent => false}
-      RosettaQueue::Producer.publish(options[:to], message.to_json, options[:options])
+      RosettaQueue::Producer.publish(options[:to], message, options[:options])
     end
     
-    # Consumes the first message defiend of the passed in consumer and uses the consumer to handle it.
+    # Consumes the first message on queue of consumer that is passed in and uses the consumer to handle it.
     # Example:
     # consume_once_with ClientStatusConsumer
     def consume_once_with(consumer)
       consumer.new.on_message(RosettaQueue::Consumer.receive(consumer.destination))
+    end
+    
+    # Consumes the first message on queue and returns it.
+    # Example:
+    # message = consume_once :foo_queue
+    def consume_once(dest)
+      RosettaQueue::Consumer.receive(dest)
     end
 
     def consuming_from(destination)

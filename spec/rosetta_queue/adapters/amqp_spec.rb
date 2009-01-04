@@ -3,6 +3,19 @@ require File.dirname(__FILE__) + '/shared_adapter_behavior'
 require File.dirname(__FILE__) + '/shared_fanout_behavior'
 
 module RosettaQueue::Gateway
+  
+  describe "an exchange", :shared => true do
+    
+    describe "#do_exchange" do
+    
+      it "should filter the message and forward it to the handler" do
+        when_receiving_exchange {
+          ::RosettaQueue::Filters.should_receive(:process_receiving).with(@msg).and_return("Filtered Message")
+          @handler.should_receive(:on_message).with("Filtered Message")
+        }
+      end
+    end
+  end
 
   describe "Amqp adapter and components" do
 
@@ -79,7 +92,14 @@ module RosettaQueue::Gateway
         EM.stub!(:stop_event_loop)
         @strategy = DirectExchange.new('user', 'pass', 'host')
       end
-    
+      
+      
+      def do_receiving_exchange
+        @strategy.do_exchange("/queue/foo", @handler)
+      end
+      
+      it_should_behave_like "an exchange"
+      
       describe "#do_single_exchange" do
     
         def do_receiving_single_exchange
@@ -104,27 +124,15 @@ module RosettaQueue::Gateway
         # end
     
       end
-      
     
       describe "#do_exchange" do
-    
-        
-        def do_receiving_exchange
-          @strategy.do_exchange("/queue/foo", @handler)
-        end
-    
-        it "should forward the message body onto the handler" do
-          when_receiving_exchange {
-            @handler.should_receive(:on_message).with("Hello World!")
-          }
-        end
-    
+
         it "should subscribe to queue" do
           when_receiving_exchange {
             @queue.should_receive(:subscribe).and_yield(@msg)
           }
-        end
-    
+        end                
+  
       end
     
     
@@ -173,6 +181,12 @@ module RosettaQueue::Gateway
         EM.stub!(:stop_event_loop)
         @strategy = FanoutExchange.new('user', 'pass', 'host')
       end
+      
+      def do_receiving_exchange
+        @strategy.do_exchange("/topic/foo", @handler)
+      end
+      
+      it_should_behave_like "an exchange"
     
       describe "#do_single_exchange" do
     
@@ -207,11 +221,7 @@ module RosettaQueue::Gateway
         end
       end
     
-      describe "#do_exchange" do
-          
-        def do_receiving_exchange
-          @strategy.do_exchange("/topic/foo", @handler)
-        end
+      describe "#do_exchange" do                  
     
         it_should_behave_like "a fanout exchange adapter"
     

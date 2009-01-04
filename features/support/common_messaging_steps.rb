@@ -1,4 +1,4 @@
-Given /^RosettaQueue is configured for (\w+)$/ do |adapter_type|
+Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
   RosettaQueue::Adapter.define do |a|
     a.user      = "chris"
     a.password  = "fuzzbuzz!"

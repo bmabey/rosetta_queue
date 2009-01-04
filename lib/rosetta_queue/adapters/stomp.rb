@@ -29,7 +29,7 @@ module RosettaQueue
         msg = receive(opts).body
         unsubscribe(destination)
         RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-        msg
+        filter_receiving(msg)
       end
 
       def receive_with(message_handler)
@@ -40,7 +40,7 @@ module RosettaQueue
         running do
           msg = receive(options).body
           RosettaLogger.info("Receiving from #{destination} :: #{msg}")
-          message_handler.on_message(msg)
+          message_handler.on_message(filter_receiving(msg))
         end
       end
       

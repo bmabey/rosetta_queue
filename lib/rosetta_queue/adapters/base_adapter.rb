@@ -13,6 +13,14 @@ module RosettaQueue
           raise DestinationNotFound.new("Missing destination!") unless message_handler.destination
           @dest ||= Destinations.lookup(message_handler.destination.to_sym)
         end
+        
+        def filter_receiving(msg)
+          Filters.process_receiving(msg)
+        end
+
+        def filter_sending(msg)
+          Filters.process_sending(msg)
+        end
   
     end
   end
