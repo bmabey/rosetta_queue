@@ -7,9 +7,17 @@ require 'ruby-debug'
 require File.dirname(__FILE__) + '/../init.rb'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
-Dir[File.join(File.dirname(__FILE__), '..', 'lib', 'rosetta_queue', 'spec_helpers/*.rb')].each do |file|
-  require file
+RosettaQueue.load_spec_helpers
+
+class NullLogger
+  def info(*args);  end
+  def debug(*args); end
+  def fatal(*args); end
+  def error(*args); end
+  def warn(*args);  end
 end
+
+RosettaQueue.logger = NullLogger.new
 
 alias :running :lambda
 

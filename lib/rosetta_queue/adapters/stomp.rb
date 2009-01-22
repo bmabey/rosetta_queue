@@ -28,7 +28,7 @@ module RosettaQueue
         subscribe(destination, opts)
         msg = receive(opts).body
         unsubscribe(destination)
-        RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+        RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
         filter_receiving(msg)
       end
 
@@ -39,13 +39,13 @@ module RosettaQueue
 
         running do
           msg = receive(options).body
-          RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+          RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           message_handler.on_message(filter_receiving(msg))
         end
       end
       
       def send_message(destination, message, options)
-        RosettaLogger.info("Publishing to #{destination} :: #{message}")        
+        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")        
         @conn.send(destination, message, options)
       end
 

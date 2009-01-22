@@ -81,7 +81,7 @@ module RosettaQueue
         end
         
         def publish_message(dest, msg, opts)
-          RosettaLogger.info("Publishing to #{dest} :: #{msg}")
+          RosettaQueue.logger.info("Publishing to #{dest} :: #{msg}")
           channel.queue(dest).publish(msg, opts)
           channel.queue(dest).unsubscribe
         end
@@ -92,7 +92,7 @@ module RosettaQueue
 
       def do_exchange(destination, message_handler)
         channel.queue(destination).subscribe do |msg|
-          RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+          RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           message_handler.on_message(Filters.process_receiving(msg))
         end
       end
@@ -100,7 +100,7 @@ module RosettaQueue
       def do_single_exchange(destination, opts={})
         EM.run do
           channel.queue(destination).pop do |msg|
-            RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             yield Filters.process_receiving(msg)
           end
         end
@@ -116,7 +116,7 @@ module RosettaQueue
 
         queue.bind(exchange).subscribe do |msg|
         # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination))).subscribe do |msg|
-          RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+          RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           message_handler.on_message(Filters.process_receiving(msg))
         end        
       end
@@ -128,7 +128,7 @@ module RosettaQueue
 
           queue.bind(exchange).pop do |msg|
           # channel.queue("queue_#{rand}").bind(channel.fanout(fanout_name_for(destination)), opts).pop do |msg|
-            RosettaLogger.info("Receiving from #{destination} :: #{msg}")
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             yield Filters.process_receiving(msg)
           end
         end
@@ -140,7 +140,7 @@ module RosettaQueue
           exchange = channel.fanout(fanout_name_for(dest))
           exchange.publish(msg, opts)
           # channel.fanout(fanout_name_for(dest), :durable => true).publish(msg, opts)
-          RosettaLogger.info("Publishing to fanout #{dest} :: #{msg}")
+          RosettaQueue.logger.info("Publishing to fanout #{dest} :: #{msg}")
         end
 
       private

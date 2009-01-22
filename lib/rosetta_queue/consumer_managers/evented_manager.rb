@@ -10,17 +10,17 @@ module RosettaQueue
 
         begin
           @consumers.each do |key, consumer|
-            RosettaLogger.info("Running consumer #{key} in event machine...")
+            RosettaQueue.logger.info("Running consumer #{key} in event machine...")
             consumer.receive
           end
         rescue Exception => e
-          RosettaLogger.error("Exception thrown: #{$!}\n" + e.backtrace.join("\n\t"))
+          RosettaQueue.logger.error("Exception thrown: #{$!}\n" + e.backtrace.join("\n\t"))
         end
       }
     end
     
     def stop
-      RosettaLogger.info("Shutting down event machine...")
+      RosettaQueue.logger.info("Shutting down event machine...")
       EM.stop
     end
 
@@ -28,12 +28,12 @@ module RosettaQueue
     
       def trap_interruptions
         trap("INT") {
-          RosettaLogger.warn("Interrupt received.  Shutting down...")
+          RosettaQueue.logger.warn("Interrupt received.  Shutting down...")
           EM.stop
         }
         
         trap("TERM") {
-          RosettaLogger.warn("Interrupt received.  Shutting down...")
+          RosettaQueue.logger.warn("Interrupt received.  Shutting down...")
           EM.stop
         }
       end

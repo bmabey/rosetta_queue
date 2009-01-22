@@ -20,7 +20,7 @@ module RosettaQueue::Gateway
   describe "Amqp adapter and components" do
 
     before(:each) do
-      RosettaLogger.stub!(:info)
+      RosettaQueue.logger.stub!(:info)
       @msg = "Hello World!"
       @adapter = AmqpAdapter.new("foo", "bar", "localhost")
       @handler = mock("handler", :on_message => true, :destination => :foo)

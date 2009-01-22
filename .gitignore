@@ -1,3 +1,5 @@
 database.yml
 .DS_Store
 tmp/*
+*.swp
+log/*
