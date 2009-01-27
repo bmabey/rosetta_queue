@@ -3,10 +3,10 @@ ENV["MESSAGING_ENV"] = "test"
 require 'rubygems'
 require 'spec'
 
-require File.dirname(__FILE__) + '/../init.rb'
+$:.unshift(File.dirname(__FILE__) + '/../lib')
+require 'rosetta_queue'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
-RosettaQueue.load_spec_helpers
 
 class NullLogger
   def info(*args);  end

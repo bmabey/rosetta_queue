@@ -3,7 +3,7 @@ ENV["MESSAGING_ENV"] = "test"
 require File.dirname(__FILE__) + '/../../init.rb'
 require 'spec/expectations'
 
-RosettaQueue.load_spec_helpers
+require 'rosetta_queue/spec_helpers'
 RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../log', 'rosetta_queue.log'))
 
 World do |w|

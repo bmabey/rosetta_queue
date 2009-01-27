@@ -1,3 +1,4 @@
+require 'rosetta_queue/consumer_managers/base'
 require 'mq'
 
 module RosettaQueue

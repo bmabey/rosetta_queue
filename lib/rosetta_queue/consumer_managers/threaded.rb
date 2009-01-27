@@ -1,3 +1,5 @@
+require 'rosetta_queue/consumer_managers/base'
+
 module RosettaQueue
   class ThreadedManager < BaseManager
 

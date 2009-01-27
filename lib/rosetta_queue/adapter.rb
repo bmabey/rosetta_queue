@@ -1,5 +1,5 @@
 # TODO: Later on we should only require the adpaters that are requested
-require File.dirname(__FILE__) + "/adapters/base_adapter.rb"
+require 'rosetta_queue/adapters/base'
 
 Dir[File.join(File.dirname(__FILE__), "adapters/*.rb")].each do |file|
   require file

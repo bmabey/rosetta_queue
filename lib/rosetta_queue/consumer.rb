@@ -2,7 +2,6 @@ module RosettaQueue
   class Consumer < Base
 
     def self.receive(destination, options = {})
-      # debugger
       RosettaQueue::Adapter.instance.receive_once(Destinations.lookup(destination), options)
       
       rescue Exception=>e
