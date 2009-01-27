@@ -1,5 +1,6 @@
+require File.expand_path(File.dirname(__FILE__) + '/env.rb')
 class SampleConsumer
-  include MessageHandler
+  include ::RosettaQueue::MessageHandler
   subscribes_to :foo
   options :durable => true
   
@@ -14,7 +15,7 @@ end
 
 
 class SampleConsumerTwo
-  include MessageHandler
+  include ::RosettaQueue::MessageHandler
   subscribes_to :foo
   options :durable => true
   

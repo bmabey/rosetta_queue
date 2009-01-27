@@ -2,7 +2,6 @@ ENV["MESSAGING_ENV"] = "test"
 
 require 'rubygems'
 require 'spec'
-require 'ruby-debug'
 
 require File.dirname(__FILE__) + '/../init.rb'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
