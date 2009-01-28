@@ -1,12 +1,13 @@
 module RosettaQueue
-  # Adds helpful methods when doing application level testing with rspec story runner.
-  # Include this module in 'module Spec::Story::World' in your helper.rb file.
-  # If you are using cucumber just include it in your env.rb file.
-  module StoryHelpers
+  # Adds helpful methods when doing application level testing.
+  # If you are using cucumber just include it in your Wolrd in the env.rb file:
+  # World {|world| world.extend RosettaQueue::SpecHelpers }
+  module SpecHelpers
     require 'open-uri'
     
     # *Currently* only works with ActiveMQ being used as gateway. 
     # This will clear the queues defined in the RosettaQueue::Destinations mapping.
+    # TODO: Figure out a better spot for this to allow for other gateways...
     def clear_queues
       RosettaQueue::Destinations.queue_names.each do |name| 
         queue = name.gsub('/queue/','')

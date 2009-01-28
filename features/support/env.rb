@@ -7,7 +7,7 @@ require 'rosetta_queue/spec_helpers'
 RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../log', 'rosetta_queue.log'))
 
 World do |w|
-  w.extend(RosettaQueue::StoryHelpers)
+  w.extend(RosettaQueue::SpecHelpers)
 end
 
 AMQP.logging = false
