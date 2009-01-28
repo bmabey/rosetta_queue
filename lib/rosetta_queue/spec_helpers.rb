@@ -1,5 +1,3 @@
-require 'rosetta_queue/spec_helpers/fake_adapter'
 require 'rosetta_queue/spec_helpers/hash'
-require 'rosetta_queue/spec_helpers/null_adapter'
 require 'rosetta_queue/spec_helpers/publishing_matchers'
 require 'rosetta_queue/spec_helpers/story_helpers'

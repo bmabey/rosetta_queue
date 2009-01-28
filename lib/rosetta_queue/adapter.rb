@@ -1,9 +1,4 @@
-# TODO: Later on we should only require the adpaters that are requested
 require 'rosetta_queue/adapters/base'
-
-Dir[File.join(File.dirname(__FILE__), "adapters/*.rb")].each do |file|
-  require file
-end
 
 module RosettaQueue
   class Adapter
@@ -20,8 +15,9 @@ module RosettaQueue
       end
       
       def type=(adapter_prefix)
-        @adapter_class = "RosettaQueue::Gateway::#{adapter_prefix.to_s.classify}Adapter".constantize
-        rescue NameError
+        require "rosetta_queue/adapters/#{adapter_prefix}"
+        @adapter_class = RosettaQueue::Gateway.const_get("#{adapter_prefix.to_s.classify}Adapter")
+        rescue MissingSourceFile
           raise AdapterException, "Adapter type '#{adapter_prefix}' does not match existing adapters!"
       end
 

@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
+require 'rosetta_queue/adapters/null'
 
 module RosettaQueue
   module Gateway
