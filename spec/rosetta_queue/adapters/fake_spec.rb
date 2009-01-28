@@ -18,6 +18,7 @@ module RosettaQueue
       end
       
       describe "#messages_sent_to" do
+
         it "should return the message bodies that were delivered to the specified queue" do
           # given
           adapter = FakeAdapter.new
@@ -28,6 +29,17 @@ module RosettaQueue
           results = adapter.messages_sent_to('queue 1')
           # then
           results.should == ['message 1', 'message 3']
+        end
+
+        it "should return the bodies of the messages after they have been filtered" do
+          # given
+          adapter = FakeAdapter.new
+          # expect
+          ::RosettaQueue::Filters.should_receive(:process_receiving).with('message').and_return("Filtered Message")
+          # when
+          adapter.send_message('queue', 'message', 'headers')
+          # then
+          adapter.messages_sent_to('queue').should == ['Filtered Message']
         end
         
         it "should return all the message's bodies when nil is passed in at the queue" do

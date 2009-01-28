@@ -59,7 +59,7 @@ module RosettaQueue
         lambda_to_run.call
         #then
         message = fake_adapter.messages_sent_to(@expected_queue).first || ''
-        @actual_message = message.to_hash_from_json
+        @actual_message = message
       end
     
       protected

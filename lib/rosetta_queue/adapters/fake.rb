@@ -8,7 +8,7 @@ module RosettaQueue
       end
 
       def send_message(queue, message, headers)
-        @messages << {'queue' => queue, 'message' => message, 'headers' => headers}
+        @messages << {'queue' => queue, 'message' => RosettaQueue::Filters::process_receiving(message), 'headers' => headers}
       end
   
       def messages_sent_to(queue)
