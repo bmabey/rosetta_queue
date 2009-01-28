@@ -1,0 +1,4 @@
+== 0.1.x (git)
+
+== 0.1.0 / 2008-01-28 - Initial Release
+RosettaQueue was realased in the wild! RQ's initial development was primarily sponsored by Alliance Health Networks (thanks!!).  The original authors were Chris Wyckoff and Ben Mabey.The initial release included adapters for stomp and amqp, in addition to a null and fake adapters for testing.
