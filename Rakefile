@@ -15,11 +15,14 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name = "rosetta-queue"
+    s.name = "rosetta_queue"
+    s.rubyforge_project = "rosetta-queue"
     s.summary = %Q{Messaging gateway API with adapters for many messaging systems available in Ruby.}
     s.email = "ben@benmabey.com"
-    s.homepage = "http://github.com/bmabey/rosetta-queue"
+    s.homepage = "http://github.com/bmabey/rosetta_queue"
     s.description = %Q{Messaging gateway API with adapters for many messaging systems available in Ruby. Messaging systems can be easily switched out with a small configuration change. Code for testing on the object and application level is also provided.}
+    s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE.txt"]
+    s.files = FileList["[A-Z]*.*", "{bin,generators,lib,features,spec}/**/*", "Rakefile", "cucumber.yml"]
     s.authors = ["Ben Mabey", "Chris Wyckoff"]
   end
 rescue LoadError

@@ -3,3 +3,4 @@ database.yml
 tmp/*
 *.swp
 log/*
+pkg
