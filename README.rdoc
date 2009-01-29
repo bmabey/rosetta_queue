@@ -73,7 +73,7 @@ It is recommended that you set your adapter to the 'null' adapter for your specs
 
   lambda { model.save }.should publish("foo", :to => :test_queue). 
   
-Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cu
+Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features.
 
 
 == How to contribute
@@ -96,5 +96,4 @@ The features rely on a user of 'rosetta' being setup with the password of 'passw
   rabbitmqctl add_user rosetta password
   rabbitmqctl map_user_vhost rosetta /
 
-cumber features.  
-
+  
