@@ -21,16 +21,74 @@ The stomp client and features should work with ApacheMQ out of the box.  If you 
 Download the right tar from here: http://www.rabbitmq.com/download.html and follow the installation directions that comes with it.
 The features rely on a user of 'rosetta' being setup with the password of 'password' and added to the default virtualhost. You can set them up like so:
 
-rabbitmqctl add_user rosetta password
-rabbitmqctl map_user_vhost rosetta /
+  rabbitmqctl add_user rosetta password
+  rabbitmqctl map_user_vhost rosetta /
 
 
-== Consumers and Producers
-First, you will need to set up a destination to produce messages to and consume messages from.
+== Quick Tutorial
+Note: The API will most likely change until we reach 1.0.  We will be moving to a more concise API (i.e. queue(:test_queue) << message, etc...)  We will also be changing how exceptions are handled.
+
+When using Rosetta Queue in an application you will need to configure the queues, adapters, and filters (optional).  These configurations should be placed in a file that gets loaded once when your program starts.  If you are using Rails then a good place for this is config/initializers/rosetta_queue.rb.
+
+To set up destinations to produce messages to and consume messages from:
 
 RosettaQueue::Destinations.define do |queue|
   queue.map :test_queue, '/queue/my_test_queue'
 end
 
-TODO.. write new docs for using consumers, producers, filters, etcs.... For now please look around in the code and check out the features for simple examples.
+Defining your adapter:
+
+  RosettaQueue::Adapter.define do |a|
+    a.user = ""
+    a.password = ""
+    a.host = "localhost"
+    a.port = 61613
+    a.type = "stomp"
+  end
+
+Define a logger for Rosetta Queue to use.  The logger should be a standard ruby logger:
+
+  RosettaQueue.logger = Logger.new('/my_project/rosetta_queue.log')
+
+
+You can optionally set up filters that are applied to all messages that are sent and received.  For example, if you want to use hashes as messages and serialize them as JSON the following filters (along with ActiveSupport) would accomplish this:
+
+  RosettaQueue::Filters.define do |filter_for|
+    filter_for.receiving { |message| ActiveSupport::JSON.decode(message) }
+    filter_for.sending { |hash| hash.to_json }
+  end
+
+
+To publish a message:
+
+  message = {"hello" => "world!"}  # Assuming you have a filter setup
+  RosettaQueue::Producer.publish(:test_queue, message)
+
+When consuming messages from a queue you will generally want to create a consumer to handle the messages:
+
+  class TestConsumer
+    include RosettaQueue::MessageHandler
+   
+    subscribes_to :vendor_status
+    options :persistent => true
+    
+    def on_message(message)
+      puts "We consumed a message: #{message.inspect}"
+    end
+
+  end
+
+To fire the consumers up you will want to run a separate process create a manager with all of your consumers.
+
+  require 'rosetta_queue'
+  require 'rosetta_queue/consumer_managers/threaded'
+  require 'test_consumer'
+
+  RosettaQueue::ThreadedManager.create do |m|
+    m.add(TestConsumer.new)
+    m.start
+  end
+
+
+It is recommended that you set your adapter to the 'null' adapter for your specs and then include RosettaQueue::Matchers in any example group you are needing to specify behaviour with RosettaQueue.  The matchers currently switch out the null adapter for the fake adapter to verify the behaviour.  All the matchers for the unit tests are lambda based, like so: lambda { model.save }.should publish("foo", :to => :test_queue). Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own cucumber features.  
 

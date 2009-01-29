@@ -5,6 +5,10 @@ require 'spec'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'rosetta_queue'
+require 'rosetta_queue/adapters/null'
+require 'rosetta_queue/adapters/fake'
+require 'rosetta_queue/adapters/stomp'
+require 'rosetta_queue/adapters/amqp'
 require 'rosetta_queue/spec_helpers'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
