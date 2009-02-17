@@ -73,7 +73,8 @@ It is recommended that you set your adapter to the 'null' adapter for your specs
 
   lambda { model.save }.should publish("foo", :to => :test_queue). 
   
-Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features.
+Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features and read this {blog post}[http://www.benmabey.com/2009/02/17/using-cucumber-to-integrate-distributed-systems-and-test-messaging/].
+
 
 
 == How to contribute
