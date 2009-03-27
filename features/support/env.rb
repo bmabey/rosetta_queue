@@ -1,10 +1,10 @@
 require 'rubygems'
-$:.unshift(File.dirname(__FILE__) + '/../lib')
+$:.unshift(File.dirname(__FILE__) + '/../../lib')
 require 'rosetta_queue'
 require 'rosetta_queue/spec_helpers'
 require 'spec/expectations'
-
 require 'rosetta_queue/spec_helpers'
+require 'amqp'
 
 begin
   RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../log', 'rosetta_queue.log'))
@@ -25,5 +25,5 @@ World do |w|
   w.extend(RosettaQueue::SpecHelpers)
 end
 
-AMQP.logging = false
+AMQP.logging = false # true
 # Thread.new {EM.run{}}

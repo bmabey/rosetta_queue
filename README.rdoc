@@ -97,4 +97,3 @@ The features rely on a user of 'rosetta' being setup with the password of 'passw
   rabbitmqctl add_user rosetta password
   rabbitmqctl map_user_vhost rosetta /
 
-  
