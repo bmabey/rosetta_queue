@@ -25,6 +25,9 @@ module RosettaQueue
       end
 
       def receive_with(message_handler)
+        # Note that, while we call destination_for (to comply with
+        # Rosetta's generic specs), beanstalk doesn't actually support
+        # destinations. This is just for compatibility.
         destination = destination_for(message_handler)
 
         running do
