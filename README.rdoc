@@ -2,7 +2,7 @@
 
 Rosetta Queue is a messaging gateway API with adapters for many messaging systems available in Ruby. Messaging systems can be easily switched out with a small configuration change. Code for testing on the object and application level is also provided.
 
-The adapters provided currently are for stomp, and amqp.  We would like to add adapters for beanstalk and other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
+The adapters provided currently are for stomp, and amqp.  We would like to add adapters for other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
 
 == Quick Tutorial
 Note: The API will most likely change until we reach 1.0.  We will be moving to a more concise API (i.e. queue(:test_queue) << message, etc...)  We will also be changing how exceptions are handled.
@@ -96,4 +96,36 @@ The features rely on a user of 'rosetta' being setup with the password of 'passw
 
   rabbitmqctl add_user rosetta password
   rabbitmqctl map_user_vhost rosetta /
+
+=== Beanstalk (for the beanstalk adapter) ===
+
+You should set up and run a local instance of beanstalk for your
+tests.
+
+==== beanstalkd ====
+
+Mac OSX users can install beanstalkd from ports. Linux users should
+check their package manager of choice. This is probably the optimal
+method.
+
+Diehards can clone git://github.com/kr/beanstalkd and build it from
+source. It is nontrivial.
+
+Once installed, you can launch beanstalk by running
+
+  beanstalkd -p 11300
+
+This will make it listen on localhost on the standard port 11300,
+which the specs use. You might also want to daemonize beanstalk with
+the -d option but for testing this is not recommended, as the queue
+can get stuck with old messages, which will break your specs.
+
+==== beanstalk-client ====
+
+You will also need the Ruby beanstalk-client gem.
+
+  sudo gem install beanstalk-client
+
+
+
 

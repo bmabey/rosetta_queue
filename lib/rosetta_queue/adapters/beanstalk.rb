@@ -16,8 +16,11 @@ module RosettaQueue
 
       def disconnect; end
 
+      # TODO: support options[:timeout] ?
       def receive(options=nil)
-        @conn.reserve
+        msg = @conn.reserve
+        msg.delete
+        msg
       end
       
       def receive_once(destination=nil, opts={})
