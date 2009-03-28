@@ -9,9 +9,11 @@ require 'rosetta_queue/adapters/null'
 require 'rosetta_queue/adapters/fake'
 require 'rosetta_queue/adapters/stomp'
 require 'rosetta_queue/adapters/amqp'
+require 'rosetta_queue/consumer_managers/base'
+require 'rosetta_queue/consumer_managers/evented'
+require 'rosetta_queue/consumer_managers/threaded'
 require 'rosetta_queue/spec_helpers'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
-
 
 class NullLogger
   def info(*args);  end

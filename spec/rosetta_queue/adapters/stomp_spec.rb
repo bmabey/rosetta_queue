@@ -13,7 +13,7 @@ module RosettaQueue
         @msg_obj = mock("message", :body => @msg, :headers => {"message-id" => 2})
         @conn = mock("Stomp::Connection", :ack => true, :send => true, :subscribe => true, :receive => @msg_obj, :unsubscribe => true, :disconnect => true)
         ::Stomp::Connection.stub!(:open).and_return(@conn)
-        @adapter = StompAdapter.new("user", "password", "host", "port")
+        @adapter = StompAdapter.new({:user => "user", :password => "password", :host => "host", :port => "port"})
         @adapter.stub!(:running).and_yield
       end
 

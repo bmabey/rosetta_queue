@@ -9,8 +9,13 @@ module RosettaQueue
         @conn.ack(msg.headers["message-id"])
       end
 
-      def initialize(user, password, host, port)
-        @conn = Stomp::Connection.open(user, password, host, port, true)
+      def initialize(adapter_settings = {})
+        raise "Missing adapter settings" if adapter_settings.empty?
+        @conn = Stomp::Connection.open(adapter_settings[:user], 
+                                       adapter_settings[:password], 
+                                       adapter_settings[:host], 
+                                       adapter_settings[:port], 
+                                       true)
       end
 
       def disconnect(message_handler)

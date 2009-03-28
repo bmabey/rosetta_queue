@@ -38,7 +38,5 @@ module RosettaQueue
       end
       
     end
-    
-    
   end
 end

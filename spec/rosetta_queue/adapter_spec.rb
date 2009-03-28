@@ -51,5 +51,51 @@ module RosettaQueue
           
     end
 
+    describe "adapter instantiation" do
+
+      before(:each) do
+        Adapter.define do |a|
+          a.user = "foo"
+          a.password = "bar"
+          a.host = "localhost"
+          a.port = "9000"
+          a.type = "amqp"
+        end
+      end 
+      
+      def do_process
+        Adapter.instance
+      end
+
+      it "should set opts as an empty has unless variable is set" do
+        during_process { 
+          RosettaQueue::Gateway::AmqpAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {}})
+        }
+      end 
+
+      describe "when setting options" do
+        before(:each) do
+          Adapter.define { |a| a.options = {:vhost => "baz"} }
+        end 
+        
+        it "should map adapter_settings to a hash" do
+          during_process { 
+            RosettaQueue::Gateway::AmqpAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {:vhost => "baz"}})
+          }
+        end 
+      end 
+
+      describe "setting options incorrectly (options should always be set as a Hash)" do
+        
+        before(:each) do
+          Adapter.define { |a| a.options = "baz" }
+        end 
+        
+        it "should raise an adapter exception" do
+          running { Adapter.instance }.should raise_error("Adapter options should be a hash")
+        end 
+      end 
+      
+    end 
   end
 end

@@ -25,5 +25,5 @@ World do |w|
   w.extend(RosettaQueue::SpecHelpers)
 end
 
-AMQP.logging = false
+#AMQP.logging = false
 # Thread.new {EM.run{}}
