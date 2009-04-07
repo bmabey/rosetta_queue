@@ -2,7 +2,7 @@
 
 Rosetta Queue is a messaging gateway API with adapters for many messaging systems available in Ruby. Messaging systems can be easily switched out with a small configuration change. Code for testing on the object and application level is also provided.
 
-The adapters provided currently are for stomp, and amqp.  We would like to add adapters for other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
+The adapters provided currently are for stomp, amqp, and beanstalk.  We would like to add adapters for other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
 
 == Quick Tutorial
 Note: The API will most likely change until we reach 1.0.  We will be moving to a more concise API (i.e. queue(:test_queue) << message, etc...)  We will also be changing how exceptions are handled.
@@ -47,10 +47,10 @@ When consuming messages from a queue you will generally want to create a consume
 
   class TestConsumer
     include RosettaQueue::MessageHandler
-   
+
     subscribes_to :vendor_status
     options :persistent => true
-    
+
     def on_message(message)
       puts "We consumed a message: #{message.inspect}"
     end
@@ -69,10 +69,10 @@ To fire the consumers up you will want to run a separate process create a manage
   end
 
 
-It is recommended that you set your adapter to the 'null' adapter for your specs and then include RosettaQueue::Matchers in any example group you are needing to specify behaviour with RosettaQueue.  The matchers currently switch out the null adapter for the fake adapter to verify the behaviour.  All the matchers for the unit tests are lambda based, like so: 
+It is recommended that you set your adapter to the 'null' adapter for your specs and then include RosettaQueue::Matchers in any example group you are needing to specify behaviour with RosettaQueue.  The matchers currently switch out the null adapter for the fake adapter to verify the behaviour.  All the matchers for the unit tests are lambda based, like so:
 
-  lambda { model.save }.should publish("foo", :to => :test_queue). 
-  
+  lambda { model.save }.should publish("foo", :to => :test_queue).
+
 Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features and read this {blog post}[http://www.benmabey.com/2009/02/17/using-cucumber-to-integrate-distributed-systems-and-test-messaging/].
 
 
@@ -80,7 +80,7 @@ Please look at the publishing matchers for more information.  For examples on ho
 == How to contribute
 ----------------------------------------------------------------
 Gems you will need:
-cucumber, rspec, yaml, stomp, tmm1-amqp
+cucumber, rspec, yaml, stomp, tmm1-amqp, beanstalk-client
 
 You should be able to run the rspec code examples (specs) without any brokers running with autospec or 'rake spec'.
 
