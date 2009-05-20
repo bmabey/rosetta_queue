@@ -1,5 +1,5 @@
-When /^a message is published to topic (\w+)$/ do |topic|
-  RosettaQueue::Producer.publish(topic.to_sym, "Hello World 1!", {:persistent => true})
+When /^a message is published to '(\w+)'$/ do |topic|
+  RosettaQueue::Producer.publish(topic.to_sym, "Hello World!", {:durable => true})
   # publish_message("Hello World!", {:options => {:ack => "client"}}.merge(:to => topic))
 end
 

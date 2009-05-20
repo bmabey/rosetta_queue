@@ -1,9 +1,8 @@
 require 'rubygems'
-$:.unshift(File.dirname(__FILE__) + '/../lib')
+$:.unshift(File.dirname(__FILE__) + '/../../lib')
 require 'rosetta_queue'
 require 'rosetta_queue/spec_helpers'
 require 'spec/expectations'
-
 require 'rosetta_queue/spec_helpers'
 
 begin
@@ -21,9 +20,7 @@ rescue Errno::ENOENT
   RosettaQueue.logger = NullLogger.new
 end
 
-World do |w|
-  w.extend(RosettaQueue::SpecHelpers)
-end
+World(RosettaQueue::SpecHelpers)
 
 #AMQP.logging = false
 # Thread.new {EM.run{}}

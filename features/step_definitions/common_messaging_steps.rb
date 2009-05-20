@@ -14,8 +14,15 @@ Given /^a point-to-point destination is set$/ do
   end  
 end
 
-Given /^a publish-subscribe destination is set$/ do
-  RosettaQueue::Destinations.define do |dest|
-    dest.map :foobar, "/topic/foobar"
-  end  
+Given /^a '(.*)' destination is set$/ do |pub_sub|
+  case pub_sub
+  when /fanout/
+    RosettaQueue::Destinations.define do |dest|
+      dest.map :foobar, "/fanout/foobar"
+    end  
+  when /topic/
+    RosettaQueue::Destinations.define do |dest|
+      dest.map :foobar, "/topic/foobar"
+    end  
+  end 
 end

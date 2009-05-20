@@ -15,8 +15,10 @@ module RosettaQueue
       end
       
       def type=(adapter_prefix)
+        require "rosetta_queue/adapters/amqp_base" if adapter_prefix =~ /amqp/
         require "rosetta_queue/adapters/#{adapter_prefix}"
         @adapter_class = RosettaQueue::Gateway.const_get("#{adapter_prefix.to_s.classify}Adapter")
+
         rescue MissingSourceFile
           raise AdapterException, "Adapter type '#{adapter_prefix}' does not match existing adapters!"
       end

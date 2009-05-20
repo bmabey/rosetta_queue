@@ -2,6 +2,7 @@ ENV["MESSAGING_ENV"] = "test"
 
 require 'rubygems'
 require 'spec'
+require 'ruby-debug'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'rosetta_queue'
