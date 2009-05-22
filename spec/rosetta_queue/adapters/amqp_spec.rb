@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 require File.dirname(__FILE__) + '/shared_adapter_behavior'
 require File.dirname(__FILE__) + '/shared_fanout_behavior'
+require 'rosetta_queue/adapters/amqp_base'
 require 'rosetta_queue/adapters/amqp'
 
 module RosettaQueue::Gateway
@@ -31,7 +32,7 @@ module RosettaQueue::Gateway
 
       before(:each) do
         @exchange_strategy = mock('DirectExchange', :receive_once => @msg, :receive => @msg, :send_message => true)
-        DirectExchange.stub!(:new).and_return(@exchange_strategy)
+        AmqpExchangeStrategies::DirectExchange.stub!(:new).and_return(@exchange_strategy)
       end
 
       it_should_behave_like "an adapter"
@@ -80,7 +81,7 @@ module RosettaQueue::Gateway
     end
 
 
-    describe DirectExchange do
+    describe AmqpExchangeStrategies::DirectExchange do
     
       before(:each) do
         AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
@@ -91,7 +92,7 @@ module RosettaQueue::Gateway
         @handler = mock("handler", :on_message => true, :destination => :foo)
         EM.stub!(:run).and_yield
         EM.stub!(:stop_event_loop)
-        @strategy = DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
+        @strategy = AmqpExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
       end
       
       
@@ -169,7 +170,7 @@ module RosettaQueue::Gateway
     end
     
     
-    describe FanoutExchange do
+    describe AmqpExchangeStrategies::FanoutExchange do
     
       before(:each) do
         AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
@@ -180,7 +181,7 @@ module RosettaQueue::Gateway
         @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
         EM.stub!(:run).and_yield
         EM.stub!(:stop_event_loop)
-        @strategy = FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
+        @strategy = AmqpExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
       end
       
       def do_receiving_exchange

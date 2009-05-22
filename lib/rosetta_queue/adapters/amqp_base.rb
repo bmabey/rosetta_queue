@@ -1,7 +1,7 @@
 module RosettaQueue
   module Gateway
 
-    module AmqpBaseAdapter
+    class AmqpBaseAdapter < BaseAdapter
 
       def initialize(adapter_settings = {})
         raise AdapterException, "Missing adapter settings" if adapter_settings.empty?
@@ -27,17 +27,6 @@ module RosettaQueue
       end
 
       def unsubscribe; end
-        
-      def exchange_strategy_for(destination, options)
-        case destination
-        when /fanout/
-          @exchange ||= FanoutExchange.new(@adapter_settings, options)
-        when /queue/
-          @exchange ||= DirectExchange.new(@adapter_settings, options)
-        else
-          @exchange ||= DirectExchange.new(@adapter_settings, options)
-        end
-      end
     end
   end 
 end 
