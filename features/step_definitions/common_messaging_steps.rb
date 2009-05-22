@@ -4,7 +4,14 @@ Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
     a.password  = "password"
     a.host      = "localhost"
     a.type      = adapter_type
-    a.port      = "61613" if adapter_type =~ /stomp/
+    a.port      = case adapter_type
+                    when /stomp/
+                    "61613"
+                    when /beanstalk/
+                    "11300"
+                    else
+                    nil
+                    end
   end
 end
 

@@ -16,6 +16,9 @@ require 'rosetta_queue/consumer_managers/base'
 require 'rosetta_queue/consumer_managers/evented'
 require 'rosetta_queue/consumer_managers/threaded'
 require 'rosetta_queue/spec_helpers'
+require 'rosetta_queue/consumer_managers/base'
+require 'rosetta_queue/consumer_managers/evented'
+require 'rosetta_queue/consumer_managers/threaded'
 require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
 class NullLogger
@@ -30,7 +33,7 @@ RosettaQueue.logger = NullLogger.new
 
 alias :running :lambda
 
-[:process, :receiving_with_handler, :receiving_once, :publishing, :disconnecting, :receiving_single_exchange, :receiving_exchange].each do |action|
+[:process, :receiving_with_handler, :receiving_once, :publishing, :disconnecting, :receiving_single_exchange, :receiving_exchange, :receiving].each do |action|
   eval %Q{
     def before_#{action}
       yield

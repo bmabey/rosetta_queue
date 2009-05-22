@@ -4,6 +4,7 @@ require 'rosetta_queue'
 require 'rosetta_queue/spec_helpers'
 require 'spec/expectations'
 require 'rosetta_queue/spec_helpers'
+require 'amqp'
 
 begin
   RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../log', 'rosetta_queue.log'))
