@@ -39,6 +39,5 @@ When /^the queue '(.*)' is deleted$/ do |queue|
 end
 
 Then /^the queue 'foo' should no longer exist$/ do
-  pending
-#  system()
+  system("rabbitmqctl list_queues | grep foo").should be_false
 end
