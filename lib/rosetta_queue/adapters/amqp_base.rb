@@ -8,6 +8,10 @@ module RosettaQueue
         @adapter_settings = adapter_settings
       end
 
+      def delete(destination, opts={})
+        exchange_strategy_for(destination, opts).delete(destination)
+      end 
+
       def disconnect(message_handler); end
 
       def receive_once(destination, opts={})

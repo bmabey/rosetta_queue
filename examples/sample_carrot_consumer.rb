@@ -4,7 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/rosetta_queue/consume
 
 module RosettaQueue
 
-  RosettaQueue.logger = Logger.new(File.expand_path(File.dirname(__FILE__) + '/../../rosetta_queue_example_log/rosetta_queue.log'))
+  RosettaQueue.logger = Logger.new(File.expand_path(File.dirname(__FILE__) + '/../../log/rosetta_queue.log'))
 
   class SampleConsumerFoo
     include RosettaQueue::MessageHandler

@@ -26,6 +26,10 @@ module RosettaQueue
           @adapter_settings, @options = adapter_settings, options
         end
 
+        def delete(destination)
+          conn.queue(destination).delete(@options)
+        end 
+
         protected
         def conn
           vhost = @adapter_settings[:opts][:vhost] || "/" 
@@ -34,7 +38,6 @@ module RosettaQueue
                                :host => @adapter_settings[:host], 
                                :vhost => vhost)
         end
-
       end
 
       class DirectExchange < BaseExchange
@@ -92,6 +95,6 @@ module RosettaQueue
           end        
         end
       end 
-   end 
+    end 
   end
 end

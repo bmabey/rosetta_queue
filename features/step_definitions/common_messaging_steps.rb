@@ -33,3 +33,12 @@ Given /^a '(.*)' destination is set$/ do |pub_sub|
     end  
   end 
 end
+
+When /^the queue '(.*)' is deleted$/ do |queue|
+  RosettaQueue::Consumer.delete(queue.to_sym)
+end
+
+Then /^the queue 'foo' should no longer exist$/ do
+  pending
+#  system()
+end

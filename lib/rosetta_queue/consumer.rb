@@ -8,6 +8,13 @@ module RosettaQueue
         RosettaQueue.logger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
+    def self.delete(destination, options={})
+      RosettaQueue::Adapter.instance.delete(Destinations.lookup(destination), options)
+      
+      rescue Exception=>e
+        RosettaQueue.logger.error("Caught exception in Consumer#delete: #{$!}\n" + e.backtrace.join("\n\t"))
+    end 
+
     def initialize(message_handler)
       @message_handler = message_handler
     end

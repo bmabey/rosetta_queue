@@ -16,15 +16,27 @@ Story: Producing and Consuming
 #    | amqp		|
 #    | stomp		| 
 
-
-  Scenario Outline: Publish-Subscribe
+  Scenario Outline: Delete queue
     Given RosettaQueue is configured for '<Adapter>'
-    And a '<PublishSubscribe>' destination is set
-    When a message is published to 'foobar'
-    Then multiple messages should be consumed from the topic
+    And a point-to-point destination is set
+    When a message is published to queue '<Queue>'
+    And the queue '<Queue>' is deleted
+    Then the queue '<Queue>' should no longer exist
     
     Examples:
-    | Adapter		| PublishSubscribe	|
-    | amqp_carrot	| fanout		|
+    | Adapter		| Queue |
+    | amqp_carrot	| foo	|
+#    | amqp		| bar 	|
+
+
+#   Scenario Outline: Publish-Subscribe
+#     Given RosettaQueue is configured for '<Adapter>'
+#     And a '<PublishSubscribe>' destination is set
+#     When a message is published to 'foobar'
+#     Then multiple messages should be consumed from the topic
+    
+#     Examples:
+#     | Adapter		| PublishSubscribe	|
+#     | amqp_carrot	| fanout		|
 #    | amqp		| fanout		|
 #    | stomp		| topic			|
