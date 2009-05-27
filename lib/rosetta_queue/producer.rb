@@ -7,7 +7,7 @@ module RosettaQueue
       RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), Filters.process_sending(message), options)
 
       rescue Exception=>e
-        RosettaQueue.logger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
+        RosettaQueue.logger.error("Caught exception in Consumer.publish: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
   end
