@@ -35,9 +35,10 @@ Given /^a '(.*)' destination is set$/ do |pub_sub|
 end
 
 When /^the queue '(.*)' is deleted$/ do |queue|
+  system("rabbitmqctl list_queues | grep bar").should be_true
   RosettaQueue::Consumer.delete(queue.to_sym)
 end
 
 Then /^the queue 'foo' should no longer exist$/ do
-  system("rabbitmqctl list_queues | grep foo").should be_false
+  system("rabbitmqctl list_queues | grep bar").should be_false
 end
