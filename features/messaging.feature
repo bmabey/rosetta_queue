@@ -12,9 +12,9 @@ Story: Producing and Consuming
     
     Examples:
     | Adapter		|
-    | amqp_carrot	|
-#    | amqp		|
+    | amqp		|
 #    | stomp		| 
+#    | beanstalk	| 
 
   Scenario Outline: Delete queue
     Given RosettaQueue is configured for '<Adapter>'
@@ -25,8 +25,7 @@ Story: Producing and Consuming
     
     Examples:
     | Adapter		| Queue |
-    | amqp_carrot	| foo	|
-#    | amqp		| bar 	|
+    | amqp		| foo 	|
 
 
 #   Scenario Outline: Publish-Subscribe

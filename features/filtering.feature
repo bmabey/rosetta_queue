@@ -14,8 +14,8 @@ Feature: Message Filtering
     
     Examples:
     | Adapter			|
-    | stomp 			|
     | amqp			|		
+#    | stomp 			|
   
 Scenario Outline: sending filter
     Given RosettaQueue is configured for '<Adapter>'
@@ -27,5 +27,5 @@ Scenario Outline: sending filter
     
     Examples:
     | Adapter			|
-    | stomp 			|
     | amqp			|
+#    | stomp 			|

@@ -11,8 +11,8 @@ RosettaQueue::Adapter.define do |a|
 end
 
 RosettaQueue::Destinations.define do |dest|
-  dest.map :foo, "/fanout/foo"
+  dest.map :foo, "queue.foo"
 end  
 
-RosettaQueue::Producer.publish(:foo, "hello there")
+RosettaQueue::Producer.publish(:foo, "hello there", :durable => true)
 

@@ -10,13 +10,5 @@ module RosettaQueue
         RosettaQueue.logger.error("Caught exception in Consumer#receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
-    # def publish(message)
-    #   begin
-    #     connection.send_message(publish_destination, message, options)
-    #   rescue Exception=>e
-    #     RosettaQueue.logger.error("Caught exception in Producer#publish: #{$!}\n" + e.backtrace.join("\n\t"))
-    #   end
-    # end
-
   end
 end

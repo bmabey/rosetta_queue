@@ -1,4 +1,3 @@
-
 require File.dirname(__FILE__) + '/../../spec_helper'
 require File.dirname(__FILE__) + '/shared_adapter_behavior'
 require File.dirname(__FILE__) + '/shared_fanout_behavior'
@@ -41,12 +40,12 @@ module RosettaQueue::Gateway
       describe "#receive_once" do
 
         def do_receiving_once
-          @adapter.receive_once("/queue/foo", {:durable => false})
+          @adapter.receive_once("queue.foo", {:durable => false})
         end
     
         it "should pass destination and options to exchange strategy" do
           when_receiving_once {
-            @exchange_strategy.should_receive(:receive_once).with("/queue/foo")
+            @exchange_strategy.should_receive(:receive_once).with("queue.foo")
           }
         end
     
@@ -64,7 +63,7 @@ module RosettaQueue::Gateway
 
         it "should pass message handler to exchange strategy" do
           when_receiving_with_handler {
-            @exchange_strategy.should_receive(:receive).with("/queue/foo", @handler)
+            @exchange_strategy.should_receive(:receive).with("foo", @handler)
           }
         end
 
@@ -85,20 +84,16 @@ module RosettaQueue::Gateway
     describe AmqpExchangeStrategies::DirectExchange do
     
       before(:each) do
-        AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
-        @queue = mock("MQ::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
-        @channel = mock("MQ", :queue => @queue)
-        MQ.stub!(:new).and_return(@channel)
+        @queue = mock("Carrot::AMQP::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
+        Carrot.stub!(:new).and_return(@conn = mock("Carrot::AMQP::Server", :queue => @queue, :fanout => @exchange))
         @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo)
-        EM.stub!(:run).and_yield
-        EM.stub!(:stop_event_loop)
-        @strategy = AmqpExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
+        @exchange = AmqpExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
       end
       
       
       def do_receiving_exchange
-        @strategy.receive("/queue/foo", @handler)
+        @exchange.receive("queue.foo", @handler)
       end
       
       it_should_behave_like "an exchange"
@@ -106,11 +101,14 @@ module RosettaQueue::Gateway
       describe "#receive_once" do
     
         def do_receiving_single_exchange
-          @strategy.receive_once("/queue/foo")
+          @exchange.receive_once("queue.foo") { |msg| }
+
         end
     
         it "should return the message from the connection" do
-          @strategy.receive_once("/queue/foo").should == @msg
+          @exchange.receive_once("queue.foo") do |msg|
+              msg.should == @msg
+          end 
         end
     
         it "should subscribe to queue" do
@@ -118,13 +116,6 @@ module RosettaQueue::Gateway
             @queue.should_receive(:pop)
           }
         end
-    
-        # it "should stop event loop" do
-        #   pending
-        #   when_receiving_single_exchange {
-        #     EM.should_receive(:stop_event_loop)
-        #   }
-        # end
     
       end
     
@@ -141,31 +132,22 @@ module RosettaQueue::Gateway
     
       describe "#publish" do
         
-        before(:each) do
-          EM.stub!(:reactor_running?).and_return(true)
-        end
-    
         def do_publishing
-          @strategy.publish('/queue/foo', 'message')
+          @exchange.publish('queue.foo', 'message')
         end
     
         it "should instantiate queue" do
           when_publishing {
-            @channel.should_receive(:queue).and_return(@queue)
+            @conn.should_receive(:queue).and_return(@queue)
           }
         end
         
         it "should publish message to queue" do
           when_publishing {
-            @channel.queue.should_receive(:publish).with("message", {})
+            @conn.queue.should_receive(:publish).with("message", {})
           }
         end
-        
-        # it "should stop event loop" do
-        #   when_publishing {
-        #     EM.should_receive(:stop_event_loop)
-        #   }
-        # end
+
       end
     
     end
@@ -174,19 +156,15 @@ module RosettaQueue::Gateway
     describe AmqpExchangeStrategies::FanoutExchange do
     
       before(:each) do
-        AMQP.stub!(:connect).and_return(@conn = mock("AMQP::Client"))    
-        @queue = mock("MQ::Queue", :pop => @msg, :bind => @bound_queue = mock("MQ::Queue", :pop => @msg), :publish => true, :unbind => true)
-        @channel = mock("MQ", :queue => @queue, :fanout => 'fanout')
-        MQ.stub!(:new).and_return(@channel)
+        @exchange = AmqpExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
+        @queue = mock("Carrot::AMQP::Queue", :pop => @msg, :bind => @bound_queue = mock("Carrot::AMQP::Queue", :pop => @msg), :publish => true, :unbind => true)
+        Carrot.stub!(:new).and_return(@conn = mock("Carrot::AMQP::Server", :queue => @queue, :fanout => @exchange))
         @bound_queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
-        EM.stub!(:run).and_yield
-        EM.stub!(:stop_event_loop)
-        @strategy = AmqpExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
       end
       
       def do_receiving_exchange
-        @strategy.receive("/topic/foo", @handler)
+        @exchange.receive("topic.foo", @handler)
       end
       
       it_should_behave_like "an exchange"
@@ -194,13 +172,15 @@ module RosettaQueue::Gateway
       describe "#receive_once" do
     
         def do_receiving_exchange
-          @strategy.receive_once("/topic/foo")
+          @exchange.receive_once("topic.foo") { |msg| }
         end
     
         it_should_behave_like "a fanout exchange adapter"
     
         it "should return the message from the connection" do
-          @strategy.receive_once("/topic/foo").should == @msg
+          @exchange.receive_once("topic.foo") do |msg|
+            msg.should == @msg
+          end 
         end
     
         it "should subscribe to queue" do
@@ -216,12 +196,6 @@ module RosettaQueue::Gateway
           }
         end
     
-        it "should stop event loop" do
-          pending
-          when_receiving_single_exchange {
-            EM.should_receive(:stop_event_loop)
-          }
-        end
       end
     
       describe "#receive" do                  
@@ -245,7 +219,7 @@ module RosettaQueue::Gateway
       # describe "#publish_to_exchange" do
       # 
       #   def do_publishing
-      #     @strategy.publish_to_exchange('/queue/foo', 'message', {:durable => false})
+      #     @exchange.publish_to_exchange('/queue/foo', 'message', {:durable => false})
       #   end
       # 
       #   it "should instantiate queue" do

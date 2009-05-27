@@ -56,7 +56,7 @@ module RosettaQueue
 
         it "should subscribe to queue defined by the class with the options defined on the class" do
           when_receiving_with_handler {
-            @conn.should_receive("subscribe").with('/queue/foo', :persistent => false, :ack => "client")
+            @conn.should_receive("subscribe").with('foo', :persistent => false, :ack => "client")
           }
         end
 
@@ -89,7 +89,7 @@ module RosettaQueue
 
         it "should unsubscribe connection" do
           when_disconnecting {
-            @conn.should_receive("unsubscribe").with("/queue/foo")          
+            @conn.should_receive("unsubscribe").with("foo")
           }
         end
 
