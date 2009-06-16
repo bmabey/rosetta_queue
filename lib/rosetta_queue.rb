@@ -1,7 +1,6 @@
-require 'activesupport' # TODO: remove dependency
-
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__))) unless $LOAD_PATH.include?(File.expand_path(File.dirname(__FILE__)))
 
+require 'core_ext'
 require 'rosetta_queue/adapter'
 require 'rosetta_queue/base'
 require 'rosetta_queue/consumer'

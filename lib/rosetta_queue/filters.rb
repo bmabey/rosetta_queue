@@ -1,6 +1,6 @@
 # Example:
 # RosettaQueue::Filters.define do |filter_for|
-#   filter_for.receiving { |message| ActiveSupport::JSON.decode(message) }
+#   filter_for.receiving { |message| JSON.parse(message) }
 #   filter_for.sending { |hash| hash.to_json }
 # end
 
