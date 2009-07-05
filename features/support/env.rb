@@ -21,9 +21,7 @@ rescue Errno::ENOENT
   RosettaQueue.logger = NullLogger.new
 end
 
-World do |w|
-  w.extend(RosettaQueue::SpecHelpers)
-end
+World(RosettaQueue::SpecHelpers)
 
 AMQP.logging = false # true
 # Thread.new {EM.run{}}
