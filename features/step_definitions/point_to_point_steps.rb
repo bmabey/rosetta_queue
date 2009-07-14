@@ -1,3 +1,4 @@
+
 Given /^the message "(.+)" is published to queue "(.+)"$/ do |message, queue_name|
   publish_message(message, {:options => {:ack => "client"}}.merge(:to => queue_name))
 end

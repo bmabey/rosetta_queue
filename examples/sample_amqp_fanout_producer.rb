@@ -9,7 +9,7 @@ RosettaQueue::Adapter.define do |a|
 end
 
 RosettaQueue::Destinations.define do |dest|
-  dest.map :foo, "queue.foo"
+  dest.map :foo, "fanout.foo"
 end  
 
 

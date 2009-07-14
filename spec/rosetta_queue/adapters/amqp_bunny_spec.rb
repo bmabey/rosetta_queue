@@ -1,8 +1,7 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 require File.dirname(__FILE__) + '/shared_adapter_behavior'
 require File.dirname(__FILE__) + '/shared_fanout_behavior'
-require 'rosetta_queue/adapters/amqp_base'
-require 'rosetta_queue/adapters/amqp'
+require 'rosetta_queue/adapters/amqp_bunny'
 
 module RosettaQueue::Gateway
   
@@ -19,16 +18,16 @@ module RosettaQueue::Gateway
     end
   end
 
-  describe "Amqp adapter and components" do
+  describe "AmqpBunny adapter and components" do
 
     before(:each) do
       RosettaQueue.logger.stub!(:info)
       @msg = "Hello World!"
-      @adapter = AmqpAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
+      @adapter = AmqpBunnyAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
       @handler = mock("handler", :on_message => true, :destination => :foo, :options_hash => {:durable => true})
     end
     
-    describe AmqpAdapter do
+    describe AmqpBunnyAdapter do
 
       before(:each) do
         @exchange_strategy = mock('DirectExchange', :receive_once => @msg, :receive => @msg, :send_message => true)
@@ -84,8 +83,8 @@ module RosettaQueue::Gateway
     describe AmqpExchangeStrategies::DirectExchange do
     
       before(:each) do
-        @queue = mock("Carrot::AMQP::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
-        Carrot.stub!(:new).and_return(@conn = mock("Carrot::AMQP::Server", :queue => @queue, :fanout => @exchange))
+        @queue = mock("Bunny::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
+        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :fanout => @exchange, :status => :connected))
         @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo)
         @exchange = AmqpExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
@@ -157,8 +156,8 @@ module RosettaQueue::Gateway
     
       before(:each) do
         @exchange = AmqpExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
-        @queue = mock("Carrot::AMQP::Queue", :pop => @msg, :bind => @bound_queue = mock("Carrot::AMQP::Queue", :pop => @msg), :publish => true, :unbind => true)
-        Carrot.stub!(:new).and_return(@conn = mock("Carrot::AMQP::Server", :queue => @queue, :fanout => @exchange))
+        @queue = mock("Bunny::Queue", :pop => @msg, :bind => @bound_queue = mock("Bunny::Queue", :pop => @msg), :publish => true, :unbind => true)
+        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :fanout => @exchange, :status => :connected))
         @bound_queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
       end

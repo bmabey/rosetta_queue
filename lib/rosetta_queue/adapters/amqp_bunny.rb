@@ -1,11 +1,11 @@
-require 'carrot'
+require 'bunny'
 
 module RosettaQueue
   module Gateway
 
-    # This AMQP adapter utilizes a forked version of the synchronous AMPQ client 'Carrot'
-    # by famoseagle (http://github.com/famoseagle)
-    class AmqpAdapter < BaseAdapter
+    # This AMQP adapter utilizes a forked version of the synchronous AMPQ client 'Bunny'
+    # by bunny (http://github.com/celldee/bunny)
+    class AmqpBunnyAdapter < BaseAdapter
 
       def initialize(adapter_settings = {})
         raise AdapterException, "Missing adapter settings" if adapter_settings.empty?
@@ -40,11 +40,11 @@ module RosettaQueue
 
       def exchange_strategy_for(destination, options)
         case destination
-        when /fanout/
+        when /^fanout\./
           @exchange ||= AmqpExchangeStrategies::FanoutExchange.new(@adapter_settings, options)
-        when /topic/
+        when /^topic\./
           raise "Sorry.  RosettaQueue can not process AMQP topics yet"
-        when /queue/
+        when /^queue\./
           @exchange ||= AmqpExchangeStrategies::DirectExchange.new(@adapter_settings, options)
         else
           @exchange ||= AmqpExchangeStrategies::DirectExchange.new(@adapter_settings, options)
@@ -66,12 +66,15 @@ module RosettaQueue
         end 
 
         protected
+
         def conn
           vhost = @adapter_settings[:opts][:vhost] || "/" 
-          @conn ||= Carrot.new(:user => @adapter_settings[:user], 
+          @conn ||= Bunny.new( :user => @adapter_settings[:user], 
                                :pass => @adapter_settings[:password], 
                                :host => @adapter_settings[:host], 
                                :vhost => vhost)
+          @conn.start unless @conn.status == :connected
+          @conn
         end
       end
 

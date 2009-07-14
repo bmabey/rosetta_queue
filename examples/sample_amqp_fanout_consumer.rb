@@ -12,7 +12,7 @@ module RosettaQueue
   end
 
   Destinations.define do |dest|
-    dest.map :foo, "queue.foo"
+    dest.map :foo, "fanout.foo"
   end  
 
   class MessageHandlerFoo
@@ -27,13 +27,23 @@ module RosettaQueue
 
   end
 
+  class MessageHandlerBar
+    include RosettaQueue::MessageHandler
+    subscribes_to :foo
+    options :ack => true
+    attr_reader :msg
+
+    def on_message(msg)
+      puts "BAR received message:  #{msg}"
+    end
+  end
+
+
   # threaded version
   ThreadedManager.create do |m|
     m.add MessageHandlerFoo.new
+    m.add MessageHandlerBar.new
     m.start
   end 
-
-#   # non-threaded consumer
-#   Consumer.new(MessageHandlerFoo.new).receive
 
 end
