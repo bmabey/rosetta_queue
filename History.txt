@@ -1,9 +1,10 @@
 == 0.1.x (git)
 
  === New features
+  * Removed dependency on ActiveSupport and brought over needed String methods. (Derek and Matt - Greenview Data, Inc.)
   * Safer shutdown in ThreadedManager (Rob Sanheim - Relevance)
-  * Beanstalk Adaper (David Brady)
-    * Still needs some work to have it take advantage of beanstalk's subscribe funtionality.
+  * Beanstalk Adaper (David Brady - Lead Media Partners)
+    * Still needs some work to have it take advantage of beanstalk's subscribe functionality.
  === Bufixes
 
 == 0.1.0 / 2008-01-28 - Initial Release
