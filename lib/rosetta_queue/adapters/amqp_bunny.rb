@@ -86,15 +86,21 @@ module RosettaQueue
         end      
 
         def receive(destination, message_handler)
-          conn.queue(destination, @options).subscribe(@options) do |msg|
+          queue = conn.queue(destination, @options)
+          ack = @options[:ack]
+          queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.on_message(Filters.process_receiving(msg))
+            queue.ack if ack
           end 
         end
 
         def receive_once(destination, options={})
-          msg = conn.queue(destination, options).pop(options)
+          q = conn.queue(destination, @options)
+          ack = @options[:ack]
+          msg = q.pop(options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+          q.ack if ack
           yield Filters.process_receiving(msg)
         end
       end

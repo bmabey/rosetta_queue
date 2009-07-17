@@ -11,6 +11,8 @@ require 'rosetta_queue/filters'
 require 'rosetta_queue/logger'
 require 'rosetta_queue/message_handler'
 require 'rosetta_queue/producer'
+require 'rosetta_queue/consumer_managers/base'
+require 'rosetta_queue/consumer_managers/threaded'
 
 if defined?(Rails)
   RosettaQueue.logger = RosettaQueue::Logger.new(File.join(Rails.root, 'log', 'rosetta_queue.log'))

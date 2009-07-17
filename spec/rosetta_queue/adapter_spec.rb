@@ -59,7 +59,7 @@ module RosettaQueue
           a.password = "bar"
           a.host = "localhost"
           a.port = "9000"
-          a.type = "amqp"
+          a.type = "amqp_bunny"
         end
       end 
       
@@ -69,7 +69,7 @@ module RosettaQueue
 
       it "should set opts as an empty has unless variable is set" do
         during_process { 
-          RosettaQueue::Gateway::AmqpAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {}})
+          RosettaQueue::Gateway::AmqpBunnyAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {}})
         }
       end 
 
@@ -80,7 +80,7 @@ module RosettaQueue
         
         it "should map adapter_settings to a hash" do
           during_process { 
-            RosettaQueue::Gateway::AmqpAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {:vhost => "baz"}})
+            RosettaQueue::Gateway::AmqpBunnyAdapter.should_receive(:new).with({:user => "foo", :password => "bar", :host => "localhost", :port => "9000", :opts => {:vhost => "baz"}})
           }
         end 
       end 

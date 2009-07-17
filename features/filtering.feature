@@ -14,7 +14,7 @@ Feature: Message Filtering
     
     Examples:
     | Adapter			|
-    | amqp			|		
+    | amqp_bunny		|		
 #    | stomp 			|
   
 Scenario Outline: sending filter
@@ -27,5 +27,5 @@ Scenario Outline: sending filter
     
     Examples:
     | Adapter			|
-    | amqp			|
+    | amqp_bunny		|
 #    | stomp 			|
