@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 	    "lib/rosetta_queue", 
 	    "lib/rosetta_queue/adapter.rb", 
 	    "lib/rosetta_queue/adapters", 
-	    "lib/rosetta_queue/adapters/amqp_bunny.rb", 
+	    "lib/rosetta_queue/adapters/amqp_synch.rb", 
 	    "lib/rosetta_queue/adapters/base.rb", 
 	    "lib/rosetta_queue/adapters/fake.rb", 
 	    "lib/rosetta_queue/adapters/null.rb", 

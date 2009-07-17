@@ -12,8 +12,8 @@ Story: Producing and Consuming
     
     Examples:
     | Adapter		|
-    | amqp_bunny	|
-#     | stomp		| 
+    | amqp_synch	|
+     | stomp		| 
 #     | beanstalk		| 
 
   Scenario Outline: Delete queue
@@ -25,7 +25,7 @@ Story: Producing and Consuming
     
     Examples:
     | Adapter		| Queue |
-    | amqp_bunny	| foo 	|
+    | amqp_synch	| foo 	|
 
 
 #   Scenario Outline: Publish-Subscribe
@@ -35,6 +35,6 @@ Story: Producing and Consuming
 #     Then multiple messages should be consumed from the topic
     
 #     Examples:
-#     | Adapter		| PublishSubscribe	|
-#    | amqp_bunny	| fanout		|
+#    | Adapter		| PublishSubscribe	|
+#    | amqp_synch	| fanout		|
 #    | stomp		| topic			|

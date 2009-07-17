@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 require File.dirname(__FILE__) + '/shared_adapter_behavior'
 require File.dirname(__FILE__) + '/shared_fanout_behavior'
-require 'rosetta_queue/adapters/amqp_bunny'
+require 'rosetta_queue/adapters/amqp_synch'
 
 module RosettaQueue::Gateway
   
@@ -18,16 +18,16 @@ module RosettaQueue::Gateway
     end
   end
 
-  describe "AmqpBunny adapter and components" do
+  describe "AmqpSynch adapter and components" do
 
     before(:each) do
       RosettaQueue.logger.stub!(:info)
       @msg = "Hello World!"
-      @adapter = AmqpBunnyAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
+      @adapter = AmqpSynchAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
       @handler = mock("handler", :on_message => true, :destination => :foo, :options_hash => {:durable => true})
     end
     
-    describe AmqpBunnyAdapter do
+    describe AmqpSynchAdapter do
 
       before(:each) do
         @exchange_strategy = mock('DirectExchange', :receive_once => @msg, :receive => @msg, :send_message => true)
