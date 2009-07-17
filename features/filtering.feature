@@ -13,9 +13,9 @@ Feature: Message Filtering
     Then the consumed message should equal "Foo Hello World"
     
     Examples:
-    | Adapter			|
-    | amqp_bunny		|		
-#    | stomp 			|
+    | Adapter		|
+    | amqp_synch	|		
+    | stomp 		|
   
 Scenario Outline: sending filter
     Given RosettaQueue is configured for '<Adapter>'
@@ -26,6 +26,6 @@ Scenario Outline: sending filter
     Then the consumed message should equal "Foo Hello World"
     
     Examples:
-    | Adapter			|
-    | amqp_bunny		|
-#    | stomp 			|
+    | Adapter		|
+    | amqp_synch 	|
+    | stomp 		|

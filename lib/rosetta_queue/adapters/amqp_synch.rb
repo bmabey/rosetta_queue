@@ -3,9 +3,9 @@ require 'bunny'
 module RosettaQueue
   module Gateway
 
-    # This AMQP adapter utilizes a forked version of the synchronous AMPQ client 'Bunny'
-    # by bunny (http://github.com/celldee/bunny)
-    class AmqpBunnyAdapter < BaseAdapter
+    # This AMQP adapter utilizes the synchronous AMPQ client 'Bunny'
+    # by celldee (http://github.com/celldee/bunny)
+    class AmqpSynchAdapter < BaseAdapter
 
       def initialize(adapter_settings = {})
         raise AdapterException, "Missing adapter settings" if adapter_settings.empty?
