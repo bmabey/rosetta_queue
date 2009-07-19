@@ -12,18 +12,18 @@ module RosettaQueue
       def exchange_strategy_for(destination, options)
         case destination
         when /^fanout\./
-          @exchange ||= SynchExchangeStrategies::FanoutExchange.new(@adapter_settings, options)
+          @exchange ||= SynchExchange::FanoutExchange.new(@adapter_settings, options)
         when /^topic\./
           raise "Sorry.  RosettaQueue can not process AMQP topics yet"
         when /^queue\./
-          @exchange ||= SynchExchangeStrategies::DirectExchange.new(@adapter_settings, options)
+          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
         else
-          @exchange ||= SynchExchangeStrategies::DirectExchange.new(@adapter_settings, options)
+          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
         end
       end
     end 
 
-    module SynchExchangeStrategies
+    module SynchExchange
 
       class BaseExchange
 

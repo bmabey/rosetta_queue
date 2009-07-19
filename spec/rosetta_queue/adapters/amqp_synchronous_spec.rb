@@ -31,7 +31,7 @@ module RosettaQueue::Gateway
 
       before(:each) do
         @exchange_strategy = mock('DirectExchange', :receive_once => @msg, :receive => @msg, :send_message => true)
-        SynchExchangeStrategies::DirectExchange.stub!(:new).and_return(@exchange_strategy)
+        SynchExchange::DirectExchange.stub!(:new).and_return(@exchange_strategy)
       end
 
       it_should_behave_like "an adapter"
@@ -80,14 +80,14 @@ module RosettaQueue::Gateway
     end
 
 
-    describe SynchExchangeStrategies::DirectExchange do
+    describe SynchExchange::DirectExchange do
     
       before(:each) do
         @queue = mock("Bunny::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
         Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
         @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo)
-        @exchange = SynchExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
+        @exchange = SynchExchange::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
       end
       
       
@@ -152,10 +152,10 @@ module RosettaQueue::Gateway
     end
     
     
-    describe SynchExchangeStrategies::FanoutExchange do
+    describe SynchExchange::FanoutExchange do
     
       before(:each) do
-        @exchange = SynchExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
+        @exchange = SynchExchange::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
         @queue = mock("Bunny::Queue", :pop => @msg, :bind => @bound_queue = mock("Bunny::Queue", :pop => @msg), :publish => true, :unbind => true)
         Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
         @queue.stub!(:subscribe).and_yield(@msg)
