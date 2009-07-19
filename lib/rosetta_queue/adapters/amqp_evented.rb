@@ -1,4 +1,5 @@
-require 'amqp'
+require 'eventmachine'
+require 'mq'
 require File.expand_path(File.dirname(__FILE__) + "/amqp.rb")
 
 module RosettaQueue
@@ -36,13 +37,13 @@ module RosettaQueue
         protected
         
         def channel
-          @channel ||= MQ.new(conn)
+          @channel ||=  MQ.new(conn)
         end
         
         def conn
           vhost = @adapter_settings[:opts][:vhost] || "/" 
           @conn ||= AMQP.connect(:user => @adapter_settings[:user], 
-                                 :pass => @adapter_settings[:pass], 
+                                 :pass => @adapter_settings[:password], 
                                  :host => @adapter_settings[:host], 
                                  :vhost => vhost)
         end
@@ -51,67 +52,45 @@ module RosettaQueue
       
       class DirectExchange < BaseExchange
 
-        def receive_once(destination, options={})
-          raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
-
-          queue = conn.queue(destination, @options)
-          queue.pop(@options) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            yield Filters.process_receiving(msg)
-          end
-        end
-
-        def receive(destination, message_handler)
-          raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
-
-          queue = channel.queue(destination)
-          ack = @options[:ack]
-          queue.subscribe(@options) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
-            queue.ack if ack
-          end
-        end
-
         def publish(destination, message, options={})
           raise AdapterException, "Messages need to be published in an EventMachine run block (e.g., EM.run { RosettaQueue::Producer.publish(:foo, msg) } " unless EM.reactor_running?
 
-          RosettaQueue.logger.info("Publishing to #{dest} :: #{msg}")
           queue = channel.queue(destination, options)
           queue.publish(message, options)
+          RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
           queue.unsubscribe
         end
         
+        def receive(destination, message_handler)
+          raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
+
+          queue = channel.queue(destination, @options)
+          ack = @options[:ack]
+          queue.subscribe(@options) do |header, msg|
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+            message_handler.on_message(Filters.process_receiving(msg))
+            header.ack if ack
+          end
+        end
+
+        def receive_once(destination, options={})
+          raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
+
+          queue = channel.queue(destination, @options)
+          ack = @options[:ack]
+          queue.pop(@options) do |header, msg|
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+            header.ack if ack
+            yield Filters.process_receiving(msg)
+          end
+        end
       end
       
       
       class FanoutExchange < BaseExchange
+        include Fanout
 
-        def receive_once(destination, opts={})
-          raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
-
-          queue = channel.queue("queue_#{self.object_id}")
-          exchange = channel.fanout(fanout_name_for(destination), opts)
-          
-          queue.bind(exchange).pop(opts) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            yield Filters.process_receiving(msg)
-          end
-        end
-        
-        def receive(destination, message_handler)
-          raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
-
-          queue = channel.queue("queue_#{self.object_id}")
-          exchange = channel.fanout(fanout_name_for(destination), @options)
-          
-          queue.bind(exchange).subscribe(@options) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
-          end
-        end
-        
-        def publish_message(dest, msg, opts)
+        def publish(dest, msg, opts)
           raise AdapterException, "Messages need to be published in an EventMachine run block (e.g., EM.run { RosettaQueue::Producer.publish(:foo, msg) } " unless EM.reactor_running?
 
           exchange = channel.fanout(fanout_name_for(dest), opts)
@@ -119,13 +98,34 @@ module RosettaQueue
           RosettaQueue.logger.info("Publishing to fanout #{dest} :: #{msg}")
         end
         
-        private
-        
-        def fanout_name_for(destination)
-          fanout_name = destination.gsub(/(topic|fanout)\/(.*)/, '\2')
-          raise AdapterException, "Unable to discover fanout exchange. Cannot bind queue to exchange!" unless fanout_name
-          fanout_name
+        def receive(destination, message_handler)
+          raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
+
+          queue = channel.queue("queue_#{self.object_id}")
+          exchange = channel.fanout(fanout_name_for(destination), @options)
+          ack = @options[:ack]
+          
+          queue.bind(exchange).subscribe(@options) do |header, msg|
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+            message_handler.on_message(Filters.process_receiving(msg))
+            header.ack if ack
+          end
         end
+        
+        def receive_once(destination, opts={})
+          raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
+
+          queue = channel.queue("queue_#{self.object_id}")
+          exchange = channel.fanout(fanout_name_for(destination), opts)
+          ack = @options[:ack]
+          
+          queue.bind(exchange).pop(opts) do |header, msg|
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+            header.ack if ack
+            yield Filters.process_receiving(msg)
+          end
+        end
+        
       end
     end
   end 

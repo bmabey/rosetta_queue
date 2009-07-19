@@ -84,7 +84,7 @@ module RosettaQueue::Gateway
     
       before(:each) do
         @queue = mock("Bunny::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
-        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :fanout => @exchange, :status => :connected))
+        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
         @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo)
         @exchange = SynchExchangeStrategies::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
@@ -157,8 +157,8 @@ module RosettaQueue::Gateway
       before(:each) do
         @exchange = SynchExchangeStrategies::FanoutExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => 'foo'}})
         @queue = mock("Bunny::Queue", :pop => @msg, :bind => @bound_queue = mock("Bunny::Queue", :pop => @msg), :publish => true, :unbind => true)
-        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :fanout => @exchange, :status => :connected))
-        @bound_queue.stub!(:subscribe).and_yield(@msg)
+        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
+        @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
       end
       
@@ -184,7 +184,7 @@ module RosettaQueue::Gateway
     
         it "should subscribe to queue" do
           when_receiving_exchange {
-            @bound_queue.should_receive(:pop)
+            @queue.should_receive(:pop)
           }
         end
     
@@ -209,7 +209,7 @@ module RosettaQueue::Gateway
     
         it "should subscribe to queue" do
           when_receiving_exchange {
-            @bound_queue.should_receive(:subscribe).and_yield(@msg)
+            @queue.should_receive(:subscribe).and_yield(@msg)
           }
         end
       

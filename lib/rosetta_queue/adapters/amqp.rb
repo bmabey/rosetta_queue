@@ -1,6 +1,14 @@
 module RosettaQueue
   module Gateway
 
+    module Fanout
+      def fanout_name_for(destination)
+        fanout_name = destination.gsub(/(topic|fanout)\/(.*)/, '\2')
+        raise AdapterException, "Unable to discover fanout exchange. Cannot bind queue to exchange!" unless fanout_name
+        fanout_name
+      end
+    end 
+
     class Amqp < BaseAdapter
 
       def initialize(adapter_settings = {})

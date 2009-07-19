@@ -79,36 +79,35 @@ module RosettaQueue
       end
 
       class FanoutExchange < BaseExchange
+        include Fanout
         
-        def fanout_name_for(destination)
-          fanout_name = destination.gsub(/fanout\/(.*)/, '\1')
-          raise AdapterException, "Unable to discover fanout exchange.  Cannot bind queue to exchange!" unless fanout_name
-          fanout_name
-        end
-
         def publish(destination, message, options={})
-          exchange = conn.fanout(fanout_name_for(destination), options)
+          exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
           exchange.publish(message, options)
           RosettaQueue.logger.info("Publishing to fanout #{destination} :: #{message}")
         end      
 
         def receive(destination, message_handler)
           queue = conn.queue("queue_#{self.object_id}", @options)
-          exchange = conn.fanout(fanout_name_for(destination), @options)
+          exchange = conn.exchange(fanout_name_for(destination), @options.merge({:type => :fanout}))
+          queue.bind(exchange)
+          ack = @options[:ack]
 
-          msg = queue.bind(exchange).subscribe(@options) do |msg|
-
+          msg = queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.on_message(Filters.process_receiving(msg))
+            queue.ack if ack
           end        
         end
 
         def receive_once(destination, options={})
           queue = conn.queue("queue_#{self.object_id}", options)
-          exchange = conn.fanout(fanout_name_for(destination), options)
-
-          msg = queue.bind(exchange).pop(@options)
+          exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
+          queue.bind(exchange)
+          ack = @options[:ack]
+          msg = queue.pop(@options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+          queue.ack if ack
           yield Filters.process_receiving(msg)
         end
 
