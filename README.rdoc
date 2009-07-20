@@ -87,7 +87,7 @@ RosettaQueue comes with two AMQP adapters: a synchronous adapter and an evented 
 
 ==== Configuration
 
-If you are using the AMQP adapter, there are some important rules when defining the adapter and mapping your destinations.  Two of the basic building blocks of AMQP are queues and exchanges.  Queues bind to exchanges in several different ways.  A can queue bind to an exchange and requests messages that match a specific routing key, which is called 'direct exchange' and is analogous to the 'point-to-point' messaging pattern.  Alternately, queues can bind to an exchange to receive all messages sent to that exchange; this is called 'fanout exchange' and is analogous to the 'publish-subscribe' pattern.  So, when you want to define a simple 'direct-exchange' queue, your queue name must begin with the term "queue".
+If you are using an AMQP adapter, there are some important rules when defining the adapter and mapping your destinations.  Two of the basic building blocks of AMQP are queues and exchanges.  Queues bind to exchanges in several different ways.  A can queue bind to an exchange and requests messages that match a specific routing key, which is called 'direct exchange' and is analogous to the 'point-to-point' messaging pattern.  Alternately, queues can bind to an exchange to receive all messages sent to that exchange; this is called 'fanout exchange' and is analogous to the 'publish-subscribe' pattern.  So, when you want to define a simple 'direct-exchange' queue, your queue name must begin with the term "queue".
 
    RosettaQueue::Destinations.define do |queue|
      queue.map :test_queue, 'queue.my_test_queue'
