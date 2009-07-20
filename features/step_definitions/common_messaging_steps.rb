@@ -1,10 +1,11 @@
 Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
+  @adapter_type = adapter_type
   RosettaQueue::Adapter.define do |a|
     a.user      = "rosetta"
     a.password  = "password"
     a.host      = "localhost"
-    a.type      = adapter_type
-    a.port      = case adapter_type
+    a.type      = @adapter_type
+    a.port      = case @adapter_type
                     when /stomp/
                     "61613"
                     when /beanstalk/

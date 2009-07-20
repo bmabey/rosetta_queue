@@ -75,7 +75,7 @@ module RosettaQueue
 
         def receive_once(destination, options={})
           raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
-
+          
           queue = channel.queue(destination, @options)
           ack = @options[:ack]
           queue.pop(@options) do |header, msg|

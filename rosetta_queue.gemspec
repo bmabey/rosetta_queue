@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name = %q{rosetta_queue}
-  s.version = "0.3.0"
+  s.version = "0.1.4"
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Mabey", "Chris Wyckoff"]
   s.date = %q{2009-01-28}
@@ -15,7 +15,9 @@ Gem::Specification.new do |s|
 	    "lib/rosetta_queue", 
 	    "lib/rosetta_queue/adapter.rb", 
 	    "lib/rosetta_queue/adapters", 
+	    "lib/rosetta_queue/adapters/amqp.rb", 
 	    "lib/rosetta_queue/adapters/amqp_synch.rb", 
+	    "lib/rosetta_queue/adapters/amqp_evented.rb", 
 	    "lib/rosetta_queue/adapters/base.rb", 
 	    "lib/rosetta_queue/adapters/fake.rb", 
 	    "lib/rosetta_queue/adapters/null.rb", 

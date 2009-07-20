@@ -83,7 +83,7 @@ Please look at the publishing matchers for more information.  For examples on ho
 
 === AMQP
 
-The AMQP adapter is based on the synchronous AMQP ruby client "Bunny" by celldee [http://github.com/celldee/bunny].  The original AMQP adapter for RosettaQueue was the 'evented' client by Aman Gupta [http://github.com/tmm1/amqp], but the evented model posed some problems for our integration tests.  That, and the desire to keep things simple led us to use a synchronous AMQP client.
+RosettaQueue comes with two AMQP adapters: a synchronous adapter and an evented one.  The former uses the synchronous AMQP client "Bunny" by celldee [http://github.com/celldee/bunny] and the latter, the evented AMQP client by Aman Gupta [http://github.com/tmm1/amqp].
 
 ==== Configuration
 
@@ -99,7 +99,33 @@ And, when you want to define a queue that will bind to a 'fanout-exchange', your
      queue.map :test_queue, 'fanout.my_test_queue'
    end
 
-Oh, and when defining your adapter, be sure to specify the AMQP adapter as :amqp_synch, not :amqp.  This way, if we do get around to adding Aman's evented AMQP client, we can distinguish between the synchronous and asynchronous clients (i.e., :amqp_sync vs. :amqp_asynch).
+Oh, and when defining your adapter, the synchronous AMQP adapter should be defined as *:amqp_synch*, and the evented adapter as *:amqp_evented*.
+
+==== Evented AMQP adapter
+
+When publishing and subscribing using the evented AMQP adapter, you need to wrap that code in an event machine run block.  For example, publishing a message might look like this:
+
+  EM.run do
+    Em.add_periodic_timer(1) do
+      RosettaQueue::Producer.publish(:foo, "Hello World!")
+    end
+  end
+
+And a sample consumer might look like this:
+
+  EM.run do
+    RosettaQueue::Consumer.new(MyMessageHandler.new).receive
+  end
+
+Although, if you are using the evented AMQP adapter to consume messages you could simply wrap your consumers in RosettaQueue's EventedManager:
+
+  RosettaQueue::EventedManager.create do |m|
+    m.add(MyFirstMessageHandler.new)
+    m.add(MySecondMessageHandler.new)
+    m.add(MyThirdMessageHandler.new)
+
+    m.start
+  end 
 
 
 == How to contribute
