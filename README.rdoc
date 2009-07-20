@@ -99,7 +99,7 @@ And, when you want to define a queue that will bind to a 'fanout-exchange', your
      queue.map :test_queue, 'fanout.my_test_queue'
    end
 
-Oh, and when defining your adapter, the synchronous AMQP adapter should be defined as *amqp_synch*, and the evented adapter as +:amqp_evented+.
+Oh, and when defining your adapter, the synchronous AMQP adapter should be defined as <tty>:amqp_synch</tty>, and the evented adapter as <tty>:amqp_evented</tty>.
 
 ==== Evented AMQP adapter
 
