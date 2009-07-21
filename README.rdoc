@@ -7,9 +7,11 @@ The adapters provided currently are for stomp, amqp, and beanstalk.  We would li
 
 == Authors
 
-Dave Brady [http://github.com/dbrady] 
-Ben Mabey [http://github.com/bmabey] 
-Chris Wyckoff [http://github.com/cwyckoff] 
+Dave Brady [http://github.com/dbrady]
+
+Ben Mabey [http://github.com/bmabey]
+
+Chris Wyckoff [http://github.com/cwyckoff]
 
 
 == Quick Tutorial
