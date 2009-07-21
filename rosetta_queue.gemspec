@@ -8,6 +8,10 @@ Gem::Specification.new do |s|
   s.description = %q{Messaging gateway API with adapters for many messaging systems available in Ruby. Messaging systems can be easily switched out with a small configuration change. Code for testing on the object and application level is also provided.}
   s.email = %q{ben@benmabey.com}
   s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE.txt"]
+  s.add_dependency('amqp')
+  s.add_dependency('bunny')
+  s.add_dependency('stomp')
+  s.add_dependency('beanstalk-client')
   s.files = ["History.txt", 
   	    "MIT-LICENSE.txt", 
 	    "README.rdoc", 

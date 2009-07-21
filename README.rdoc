@@ -5,6 +5,13 @@ Rosetta Queue is a messaging gateway API with adapters for many messaging system
 The adapters provided currently are for stomp, amqp, and beanstalk.  We would like to add adapters for other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
 
 
+== Authors
+
+Dave Brady 
+Ben Mabey
+Chris Wyckoff
+
+
 == Quick Tutorial
 
 Note: The API will most likely change until we reach 1.0.  We will be moving to a more concise API (i.e. queue(:test_queue) << message, etc...)  We will also be changing how exceptions are handled.
@@ -81,9 +88,22 @@ It is recommended that you set your adapter to the 'null' adapter for your specs
 Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features and read this {blog post}[http://www.benmabey.com/2009/02/17/using-cucumber-to-integrate-distributed-systems-and-test-messaging/].
 
 
+== Adapters
+
 === AMQP
 
 RosettaQueue comes with two AMQP adapters: a synchronous adapter and an evented one.  The former uses the synchronous AMQP client "Bunny" by celldee [http://github.com/celldee/bunny] and the latter, the evented AMQP client by Aman Gupta [http://github.com/tmm1/amqp].
+
+==== Set Up
+
+Install Erlang, unless already installed, and the RabbitMQ messaging broker.  Mac OSX users can install from ports.  Linux users should use their package manager or choice.  One installed, you can launch rabbitmq by running
+
+  rabbitmq-server
+
+or
+
+  rabbitmqctl start_app
+
 
 ==== Configuration
 
@@ -128,32 +148,12 @@ Although, if you are using the evented AMQP adapter to consume messages you coul
   end 
 
 
-== How to contribute
-----------------------------------------------------------------
-Gems you will need:
-cucumber, rspec, yaml, stomp, bunny, beanstalk-client
-
-You should be able to run the rspec code examples (specs) without any brokers running with autospec or 'rake spec'.
-
-To run the cucumber features you will need the a messaging system setup that can speak stomp and AMQP.  We have been using the following brokers in testing:
-
-=== Apache ActiveMQ (for the stomp adapter)
-Go to http://activemq.apache.org/download.html to download the latest version, and see http://activemq.apache.org/getting-started.html for installation and configuration instructions.
-The stomp client and features should work with ApacheMQ out of the box.  If you are running any ApacheMQ servers in production on your network you will want to disable the multicast autodiscovery in conf/activemq.xml.  (Around lines 56 and 98.)
-
-=== RabbitMQ (for the amqp adapter)
-Download the right tar from here: http://www.rabbitmq.com/download.html and follow the installation directions that comes with it.
-The features rely on a user of 'rosetta' being setup with the password of 'password' and added to the default virtualhost. You can set them up like so:
-
-  rabbitmqctl add_user rosetta password
-  rabbitmqctl map_user_vhost rosetta /
-
-=== Beanstalk (for the beanstalk adapter) ===
+=== Beanstalk
 
 You should set up and run a local instance of beanstalk for your
 tests.
 
-==== beanstalkd ====
+==== beanstalkd
 
 Mac OSX users can install beanstalkd from ports. Linux users should
 check their package manager of choice. This is probably the optimal
@@ -171,12 +171,33 @@ which the specs use. You might also want to daemonize beanstalk with
 the -d option but for testing this is not recommended, as the queue
 can get stuck with old messages, which will break your specs.
 
-==== beanstalk-client ====
+==== beanstalk-client
 
 You will also need the Ruby beanstalk-client gem.
 
   sudo gem install beanstalk-client
 
+
+
+== How to contribute
+----------------------------------------------------------------
+Gems you will need:
+cucumber, rspec, yaml, stomp, amqp, bunny, beanstalk-client
+
+You should be able to run the rspec code examples (specs) without any brokers running with autospec or 'rake spec'.
+
+To run the cucumber features you will need the a messaging system setup that can speak stomp and AMQP.  We have been using the following brokers in testing:
+
+=== Apache ActiveMQ (for the stomp adapter)
+Go to http://activemq.apache.org/download.html to download the latest version, and see http://activemq.apache.org/getting-started.html for installation and configuration instructions.
+The stomp client and features should work with ApacheMQ out of the box.  If you are running any ApacheMQ servers in production on your network you will want to disable the multicast autodiscovery in conf/activemq.xml.  (Around lines 56 and 98.)
+
+=== RabbitMQ (for the amqp adapter)
+Download the right tar from here: http://www.rabbitmq.com/download.html and follow the installation directions that comes with it.
+The features rely on a user of 'rosetta' being setup with the password of 'password' and added to the default virtualhost. You can set them up like so:
+
+  rabbitmqctl add_user rosetta password
+  rabbitmqctl map_user_vhost rosetta /
 
 
 
