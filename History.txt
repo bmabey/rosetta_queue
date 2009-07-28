@@ -1,6 +1,8 @@
 == 0.1.x (git)
 
  === New features
+  * Synchronous AMQP adapter
+    * Uses celldee's synchronous AMQP client, 'Bunny'.
   * Beanstalk Adaper (David Brady)
     * Still needs some work to have it take advantage of beanstalk's subscribe funtionality.
  === Bufixes
