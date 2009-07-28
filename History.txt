@@ -5,13 +5,13 @@
 
 == 0.2.0
  === New features
-  * Synchronous AMQP adapter
+  * Synchronous AMQP adapter (Chris Wyckoff - Lead Media Partners)
     * Uses celldee's synchronous AMQP client, 'Bunny'.
-  * Added .delete method to Consumer class
+  * Added .delete method to Consumer class (Chris Wyckoff - Lead Media Partners)
     * Allows user to purge a queue.
     * Works for AMQP adapters only.
  === Bufixes
-  * client :ack now working.
+  * client :ack now working. (Chris Wyckoff - Lead Media Partners)
 
 == 0.1.4
 
