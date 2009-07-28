@@ -13,7 +13,7 @@ module RosettaQueue
         @msg_obj = mock("message", :body => @msg, :delete => true)
         @conn = mock("Beanstalk::Pool", :put => true, :reserve => @msg_obj)
         ::Beanstalk::Pool.stub!(:new).and_return(@conn)
-        @adapter = BeanstalkAdapter.new("user", "password", "host", "port")
+        @adapter = BeanstalkAdapter.new({:host => "host", :port => "port"})
         @adapter.stub!(:running).and_yield
       end
 
