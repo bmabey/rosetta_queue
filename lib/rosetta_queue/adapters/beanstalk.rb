@@ -9,9 +9,9 @@ module RosettaQueue
         @conn.ack(msg.headers["message-id"])
       end
 
-      def initialize(user=nil, password=nil, host="localhost", port=11300)
-        @host, @port = host, port
-        @conn = Beanstalk::Pool.new(["#{host}:#{port}"])
+      def initialize(adapter_settings = {})
+        @host, @port = adapter_settings[:host], adapter_settings[:port]
+        @conn = Beanstalk::Pool.new(["#{@host}:#{@port}"])
       end
 
       def disconnect; end

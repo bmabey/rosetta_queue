@@ -13,8 +13,8 @@ Story: Producing and Consuming
     Examples:
     | Adapter		|
     | amqp_synch	|
-     | stomp		| 
-#     | beanstalk		| 
+    | stomp		| 
+    | beanstalk		| 
 
   Scenario Outline: Delete queue
     Given RosettaQueue is configured for '<Adapter>'
