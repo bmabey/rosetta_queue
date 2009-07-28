@@ -47,6 +47,30 @@ module RosettaQueue
     end
 
       
+    describe ".delete" do
+
+      before(:each) do 
+        @adapter.stub!(:delete)
+        Destinations.stub!(:lookup).and_return("/queue/foo")            
+      end 
+
+      it "should look up the destination" do
+        # expect
+        Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")            
+
+        # when
+        Consumer.delete(:test_queue_passed_in)
+      end
+
+      it "should delegate to the adapter" do
+        # expect
+        @adapter.should_receive(:delete).with("/queue/foo", {})
+
+        # when
+        Consumer.delete(:test_queue_passed_in)
+      end
+    end
+
     describe ".receive" do
 
       def when_receiving

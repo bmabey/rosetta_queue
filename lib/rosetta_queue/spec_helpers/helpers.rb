@@ -1,6 +1,6 @@
 module RosettaQueue
   # Adds helpful methods when doing application level testing.
-  # If you are using cucumber just include it in your Wolrd in the env.rb file:
+  # If you are using cucumber just include it in your World in the env.rb file:
   # World {|world| world.extend RosettaQueue::SpecHelpers }
   module SpecHelpers
     require 'open-uri'

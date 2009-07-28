@@ -4,16 +4,27 @@ Rosetta Queue is a messaging gateway API with adapters for many messaging system
 
 The adapters provided currently are for stomp, amqp, and beanstalk.  We would like to add adapters for other messaging gateways.  The stomp adapter has been used in production along side with Apache's ActiveMQ.  The amqp adapter currently works along side RabbitMQ and passes the acceptance tests but as of yet has not been used in production.
 
+
+== Authors
+
+Ben Mabey [http://github.com/bmabey]
+
+Chris Wyckoff [http://github.com/cwyckoff]
+
+
 == Quick Tutorial
+
 Note: The API will most likely change until we reach 1.0.  We will be moving to a more concise API (i.e. queue(:test_queue) << message, etc...)  We will also be changing how exceptions are handled.
 
 When using Rosetta Queue in an application you will need to configure the queues, adapters, and filters (optional).  These configurations should be placed in a file that gets loaded once when your program starts.  If you are using Rails then a good place for this is config/initializers/rosetta_queue.rb.
 
-To set up destinations to produce messages to and consume messages from:
+
+To set up destinations for producing and consuming messages:
 
 RosettaQueue::Destinations.define do |queue|
   queue.map :test_queue, '/queue/my_test_queue'
 end
+
 
 Defining your adapter:
 
@@ -24,6 +35,7 @@ Defining your adapter:
     a.port = 61613
     a.type = "stomp"
   end
+
 
 Define a logger for Rosetta Queue to use.  The logger should be a standard ruby logger:
 
@@ -76,33 +88,72 @@ It is recommended that you set your adapter to the 'null' adapter for your specs
 Please look at the publishing matchers for more information.  For examples on how to write acceptance tests for your Rosetta Queue's code please see RosettaQueue's own Cucumber features and read this {blog post}[http://www.benmabey.com/2009/02/17/using-cucumber-to-integrate-distributed-systems-and-test-messaging/].
 
 
+== Adapters
 
-== How to contribute
-----------------------------------------------------------------
-Gems you will need:
-cucumber, rspec, yaml, stomp, tmm1-amqp, beanstalk-client
+=== AMQP
 
-You should be able to run the rspec code examples (specs) without any brokers running with autospec or 'rake spec'.
+RosettaQueue comes with two AMQP adapters: a synchronous adapter and an evented one.  The former uses the synchronous AMQP client "Bunny" by celldee [http://github.com/celldee/bunny] and the latter, the evented AMQP client by Aman Gupta [http://github.com/tmm1/amqp].
 
-To run the cucumber features you will need the a messaging system setup that can speak stomp and AMQP.  We have been using the following brokers in testing:
+==== Set Up
 
-=== Apache ActiveMQ (for the stomp adapter)
-Go to http://activemq.apache.org/download.html to download the latest version, and see http://activemq.apache.org/getting-started.html for installation and configuration instructions.
-The stomp client and features should work with ApacheMQ out of the box.  If you are running any ApacheMQ servers in production on your network you will want to disable the multicast autodiscovery in conf/activemq.xml.  (Around lines 56 and 98.)
+Install Erlang, unless already installed, and the RabbitMQ messaging broker.  Mac OSX users can install from ports.  Linux users should use their package manager or choice.  One installed, you can launch rabbitmq by running
 
-=== RabbitMQ (for the amqp adapter)
-Download the right tar from here: http://www.rabbitmq.com/download.html and follow the installation directions that comes with it.
-The features rely on a user of 'rosetta' being setup with the password of 'password' and added to the default virtualhost. You can set them up like so:
+  rabbitmq-server
 
-  rabbitmqctl add_user rosetta password
-  rabbitmqctl map_user_vhost rosetta /
+or
 
-=== Beanstalk (for the beanstalk adapter) ===
+  rabbitmqctl start_app
+
+
+==== Configuration
+
+If you are using an AMQP adapter, there are some important rules when defining the adapter and mapping your destinations.  Two of the basic building blocks of AMQP are queues and exchanges.  Queues bind to exchanges in several different ways.  A can queue bind to an exchange and requests messages that match a specific routing key, which is called 'direct exchange' and is analogous to the 'point-to-point' messaging pattern.  Alternately, queues can bind to an exchange to receive all messages sent to that exchange; this is called 'fanout exchange' and is analogous to the 'publish-subscribe' pattern.  So, when you want to define a simple 'direct-exchange' queue, your queue name must begin with the term "queue".
+
+   RosettaQueue::Destinations.define do |queue|
+     queue.map :test_queue, 'queue.my_test_queue'
+   end
+
+And, when you want to define a queue that will bind to a 'fanout-exchange', your queue name must begin with the term "fanout".
+
+   RosettaQueue::Destinations.define do |queue|
+     queue.map :test_queue, 'fanout.my_test_queue'
+   end
+
+Finally, when defining your adapter, the synchronous AMQP adapter should be defined as :*amqp_synch*, and the evented adapter as :*amqp_evented*.
+
+==== Evented AMQP adapter
+
+When publishing and subscribing using the evented AMQP adapter, you need to wrap that code in an event machine run block.  For example, publishing a message might look like this:
+
+  EM.run do
+    Em.add_periodic_timer(1) do
+      RosettaQueue::Producer.publish(:foo, "Hello World!")
+    end
+  end
+
+And a sample consumer might look like this:
+
+  EM.run do
+    RosettaQueue::Consumer.new(MyMessageHandler.new).receive
+  end
+
+Although, if you are using the evented AMQP adapter to consume messages you could simply wrap your consumers in RosettaQueue's EventedManager:
+
+  RosettaQueue::EventedManager.create do |m|
+    m.add(MyFirstMessageHandler.new)
+    m.add(MySecondMessageHandler.new)
+    m.add(MyThirdMessageHandler.new)
+
+    m.start
+  end 
+
+
+=== Beanstalk
 
 You should set up and run a local instance of beanstalk for your
 tests.
 
-==== beanstalkd ====
+==== beanstalkd
 
 Mac OSX users can install beanstalkd from ports. Linux users should
 check their package manager of choice. This is probably the optimal
@@ -120,12 +171,33 @@ which the specs use. You might also want to daemonize beanstalk with
 the -d option but for testing this is not recommended, as the queue
 can get stuck with old messages, which will break your specs.
 
-==== beanstalk-client ====
+==== beanstalk-client
 
 You will also need the Ruby beanstalk-client gem.
 
   sudo gem install beanstalk-client
 
+
+
+== How to contribute
+----------------------------------------------------------------
+Gems you will need:
+cucumber, rspec, yaml, stomp, amqp, bunny, beanstalk-client
+
+You should be able to run the rspec code examples (specs) without any brokers running with autospec or 'rake spec'.
+
+To run the cucumber features you will need the a messaging system setup that can speak stomp and AMQP.  We have been using the following brokers in testing:
+
+=== Apache ActiveMQ (for the stomp adapter)
+Go to http://activemq.apache.org/download.html to download the latest version, and see http://activemq.apache.org/getting-started.html for installation and configuration instructions.
+The stomp client and features should work with ApacheMQ out of the box.  If you are running any ApacheMQ servers in production on your network you will want to disable the multicast autodiscovery in conf/activemq.xml.  (Around lines 56 and 98.)
+
+=== RabbitMQ (for the amqp adapter)
+Download the right tar from here: http://www.rabbitmq.com/download.html and follow the installation directions that comes with it.
+The features rely on a user of 'rosetta' being setup with the password of 'password' and added to the default virtualhost. You can set them up like so:
+
+  rabbitmqctl add_user rosetta password
+  rabbitmqctl map_user_vhost rosetta /
 
 
 
