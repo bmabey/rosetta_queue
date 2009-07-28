@@ -23,7 +23,7 @@ module RosettaQueue
     # to set ENV["RUNNING_STORIES"] = "true" in your helper.rb or env.rb file)
     class NullAdapter
                     
-      def initialize(user, password, host, port)
+      def initialize(adapter_settings)
         # no-op
       end
 

@@ -4,10 +4,9 @@ require 'rosetta_queue'
 require 'rosetta_queue/spec_helpers'
 require 'spec/expectations'
 require 'rosetta_queue/spec_helpers'
-require 'amqp'
 
 begin
-  RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../log', 'rosetta_queue.log'))
+  RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../../log', 'rosetta_queue.log'))
 rescue Errno::ENOENT
   Kernel.warn "No log directory setup at the root of rosetta_queue. Using the null logger instead."
   class NullLogger
@@ -22,6 +21,3 @@ rescue Errno::ENOENT
 end
 
 World(RosettaQueue::SpecHelpers)
-
-AMQP.logging = false # true
-# Thread.new {EM.run{}}

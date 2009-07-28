@@ -9,27 +9,23 @@ Feature: Message Filtering
     And a point-to-point destination is set
     And a receiving filter is defined to prepend 'Foo' to all messages
     And the message "Hello World" is published to queue "foo"
-  
     When the message on "foo" is consumed
-  
     Then the consumed message should equal "Foo Hello World"
     
     Examples:
-    | Adapter     |
-    | stomp       |
-    | amqp        |   
-    
-  Scenario Outline: sending filter
+    | Adapter		|
+    | amqp_synch	|		
+    | stomp 		|
+  
+Scenario Outline: sending filter
     Given RosettaQueue is configured for '<Adapter>'
     And a point-to-point destination is set
     And a sending filter is defined to prepend 'Foo' to all messages
     And the message "Hello World" is published to queue "foo"
-
     When the message on "foo" is consumed
-
     Then the consumed message should equal "Foo Hello World"
-
+    
     Examples:
-    | Adapter     |
-    | stomp       |
-    | amqp        |
+    | Adapter		|
+    | amqp_synch 	|
+    | stomp 		|

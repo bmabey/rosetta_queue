@@ -8,7 +8,7 @@ module RosettaQueue
     describe NullAdapter do
       
       def null_adapter
-        NullAdapter.new('user', 'password', 'host', 'port')
+        NullAdapter.new({:user => 'user', :password => 'password', :host => 'host', :port => 'port'})
       end
       
       %w[disconnect receive receive_with send_message subscribe unsubscribe].each do |adapter_method|
