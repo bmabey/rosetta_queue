@@ -20,6 +20,7 @@ module RosettaQueue
     
     def self.included(receiver)
       receiver.extend(ClassMethods)
+      attr_accessor :queue
 
       def destination
         self.class.destination  
@@ -28,6 +29,11 @@ module RosettaQueue
       def options_hash
         self.class.options_hash
       end
+
+      def ack
+        queue.ack unless queue.nil?
+      end 
+
     end
   end
 end

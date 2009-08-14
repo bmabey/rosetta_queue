@@ -1,6 +1,7 @@
 require 'rubygems'
 require File.dirname(__FILE__) + '/../init.rb'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/rosetta_queue/consumer_managers/threaded.rb')
+RosettaQueue.logger = Logger.new(File.expand_path(File.dirname(__FILE__) + '/../../log/rosetta_queue.log'))
 
 module RosettaQueue
 
@@ -8,7 +9,7 @@ module RosettaQueue
     a.user      = "rosetta"
     a.password  = "password"
     a.host      = "localhost"
-    a.type      = 'amqp'
+    a.type      = 'amqp_synch'
   end
 
   Destinations.define do |dest|
@@ -18,11 +19,12 @@ module RosettaQueue
   class MessageHandlerFoo
     include RosettaQueue::MessageHandler
     subscribes_to :foo
-    options :ack => true
+    options :manual_ack => true
     attr_reader :msg
 
     def on_message(msg)
       puts "FOO received message:  #{msg}"
+      ack
     end
 
   end
@@ -30,11 +32,12 @@ module RosettaQueue
   class MessageHandlerBar
     include RosettaQueue::MessageHandler
     subscribes_to :foo
-    options :ack => true
+    options :manual_ack => true
     attr_reader :msg
 
     def on_message(msg)
       puts "BAR received message:  #{msg}"
+      ack
     end
   end
 

@@ -1,5 +1,6 @@
 require 'rubygems'
 require File.dirname(__FILE__) + '/../init.rb'
+RosettaQueue.logger = Logger.new(File.expand_path(File.dirname(__FILE__) + '/../../log/rosetta_queue.log'))
 
 RosettaQueue::Adapter.define do |a|
   a.user      = "rosetta"
