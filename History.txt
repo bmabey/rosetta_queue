@@ -1,6 +1,25 @@
-== 0.1.x (git)
+== 0.2.x (git)
 
  === New features
+ === Bufixes
+
+== 0.2.0
+ === New features
+  * Synchronous AMQP adapter (Chris Wyckoff - Lead Media Partners)
+    * Uses celldee's synchronous AMQP client, 'Bunny'.
+  * Added .delete method to Consumer class (Chris Wyckoff - Lead Media Partners)
+    * Allows user to purge a queue.
+    * Works for AMQP adapters only.
+ === Bufixes
+  * client :ack now working. (Chris Wyckoff - Lead Media Partners)
+
+== 0.1.4
+
+ === New features
+  * Removed dependency on ActiveSupport and brought over needed String methods. (Derek and Matt - Greenview Data, Inc.)
+  * Safer shutdown in ThreadedManager (Rob Sanheim - Relevance)
+  * Beanstalk Adaper (David Brady - Lead Media Partners)
+    * Still needs some work to have it take advantage of beanstalk's subscribe functionality.
   * Synchronous AMQP adapter
     * Uses celldee's synchronous AMQP client, 'Bunny'.
   * Added .delete method to Consumer class
@@ -8,8 +27,6 @@
     * Works for AMQP adapters only.
   * Beanstalk Adaper (David Brady)
     * Still needs some work to have it take advantage of beanstalk's subscribe funtionality.
- === Bufixes
-  * client :ack now working.
 
 == 0.1.0 / 2008-01-28 - Initial Release
-RosettaQueue was realased in the wild! RQ's initial development was primarily sponsored by Alliance Health Networks (thanks!!).  The original authors were Chris Wyckoff and Ben Mabey.The initial release included adapters for stomp and amqp, in addition to a null and fake adapters for testing.
+RosettaQueue was realased in the wild! RQ's initial development was primarily sponsored by Alliance Health Networks (thanks!!).  The original authors were Chris Wyckoff and Ben Mabey. The initial release included adapters for stomp and amqp, in addition to a null and fake adapters for testing.

@@ -6,6 +6,7 @@ module RosettaQueue
     def initialize
       @threads    = {}
       @running    = true
+      @processing = true
       super
     end
 
@@ -24,12 +25,24 @@ module RosettaQueue
     def join_threads
       @threads.each { |thread| thread.join }
     end
+    
+    def shutdown_requested
+      RosettaQueue.logger.error "Shutdown requested, starting to prune threads..."
+      
+      while @threads.any? { |n, t| t.alive? }
+        RosettaQueue.logger.info "Calling stop_threads"
+        stop_threads
+        sleep 5
+      end
+    end
 
     def monitor_threads
       while @running
-        trap("TERM", "EXIT")
+        trap("TERM") { shutdown_requested }
+        trap("INT")  { shutdown_requested }
         living = false
         @threads.each { |name, thread| living ||= thread.alive? }
+        @processing = @threads.any? { |name, thread| thread[:processing] }
         @running = living
         sleep 1
       end
@@ -64,9 +77,15 @@ module RosettaQueue
     end
 
     def stop_threads
+      RosettaQueue.logger.debug("Attempting to stop all threads...")
       @running = false
-      @threads.each do |key, thread|
-        RosettaQueue.logger.info("Stopping thread and disconnecting from #{key}...")
+      @threads.select { |key, thread| thread.alive? }.each do |key, thread|
+        if thread[:processing]
+          RosettaQueue.logger.debug("#{key} Skipping thread #{thread} because the consumer is processing")
+          @running = true
+          next
+        end
+        RosettaQueue.logger.debug("#{key} Stopping thread #{thread} and disconnecting the consumer")
         @consumers[key].disconnect
         thread.kill
       end

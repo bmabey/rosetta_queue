@@ -23,7 +23,8 @@ module RosettaQueue
       before do
         @manager.stub!(:join_threads)
         @manager.stub!(:monitor_threads)
-        @thread = mock(Thread, :kill => nil)
+        # we stub brackets because we check a Thread variable
+        @thread = mock(Thread, :kill => nil, :alive? => true, :[] => false)
         Thread.stub!(:new).and_return(@thread)
       end
 

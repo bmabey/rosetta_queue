@@ -18,7 +18,7 @@ module RosettaQueue
         require "rosetta_queue/adapters/#{adapter_prefix}"
         @adapter_class = RosettaQueue::Gateway.const_get("#{adapter_prefix.to_s.classify}Adapter")
 
-        rescue MissingSourceFile
+        rescue LoadError
           raise AdapterException, "Adapter type '#{adapter_prefix}' does not match existing adapters!"
       end
 

@@ -44,8 +44,10 @@ module RosettaQueue
 
         running do
           msg = receive(options).body
+          Thread.current[:processing] = true
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           message_handler.on_message(filter_receiving(msg))
+          Thread.current[:processing] = false
         end
       end
       

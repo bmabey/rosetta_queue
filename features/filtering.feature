@@ -11,7 +11,7 @@ Feature: Message Filtering
     And the message "Hello World" is published to queue "foo"
     When the message on "foo" is consumed
     Then the consumed message should equal "Foo Hello World"
-    
+
     Examples:
     | Adapter		|
     | amqp_synch	|		
@@ -24,7 +24,7 @@ Scenario Outline: sending filter
     And the message "Hello World" is published to queue "foo"
     When the message on "foo" is consumed
     Then the consumed message should equal "Foo Hello World"
-    
+
     Examples:
     | Adapter		|
     | amqp_synch 	|

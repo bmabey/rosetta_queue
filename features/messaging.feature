@@ -9,7 +9,7 @@ Story: Producing and Consuming
     And a point-to-point destination is set
     When a message is published to queue 'foo'
     Then the message should be consumed
-    
+
     Examples:
     | Adapter		|
     | amqp_synch	|
@@ -22,10 +22,10 @@ Story: Producing and Consuming
     When a message is published to queue '<Queue>'
     And the queue '<Queue>' is deleted
     Then the queue '<Queue>' should no longer exist
-    
+
     Examples:
-    | Adapter		| Queue |
-    | amqp_synch	| foo 	|
+    | Adapter   | Queue   |
+    | amqp_synch  | foo   |
 
 
 #   Scenario Outline: Publish-Subscribe
@@ -33,8 +33,8 @@ Story: Producing and Consuming
 #     And a '<PublishSubscribe>' destination is set
 #     When a message is published to 'foobar'
 #     Then multiple messages should be consumed from the topic
-    
+
 #     Examples:
-#    | Adapter		| PublishSubscribe	|
-#    | amqp_synch	| fanout		|
-#    | stomp		| topic			|
+#    | Adapter    | PublishSubscribe  |
+#    | amqp_synch | fanout    |
+#    | stomp    | topic     |
