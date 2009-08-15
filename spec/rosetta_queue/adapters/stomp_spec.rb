@@ -100,6 +100,27 @@ module RosettaQueue
         end
                 
       end      
+
+      describe StompAdapterProxy do
+
+        before(:each) do
+          @adapter = mock("StompAdapter", :ack => nil)
+          @proxy = StompAdapterProxy.new(@adapter, "foo")
+        end
+
+        context "#ack" do
+          
+          it "should delegate to AMQP queue object" do
+            # expect
+            @adapter.should_receive(:ack).with("foo")
+
+            # when
+            @proxy.ack
+          end
+          
+        end
+      end
+
     end
   end
 end

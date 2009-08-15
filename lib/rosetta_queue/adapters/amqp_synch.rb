@@ -49,7 +49,7 @@ module RosettaQueue
 
         def process_message(queue, msg)
           if @ack[:manual_ack]
-            @message_handler.queue = queue
+            @message_handler.adapter_proxy = queue
             @message_handler.on_message(Filters.process_receiving(msg))
           elsif @ack[:automatic_ack]
             @message_handler.on_message(Filters.process_receiving(msg))
@@ -123,6 +123,19 @@ module RosettaQueue
         end
 
       end 
+
+      class AmqpAdapterProxy
+
+        def initialize(queue)
+          @queue = queue
+        end 
+
+        def ack
+          @queue.ack
+        end 
+
+      end 
     end 
+
   end
 end

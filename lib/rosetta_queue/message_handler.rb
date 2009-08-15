@@ -20,7 +20,7 @@ module RosettaQueue
     
     def self.included(receiver)
       receiver.extend(ClassMethods)
-      attr_accessor :queue
+      attr_accessor :adapter_proxy
 
       def destination
         self.class.destination  
@@ -31,7 +31,7 @@ module RosettaQueue
       end
 
       def ack
-        queue.ack unless queue.nil?
+        adapter_proxy.ack unless adapter_proxy.nil?
       end 
 
     end

@@ -239,7 +239,28 @@ module RosettaQueue::Gateway
       #     }
       #   end
       # end
-    
+
+      describe SynchExchange::AmqpAdapterProxy do
+
+        before(:each) do
+          @queue = mock("Queue", :ack => nil)
+          @proxy = SynchExchange::AmqpAdapterProxy.new(@queue)
+        end
+
+        context "#ack" do
+          
+          it "should delegate to AMQP queue object" do
+            # expect
+            @queue.should_receive(:ack)
+
+            # when
+            @proxy.ack
+          end
+          
+        end
+      end
+
     end
+
   end
 end
