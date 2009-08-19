@@ -1,3 +1,10 @@
+Given /^consumer logs do not exist$/ do
+  %w[p_to_p_log, pub_sub_log].each do |file_name|
+    file_path = File.expand_path(File.dirname(__FILE__) + "/../support/#{file_name}.txt", "a")
+    File.delete(file_path) if File.exists?(file_path)
+  end 
+end
+
 Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
   @adapter_type = adapter_type
   RosettaQueue::Adapter.define do |a|
@@ -16,9 +23,9 @@ Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
   end
 end
 
-Given /^a point-to-point destination is set$/ do
+Given /^a point-to-point destination is set with queue '(.*)' and queue address '(.*)'$/ do |key, queue|
   RosettaQueue::Destinations.define do |dest|
-    dest.map :foo, "/queue/bar"
+    dest.map key.to_sym, queue
   end  
 end
 
@@ -36,10 +43,10 @@ Given /^a '(.*)' destination is set$/ do |pub_sub|
 end
 
 When /^the queue '(.*)' is deleted$/ do |queue|
-  system("rabbitmqctl list_queues | grep bar").should be_true
+  system("rabbitmqctl list_queues | grep #{queue}").should be_true
   RosettaQueue::Consumer.delete(queue.to_sym)
 end
 
-Then /^the queue 'foo' should no longer exist$/ do
-  system("rabbitmqctl list_queues | grep bar").should be_false
+Then /^the queue '(.*)' should no longer exist$/ do |queue|
+  system("rabbitmqctl list_queues | grep #{queue}").should be_false
 end

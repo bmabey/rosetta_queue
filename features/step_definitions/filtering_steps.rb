@@ -5,7 +5,7 @@ Then /^a (receiving|sending) filter is defined to prepend 'Foo' to all messages$
   end
 end
 
-When /^the message on "(.+)" is consumed$/ do |queue_name|
+When /^the message on '(.+)' is consumed$/ do |queue_name|
   # TODO
   # @consumed_message = queue(:foo_queue).pop  
   @consumed_message = consume_once(queue_name.to_sym)

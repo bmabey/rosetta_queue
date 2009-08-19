@@ -31,8 +31,8 @@ module RosettaQueue
           @adapter_settings, @options = adapter_settings, options
         end
 
-        def delete(destination)
-          conn.queue(destination).delete(@options)
+        def delete(destination, options={})
+          conn.queue(destination).delete(options)
         end 
 
         protected
@@ -47,17 +47,26 @@ module RosettaQueue
           @conn
         end
 
-        def process_message(queue, msg)
-          if @ack[:manual_ack]
-            @message_handler.adapter_proxy = queue
-            @message_handler.on_message(Filters.process_receiving(msg))
-          elsif @ack[:automatic_ack]
-            @message_handler.on_message(Filters.process_receiving(msg))
+        def process_message(message_handler, queue, msg)
+          if @client_ack[:manual_ack]
+            message_handler.adapter_proxy = queue
+            message_handler.on_message(Filters.process_receiving(msg))
+          elsif @client_ack[:automatic_ack]
+            message_handler.on_message(Filters.process_receiving(msg))
             queue.ack
           else 
-            @message_handler.on_message(Filters.process_receiving(msg))
+            message_handler.on_message(Filters.process_receiving(msg))
           end 
         end 
+
+        def process_ack_options!
+          @client_ack = {}
+          if(@options[:manual_ack])
+            @options[:ack] = true
+            @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
+          end 
+        end 
+
       end
 
       class DirectExchange < BaseExchange
@@ -71,18 +80,18 @@ module RosettaQueue
 
         def receive(destination, message_handler)
           queue = conn.queue(destination, @options)
-          @ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
-          @message_handler = message_handler
+          process_ack_options!
+#          @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
           queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            process_message(queue, msg)
+            process_message(message_handler, queue, msg)
           end 
         end
 
-        def receive_once(destination)
-          queue = conn.queue(destination, @options)
-          ack = @options[:ack]
-          msg = queue.pop(@options)
+        def receive_once(destination, options = {})
+          queue = conn.queue(destination, options)
+          ack = options[:ack]
+          msg = queue.pop(options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           queue.ack if ack
           yield Filters.process_receiving(msg)
@@ -103,11 +112,11 @@ module RosettaQueue
           queue = conn.queue("queue_#{self.object_id}", @options)
           exchange = conn.exchange(fanout_name_for(destination), @options.merge({:type => :fanout}))
           queue.bind(exchange)
-          @ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
-          @message_handler = message_handler
+          process_ack_options!
+#          @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
           msg = queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            process_message(queue, msg)
+            process_message(message_handler, queue, msg)
           end        
         end
 
@@ -115,8 +124,8 @@ module RosettaQueue
           queue = conn.queue("queue_#{self.object_id}", options)
           exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
           queue.bind(exchange)
-          ack = @options[:ack]
-          msg = queue.pop(@options)
+          ack = options[:ack]
+          msg = queue.pop(options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           queue.ack if ack
           yield Filters.process_receiving(msg)
