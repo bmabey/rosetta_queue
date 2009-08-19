@@ -5,6 +5,8 @@ require 'rosetta_queue/spec_helpers'
 require 'spec/expectations'
 require 'rosetta_queue/spec_helpers'
 
+CONSUMER_LOG_DIR = File.expand_path(File.dirname(__FILE__) + "/../support/tmp")
+
 begin
   RosettaQueue.logger = RosettaQueue::Logger.new(File.join(File.dirname(__FILE__), '../../../log', 'rosetta_queue.log'))
 rescue Errno::ENOENT

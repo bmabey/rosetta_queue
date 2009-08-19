@@ -9,15 +9,16 @@ Story: Producing and Consuming
 
   Scenario Outline: Point-to-Point
     Given RosettaQueue is configured for '<Adapter>'
-    And a point-to-point destination is set with queue '<Queue>' and queue address '<QueueAddress>'
+    And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
     And a consumer is listening to queue '<Queue>'
     When a message is published to queue '<Queue>'
-    Then the message should be consumed
+    Then the message should be consumed from '<Queue>'
 
     Examples:
     | Adapter		| Queue    |  QueueAddress	|
+    | amqp_evented	| bar      |  queue.bar		|
     | amqp_synch	| foo      |  queue.foo		|
-#    | stomp		| bar      |  queue/bar  	|
+    | stomp		| baz      |  /queue/baz  	|
 #    | beanstalk	| baz      |  baz  		|
 
   Scenario Outline: Delete queue
@@ -32,13 +33,15 @@ Story: Producing and Consuming
     | amqp_synch  | foo      |  queue.foo 	|
 
 
-#   Scenario Outline: Publish-Subscribe
-#     Given RosettaQueue is configured for '<Adapter>'
-#     And a '<PublishSubscribe>' destination is set with key '<Key>' and queue '<Queue>'
-#     When a message is published to 'foobar'
-#     Then multiple messages should be consumed from the topic
+  Scenario Outline: Publish-Subscribe
+    Given RosettaQueue is configured for '<Adapter>'
+    And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
+    And multiple consumers are listening to queue '<Queue>'
+    When a message is published to '<Queue>'
+    Then multiple messages should be consumed from '<Queue>'
 
-#     Examples:
-#    | Adapter    | PublishSubscribe  | Queue    |  QueueAddress	|
-#    | amqp_synch | fanout    	      | foo  	 |  queue.foo 		|
-#    | stomp      | topic     	      | foo    	 |  queue/foo 		|
+    Examples:
+   | Adapter	  | QueueAddress  | Queue	|
+   | amqp_synch   | queue.foo 	  | foo		|
+#    | amqp_evented | queue.foo 	  | foo		|
+#    | stomp        | topic/foo     | bar 	|

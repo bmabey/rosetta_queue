@@ -1,40 +1,21 @@
-Given /^the message '(.+)' is published to queue '(.+)'$/ do |message, queue_name|
-  publish_message(message, {:to => queue_name})
-end
-
 Given /^a consumer is listening to queue '(.*)'$/ do |queue|
-  str = <<-EOC
-    class SampleCons
-      include ::RosettaQueue::MessageHandler
-      subscribes_to :#{queue}
-      options :ack => true
-    
-      def on_message(msg)
-        file_path = File.expand_path(File.dirname(__FILE__) + "/features/support/tmp/p_to_p_log.txt")
-        File.open(file_path, "w") do |f|
-          f << msg
-        end 
-      end
-    end
-  EOC
-
-    eval(str)
-    
-    @thread = Thread.new do
-      cons = SampleCons.new
+  klass = eval_consumer_class(queue)
+  @thread = Thread.new do
+    cons = klass.new
+    case @adapter_type
+    when /evented/
+      EM.run do
+        RosettaQueue::Consumer.new(cons).receive
+      end 
+    else
       RosettaQueue::Consumer.new(cons).receive
     end 
+  end 
 end
 
-When /^a message is published to queue '(\w+)'$/ do |q|
-  publish_message("Hello World!", {:options => {:ack => "client"}}.merge(:to => q))
-end
-
-Then /^the message should be consumed$/ do
-    file_path = File.expand_path(File.dirname(__FILE__) + "/../support/tmp/p_to_p_log.txt")
-    File.readlines(file_path).last.should =~ /Hello World!/
-    
-  #  RosettaQueue::Consumer.receive(:foo).should =~ /Hello World!/
-  # consume_once_with(SampleConsumer).should =~ /Hello World!/
-    @thread.kill
+Then /^the message should be consumed from '(.*)'$/ do |queue|
+  file_path = "#{CONSUMER_LOG_DIR}/p_to_p_log.txt"
+  sleep 1 unless File.exists?(file_path)
+  File.readlines(file_path).last.should =~ /Hello World! from #{queue}/
+  @thread.kill
 end

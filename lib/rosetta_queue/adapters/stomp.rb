@@ -6,11 +6,12 @@ module RosettaQueue
     class StompAdapter < BaseAdapter
 
       def ack(msg)
+        raise AdapterException, "Unable to ack client because message-id is blank.  Are your message handler options correct? (i.e., :ack => 'client')" if msg.headers["message-id"].nil?
         @conn.ack(msg.headers["message-id"])
       end
 
       def initialize(adapter_settings = {})
-        raise "Missing adapter settings" if adapter_settings.empty?
+        raise AdapterException, "Missing adapter settings" if adapter_settings.empty?
         @conn = Stomp::Connection.open(adapter_settings[:user], 
                                        adapter_settings[:password], 
                                        adapter_settings[:host], 
