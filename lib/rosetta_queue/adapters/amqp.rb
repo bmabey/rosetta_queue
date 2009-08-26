@@ -20,7 +20,10 @@ module RosettaQueue
         exchange_strategy_for(destination, opts).delete(destination)
       end 
 
-      def disconnect(message_handler); end
+      def disconnect(message_handler)
+        destination = destination_for(message_handler)
+        exchange_strategy_for(destination).unsubscribe
+      end
 
       def receive_once(destination, opts={})
         exchange_strategy_for(destination, opts).receive_once(destination) do |msg|

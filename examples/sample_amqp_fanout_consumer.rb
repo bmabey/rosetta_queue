@@ -19,7 +19,7 @@ module RosettaQueue
   class MessageHandlerFoo
     include RosettaQueue::MessageHandler
     subscribes_to :foo
-    options :manual_ack => true
+    options :ack => true
     attr_reader :msg
 
     def on_message(msg)
@@ -32,7 +32,7 @@ module RosettaQueue
   class MessageHandlerBar
     include RosettaQueue::MessageHandler
     subscribes_to :foo
-    options :manual_ack => true
+    options :ack => true
     attr_reader :msg
 
     def on_message(msg)

@@ -95,7 +95,7 @@ module RosettaQueue::Gateway
 
       before(:each) do
         @queue = mock("Bunny::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
-        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
+        Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected, :stop => nil))
         @queue.stub!(:subscribe).and_yield(@msg)
         @handler = mock("handler", :on_message => true, :destination => :foo)
         @exchange = SynchExchange::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
@@ -251,25 +251,25 @@ module RosettaQueue::Gateway
       #   end
       # end
 
-      describe SynchExchange::AmqpAdapterProxy do
+#       describe SynchExchange::AmqpAdapterProxy do
 
-        before(:each) do
-          @queue = mock("Queue", :ack => nil)
-          @proxy = SynchExchange::AmqpAdapterProxy.new(@queue)
-        end
+#         before(:each) do
+#           @queue = mock("Queue", :ack => nil)
+#           @proxy = SynchExchange::AmqpAdapterProxy.new(@queue)
+#         end
 
-        context "#ack" do
+#         context "#ack" do
           
-          it "should delegate to AMQP queue object" do
-            # expect
-            @queue.should_receive(:ack)
+#           it "should delegate to AMQP queue object" do
+#             # expect
+#             @queue.should_receive(:ack)
 
-            # when
-            @proxy.ack
-          end
+#             # when
+#             @proxy.ack
+#           end
           
-        end
-      end
+#         end
+#       end
 
     end
   end

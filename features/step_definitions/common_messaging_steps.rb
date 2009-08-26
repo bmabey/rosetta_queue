@@ -1,5 +1,5 @@
-def eval_consumer_class(queue)
-  klass_name = "#{queue.to_s.capitalize}Consumer"
+def eval_consumer_class(queue, log_file="point-to-point.log", klass_name=nil)
+  klass_name = "#{queue.to_s.capitalize}Consumer" if klass_name.nil?
   return if Object.const_defined?(klass_name)
   options = {}
   unless @adapter_type == "stomp"
@@ -10,14 +10,18 @@ def eval_consumer_class(queue)
 
   str = <<-EOC
     class #{klass_name}
-      include ::RosettaQueue::MessageHandler
+      include RosettaQueue::MessageHandler
       subscribes_to :#{queue}
       options #{options}
     
       def on_message(msg)
-        file_path = "#{CONSUMER_LOG_DIR}/p_to_p_log.txt"
-        File.open(file_path, "w+") do |f|
-          f << msg + " from #{queue}"
+        begin
+          file_path = "#{CONSUMER_LOG_DIR}/#{log_file}"
+          File.open(file_path, "w+") do |f|
+            f << msg + " from #{klass_name}"
+          end 
+        rescue Exception => e
+          puts e.message
         end 
       end
     end
@@ -27,11 +31,12 @@ def eval_consumer_class(queue)
   Object.const_get(klass_name)
 end 
 
-Given /^consumer logs do not exist$/ do
-  %w[p_to_p_log pub_sub_log].each do |file_name|
-    file_path = "#{CONSUMER_LOG_DIR}/#{file_name}.txt"
-    File.delete(file_path) if File.exists?(file_path)
-  end 
+Given /^consumer logs have been cleared$/ do
+    %w[point-to-point pub-sub fooconsumer barconsumer].each do |file_name|
+      file_path = "#{CONSUMER_LOG_DIR}/#{file_name}.log"
+      File.delete(file_path) if File.exists?(file_path)
+      File.open(file_path, "a+")
+    end 
 end
 
 Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
@@ -58,25 +63,13 @@ Given /^a destination is set with queue '(.*)' and queue address '(.*)'$/ do |ke
   end  
 end
 
-Given /^a '(.*)' destination is set$/ do |pub_sub|
-  case pub_sub
-  when /fanout/
-    RosettaQueue::Destinations.define do |dest|
-      dest.map :foobar, "/fanout/foobar"
-    end  
-  when /topic/
-    RosettaQueue::Destinations.define do |dest|
-      dest.map :foobar, "/topic/foobar"
-    end  
-  end 
-end
-
 Given /^the message '(.+)' is published to queue '(.+)'$/ do |message, queue_name|
   publish_message(message, {:to => queue_name})
 end
 
-When /^a message is published to queue '(\w+)'$/ do |q|
-  publish_message("Hello World!", {:options => {:ack => "client"}}.merge(:to => q))
+When /^a message is published to '(\w+)'$/ do |q|
+  RosettaQueue::Producer.publish(q.to_sym, "Hello World!")
+#  publish_message("Hello World!", {:options => {:to => q}})
 end
 
 When /^the queue '(.*)' is deleted$/ do |queue|

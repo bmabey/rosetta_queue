@@ -86,8 +86,8 @@ module RosettaQueue
           next
         end
         RosettaQueue.logger.debug("#{key} Stopping thread #{thread} and disconnecting the consumer")
-        @consumers[key].disconnect
         thread.kill
+        @consumers[key].disconnect
       end
     end
   end

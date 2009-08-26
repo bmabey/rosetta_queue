@@ -9,7 +9,7 @@ module RosettaQueue
     class AmqpSynchAdapter < Amqp
       private
 
-      def exchange_strategy_for(destination, options)
+      def exchange_strategy_for(destination, options={})
         case destination
         when /^fanout\./
           @exchange ||= SynchExchange::FanoutExchange.new(@adapter_settings, options)
@@ -35,6 +35,11 @@ module RosettaQueue
           conn.queue(destination).delete(options)
         end 
 
+        def unsubscribe
+          @queue.unsubscribe
+          conn.stop
+        end
+
         protected
 
         def conn
@@ -47,26 +52,6 @@ module RosettaQueue
           @conn
         end
 
-        def process_message(message_handler, queue, msg)
-          if @client_ack[:manual_ack]
-            message_handler.adapter_proxy = queue
-            message_handler.on_message(Filters.process_receiving(msg))
-          elsif @client_ack[:automatic_ack]
-            message_handler.on_message(Filters.process_receiving(msg))
-            queue.ack
-          else 
-            message_handler.on_message(Filters.process_receiving(msg))
-          end 
-        end 
-
-        def process_ack_options!
-          @client_ack = {}
-          if(@options[:manual_ack])
-            @options[:ack] = true
-            @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
-          end 
-        end 
-
       end
 
       class DirectExchange < BaseExchange
@@ -75,25 +60,25 @@ module RosettaQueue
           RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
           queue = conn.queue(destination, options)
           queue.publish(message, options)
-          queue.unsubscribe
+          conn.stop
         end      
 
         def receive(destination, message_handler)
-          queue = conn.queue(destination, @options)
-          process_ack_options!
-#          @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
-          queue.subscribe(@options) do |msg|
+          ack = @options[:ack]
+          @queue = conn.queue(destination, @options)
+          @queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            process_message(message_handler, queue, msg)
+            message_handler.on_message(Filters.process_receiving(msg))
+            @queue.ack if ack
           end 
         end
 
         def receive_once(destination, options = {})
-          queue = conn.queue(destination, options)
           ack = options[:ack]
-          msg = queue.pop(options)
+          @queue = conn.queue(destination, options)
+          msg = @queue.pop(options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-          queue.ack if ack
+          @queue.ack if ack
           yield Filters.process_receiving(msg)
         end
 
@@ -109,42 +94,30 @@ module RosettaQueue
         end      
 
         def receive(destination, message_handler)
-          queue = conn.queue("queue_#{self.object_id}", @options)
+          ack = @options[:ack]
+          @queue = conn.queue("queue_#{self.object_id}", @options)
           exchange = conn.exchange(fanout_name_for(destination), @options.merge({:type => :fanout}))
-          queue.bind(exchange)
-          process_ack_options!
-#          @client_ack = {:automatic_ack => @options[:ack], :manual_ack => @options[:manual_ack]}
-          msg = queue.subscribe(@options) do |msg|
+          @queue.bind(exchange)
+          @queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            process_message(message_handler, queue, msg)
+            message_handler.on_message(Filters.process_receiving(msg))
+            @queue.ack if ack
           end        
         end
 
         def receive_once(destination, options={})
-          queue = conn.queue("queue_#{self.object_id}", options)
-          exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
-          queue.bind(exchange)
           ack = options[:ack]
-          msg = queue.pop(options)
+          @queue = conn.queue("queue_#{self.object_id}", options)
+          exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
+          @queue.bind(exchange)
+          msg = @queue.pop(options)
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-          queue.ack if ack
+          @queue.ack if ack
           yield Filters.process_receiving(msg)
         end
 
       end 
 
-      class AmqpAdapterProxy
-
-        def initialize(queue)
-          @queue = queue
-        end 
-
-        def ack
-          @queue.ack
-        end 
-
-      end 
     end 
-
   end
 end

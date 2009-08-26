@@ -5,7 +5,9 @@ module RosettaQueue
 
     class << self
       def create
-        yield self.new
+        manager = self.new
+        yield manager
+        manager
       end
     end
     

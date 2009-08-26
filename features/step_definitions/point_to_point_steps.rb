@@ -14,8 +14,9 @@ Given /^a consumer is listening to queue '(.*)'$/ do |queue|
 end
 
 Then /^the message should be consumed from '(.*)'$/ do |queue|
-  file_path = "#{CONSUMER_LOG_DIR}/p_to_p_log.txt"
-  sleep 1 unless File.exists?(file_path)
-  File.readlines(file_path).last.should =~ /Hello World! from #{queue}/
+  sleep 1
+  file_path = "#{CONSUMER_LOG_DIR}/point-to-point.log"
+#  sleep 1 unless File.exists?(file_path)
+  File.readlines(file_path).last.should =~ /Hello World! from #{queue.capitalize}Consumer/
   @thread.kill
 end
