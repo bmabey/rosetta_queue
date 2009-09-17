@@ -2,10 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rosetta_queue}
-  s.version = "0.3.2"
+  s.version = "0.3.3"
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Mabey", "Chris Wyckoff"]
-  s.date = %q{2009-07-28}
+  s.date = %q{2009-08-26}
   s.description = %q{Messaging gateway API with adapters for many messaging systems available in Ruby. Messaging systems can be easily switched out with a small configuration change. Code for testing on the object and application level is also provided.}
   s.email = %q{cbwyckoff@gmail.com}
   s.extra_rdoc_files = [
@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
      "lib/rosetta_queue/consumer_managers/evented.rb",
      "lib/rosetta_queue/consumer_managers/threaded.rb",
      "lib/rosetta_queue/core_ext/string.rb",
+     "lib/rosetta_queue/core_ext/time.rb",
      "lib/rosetta_queue/destinations.rb",
      "lib/rosetta_queue/exceptions.rb",
      "lib/rosetta_queue/filters.rb",
