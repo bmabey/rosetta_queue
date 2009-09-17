@@ -6,7 +6,7 @@ Feature: Message Filtering
 
   Scenario Outline: receiving filter
     Given RosettaQueue is configured for '<Adapter>'
-    And a point-to-point destination is set with queue '<Queue>' and queue address '<QueueAddress>'
+    And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
     And a receiving filter is defined to prepend 'Foo' to all messages
     And the message 'Hello World' is published to queue '<Queue>'
     When the message on '<Queue>' is consumed
@@ -19,7 +19,7 @@ Feature: Message Filtering
   
   Scenario Outline: sending filter
     Given RosettaQueue is configured for '<Adapter>'
-    And a point-to-point destination is set with queue '<Queue>' and queue address '<QueueAddress>'
+    And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
     And a sending filter is defined to prepend 'Foo' to all messages
     And the message 'Hello World' is published to queue '<Queue>'
     When the message on '<Queue>' is consumed
