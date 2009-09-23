@@ -1,7 +1,10 @@
 == 0.2.x (git)
 
  === New features
+ * Added core time extension when ActiveSupport not present. (Chris Wyckoff)
  === Bufixes
+ * Closing the connection after publishing message now instead of unsubscribing. (Chris Wyckoff)
+
 
 == 0.2.0
  === New features
