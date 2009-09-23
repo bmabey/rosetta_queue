@@ -1,1 +1,1 @@
-default: features --format pretty --require features
+default: features --format pretty --require features --tags ~@unreliable

@@ -33,6 +33,7 @@ Story: Producing and Consuming
     | amqp_synch  | foo      |  queue.foo   |
 
 
+  @unreliable
   Scenario Outline: Publish-Subscribe
     Given RosettaQueue is configured for '<Adapter>'
     And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
@@ -43,5 +44,5 @@ Story: Producing and Consuming
     Examples:
    | Adapter    | QueueAddress  | Queue |
    | amqp_synch   | fanout.baz    | baz   |
-#| amqp_evented | queue.foo     | foo   |
-#| stomp        | topic/foo     | bar   |
+   | amqp_evented | queue.foo     | foo   |
+   | stomp        | /topic/foo     | bar   |
