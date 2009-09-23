@@ -19,7 +19,7 @@ module RosettaQueue
     it_should_behave_like "a consumer manager"
 
     describe "threading" do
-    
+
       before do
         @manager.stub!(:join_threads)
         @manager.stub!(:monitor_threads)
@@ -31,9 +31,9 @@ module RosettaQueue
       it "should load subscriptions into threads on start" do
         during_process {Thread.should_receive(:new).with(:"spec/mocks/mock", @consumer).and_return(@thread)}
       end
-    
+
       describe "shutting down" do
-          
+
         def do_process
           @manager.start
           @manager.stop
@@ -42,7 +42,7 @@ module RosettaQueue
         it "should shut threaded subscriptions down on stop" do
           during_process do
             @consumer.should_receive(:disconnect)
-            @thread.should_receive(:kill)       
+            @thread.should_receive(:kill)
           end
         end
       end

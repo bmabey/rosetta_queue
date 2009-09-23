@@ -2,7 +2,7 @@ require 'beanstalk-client'
 
 module RosettaQueue
   module Gateway
-  
+
     class BeanstalkAdapter < BaseAdapter
 
       def ack(msg)
@@ -22,7 +22,7 @@ module RosettaQueue
         msg.delete
         msg
       end
-      
+
       def receive_once(destination=nil, opts={})
         receive.body
       end
@@ -39,14 +39,14 @@ module RosettaQueue
           message_handler.on_message(filter_receiving(msg))
         end
       end
-      
+
       def send_message(destination, message, options)
-        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")        
+        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
         @conn.put(message)
       end
 
       private
-      
+
         def running(&block)
           loop(&block)
         end

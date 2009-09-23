@@ -2,7 +2,7 @@ module RosettaQueue
   module Gateway
 
     class BaseAdapter
-  
+
       protected
 
         def options_for(message_handler)
@@ -13,7 +13,7 @@ module RosettaQueue
           raise DestinationNotFound.new("Missing destination!") unless message_handler.destination
           @dest ||= Destinations.lookup(message_handler.destination.to_sym)
         end
-        
+
         def filter_receiving(msg)
           Filters.process_receiving(msg)
         end
@@ -21,7 +21,7 @@ module RosettaQueue
         def filter_sending(msg)
           Filters.process_sending(msg)
         end
-  
+
     end
   end
 end

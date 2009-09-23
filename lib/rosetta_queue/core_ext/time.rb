@@ -17,4 +17,4 @@ class Time
     formatter.respond_to?(:call) ? formatter.call(self).to_s : strftime(formatter)
   end
 
-end 
+end

@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 module RosettaQueue
   describe Consumer do
-    
+
     class TestConsumer
       include MessageHandler
 
@@ -16,14 +16,14 @@ module RosettaQueue
 
     before(:each) do
       @message  = mock("message", "headers" => "foo", "body" => "message body")
-      @adapter  = mock("adpater", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive_with => TestConsumer.new, 
+      @adapter  = mock("adpater", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive_with => TestConsumer.new,
                                   :receive_once => @message.body, :ack => true)
       Adapter.stub!(:instance).and_return(@adapter)
       Destinations.stub!(:lookup).and_return("/queue/foo")
     end
-    
+
     it_should_behave_like "a messaging gateway object"
-    
+
     attr_reader :adapter
     def gateway
       @gateway ||= Consumer.new(TestConsumer.new)
@@ -33,30 +33,30 @@ module RosettaQueue
       before(:each) do
         @consumer = Consumer.new( @message_handler = TestConsumer.new)
       end
-            
+
       def when_receiving
         yield if block_given?
         @consumer.receive
       end
-      
+
       it "should pass message handler onto the adpater with #receive" do
-        when_receiving { 
+        when_receiving {
           @adapter.should_receive("receive_with").with(@message_handler)
         }
       end
     end
 
-      
+
     describe ".delete" do
 
-      before(:each) do 
+      before(:each) do
         @adapter.stub!(:delete)
-        Destinations.stub!(:lookup).and_return("/queue/foo")            
-      end 
+        Destinations.stub!(:lookup).and_return("/queue/foo")
+      end
 
       it "should look up the destination" do
         # expect
-        Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")            
+        Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")
 
         # when
         Consumer.delete(:test_queue_passed_in)
@@ -80,7 +80,7 @@ module RosettaQueue
 
       it "should look up the destination" do
         when_receiving {
-          Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")            
+          Destinations.should_receive(:lookup).with(:test_queue_passed_in).and_return("/queue/foo")
         }
       end
 

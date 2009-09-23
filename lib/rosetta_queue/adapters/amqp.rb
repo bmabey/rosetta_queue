@@ -7,7 +7,7 @@ module RosettaQueue
         raise AdapterException, "Unable to discover fanout exchange. Cannot bind queue to exchange!" unless fanout_name
         fanout_name
       end
-    end 
+    end
 
     class Amqp < BaseAdapter
 
@@ -18,7 +18,7 @@ module RosettaQueue
 
       def delete(destination, opts={})
         exchange_strategy_for(destination, opts).delete(destination)
-      end 
+      end
 
       def disconnect(message_handler)
         destination = destination_for(message_handler)

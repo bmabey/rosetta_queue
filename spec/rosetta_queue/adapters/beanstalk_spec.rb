@@ -23,7 +23,7 @@ module RosettaQueue
         def do_receiving_once
           @adapter.receive_once
         end
-        
+
         it "should delete messages once received" do
           when_receiving_once {
             @msg_obj.should_receive(:delete)
@@ -37,11 +37,11 @@ module RosettaQueue
         end
 
         it "should delete message during receive" do
-          when_receiving { 
+          when_receiving {
             @msg_obj.should_receive(:delete)
           }
         end
-      end 
+      end
     end
   end
 end

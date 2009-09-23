@@ -11,6 +11,6 @@ end
 
 RosettaQueue::Destinations.define do |dest|
   dest.map :foo, "queue.foo"
-end  
+end
 
 RosettaQueue::Producer.publish(:foo, "hello there")

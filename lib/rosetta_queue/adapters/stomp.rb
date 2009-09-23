@@ -2,7 +2,7 @@ require 'stomp'
 
 module RosettaQueue
   module Gateway
-  
+
     class StompAdapter < BaseAdapter
 
       def ack(msg)
@@ -12,10 +12,10 @@ module RosettaQueue
 
       def initialize(adapter_settings = {})
         raise AdapterException, "Missing adapter settings" if adapter_settings.empty?
-        @conn = Stomp::Connection.open(adapter_settings[:user], 
-                                       adapter_settings[:password], 
-                                       adapter_settings[:host], 
-                                       adapter_settings[:port], 
+        @conn = Stomp::Connection.open(adapter_settings[:user],
+                                       adapter_settings[:password],
+                                       adapter_settings[:host],
+                                       adapter_settings[:port],
                                        true)
       end
 
@@ -29,7 +29,7 @@ module RosettaQueue
         ack(msg) unless options[:ack].nil?
         msg
       end
-      
+
       def receive_once(destination, opts)
         subscribe(destination, opts)
         msg = receive(opts).body
@@ -51,22 +51,22 @@ module RosettaQueue
           Thread.current[:processing] = false
         end
       end
-      
+
       def send_message(destination, message, options)
-        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")        
+        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
         @conn.send(destination, message, options)
       end
 
       def subscribe(destination, options)
         @conn.subscribe(destination, options)
       end
-          
+
       def unsubscribe(destination)
         @conn.unsubscribe(destination)
       end
-      
+
       private
-      
+
         def running(&block)
           loop(&block)
         end
@@ -74,15 +74,15 @@ module RosettaQueue
     end
 
     class StompAdapterProxy
-        
+
       def initialize(adapter, msg)
         @adapter, @msg = adapter, msg
       end
 
       def ack
         @adapter.ack(@msg)
-      end 
-    end 
+      end
+    end
 
   end
 end

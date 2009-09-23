@@ -7,11 +7,11 @@ class String
       self.first.downcase + camelize(self)[1..-1]
     end
   end
-  
+
   def classify
     camelize(self.sub(/.*\./, ''))
   end
-  
+
   def underscore
     self.gsub(/::/, '/').
          gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').

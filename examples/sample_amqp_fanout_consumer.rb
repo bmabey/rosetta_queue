@@ -14,7 +14,7 @@ module RosettaQueue
 
   Destinations.define do |dest|
     dest.map :foo, "fanout.foo"
-  end  
+  end
 
   class MessageHandlerFoo
     include RosettaQueue::MessageHandler
@@ -47,6 +47,6 @@ module RosettaQueue
     m.add MessageHandlerFoo.new
     m.add MessageHandlerBar.new
     m.start
-  end 
+  end
 
 end

@@ -1,5 +1,5 @@
 module RosettaQueue
-  
+
   class Base
 
     def disconnect

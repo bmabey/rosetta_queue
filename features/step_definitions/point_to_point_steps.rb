@@ -6,11 +6,11 @@ Given /^a consumer is listening to queue '(.*)'$/ do |queue|
     when /evented/
       EM.run do
         RosettaQueue::Consumer.new(cons).receive
-      end 
+      end
     else
       RosettaQueue::Consumer.new(cons).receive
-    end 
-  end 
+    end
+  end
 end
 
 Then /^the message should be consumed from '(.*)'$/ do |queue|

@@ -25,10 +25,10 @@ module RosettaQueue
     def join_threads
       @threads.each { |thread| thread.join }
     end
-    
+
     def shutdown_requested
       RosettaQueue.logger.error "Shutdown requested, starting to prune threads..."
-      
+
       while @threads.any? { |n, t| t.alive? }
         RosettaQueue.logger.info "Calling stop_threads"
         stop_threads
@@ -73,7 +73,7 @@ module RosettaQueue
             Thread.pass
           end
         end
-      end      
+      end
     end
 
     def stop_threads

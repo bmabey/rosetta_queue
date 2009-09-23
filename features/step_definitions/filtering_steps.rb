@@ -7,7 +7,7 @@ end
 
 When /^the message on '(.+)' is consumed$/ do |queue_name|
   # TODO
-  # @consumed_message = queue(:foo_queue).pop  
+  # @consumed_message = queue(:foo_queue).pop
   @consumed_message = consume_once(queue_name.to_sym)
 end
 

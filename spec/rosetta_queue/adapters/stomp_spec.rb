@@ -18,7 +18,7 @@ module RosettaQueue
       end
 
       it_should_behave_like "an adapter"
-      
+
       describe "#send_message" do
         it "should delegate to the connection" do
           # need this hack since the stomp client overrides #send
@@ -26,9 +26,9 @@ module RosettaQueue
             @args = args
           end
           def @conn.sent_args ; @args  end
-    
+
           after_publishing {
-            @conn.sent_args.should == ['queue', 'message', 'options']          
+            @conn.sent_args.should == ['queue', 'message', 'options']
           }
         end
       end
@@ -38,16 +38,16 @@ module RosettaQueue
         def do_receiving_once
           @adapter.receive_once("/queue/foo", {:persistent => false})
         end
-            
+
         it "should subscribe to queue" do
-          when_receiving_once { 
-            @conn.should_receive("subscribe").with("/queue/foo", {:persistent => false}) 
+          when_receiving_once {
+            @conn.should_receive("subscribe").with("/queue/foo", {:persistent => false})
           }
         end
-        
+
         it "should unsubscribe from queue" do
-          when_receiving_once { 
-            @conn.should_receive("unsubscribe").with("/queue/foo") 
+          when_receiving_once {
+            @conn.should_receive("unsubscribe").with("/queue/foo")
           }
         end
       end
@@ -64,8 +64,8 @@ module RosettaQueue
           when_receiving_with_handler {
             @conn.should_receive(:ack)
           }
-        end          
-      
+        end
+
         describe "no ack" do
 
           before(:each) do
@@ -74,15 +74,15 @@ module RosettaQueue
 
           it "should not acknowledge client" do
             when_receiving_with_handler {
-              @conn.should_not_receive(:ack)              
+              @conn.should_not_receive(:ack)
             }
-          end          
+          end
 
-        end      
+        end
       end
-      
+
       describe "disconnect" do
-        
+
         def do_disconnecting
           @adapter.disconnect(@handler)
         end
@@ -98,8 +98,8 @@ module RosettaQueue
             @conn.should_receive("disconnect")
           }
         end
-                
-      end      
+
+      end
 
       describe StompAdapterProxy do
 
@@ -109,7 +109,7 @@ module RosettaQueue
         end
 
         context "#ack" do
-          
+
           it "should delegate to AMQP queue object" do
             # expect
             @adapter.should_receive(:ack).with("foo")
@@ -117,7 +117,7 @@ module RosettaQueue
             # when
             @proxy.ack
           end
-          
+
         end
       end
 

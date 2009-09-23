@@ -21,7 +21,7 @@ module RosettaQueue
           @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
         end
       end
-    end 
+    end
 
     module SynchExchange
 
@@ -33,7 +33,7 @@ module RosettaQueue
 
         def delete(destination, options={})
           conn.queue(destination).delete(options)
-        end 
+        end
 
         def unsubscribe
           @queue.unsubscribe
@@ -43,10 +43,10 @@ module RosettaQueue
         protected
 
         def conn
-          vhost = @adapter_settings[:opts][:vhost] || "/" 
-          @conn ||= Bunny.new( :user => @adapter_settings[:user], 
-                               :pass => @adapter_settings[:password], 
-                               :host => @adapter_settings[:host], 
+          vhost = @adapter_settings[:opts][:vhost] || "/"
+          @conn ||= Bunny.new( :user => @adapter_settings[:user],
+                               :pass => @adapter_settings[:password],
+                               :host => @adapter_settings[:host],
                                :vhost => vhost)
           @conn.start unless @conn.status == :connected
           @conn
@@ -61,7 +61,7 @@ module RosettaQueue
           queue = conn.queue(destination, options)
           queue.publish(message, options)
           conn.stop
-        end      
+        end
 
         def receive(destination, message_handler)
           ack = @options[:ack]
@@ -70,7 +70,7 @@ module RosettaQueue
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.on_message(Filters.process_receiving(msg))
             @queue.ack if ack
-          end 
+          end
         end
 
         def receive_once(destination, options = {})
@@ -86,12 +86,12 @@ module RosettaQueue
 
       class FanoutExchange < BaseExchange
         include Fanout
-        
+
         def publish(destination, message, options={})
           exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
           exchange.publish(message, options)
           RosettaQueue.logger.info("Publishing to fanout #{destination} :: #{message}")
-        end      
+        end
 
         def receive(destination, message_handler)
           ack = @options[:ack]
@@ -102,7 +102,7 @@ module RosettaQueue
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.on_message(Filters.process_receiving(msg))
             @queue.ack if ack
-          end        
+          end
         end
 
         def receive_once(destination, options={})
@@ -116,8 +116,8 @@ module RosettaQueue
           yield Filters.process_receiving(msg)
         end
 
-      end 
+      end
 
-    end 
+    end
   end
 end

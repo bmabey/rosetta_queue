@@ -259,7 +259,7 @@ module RosettaQueue::Gateway
 #         end
 
 #         context "#ack" do
-          
+
 #           it "should delegate to AMQP queue object" do
 #             # expect
 #             @queue.should_receive(:ack)
@@ -267,7 +267,7 @@ module RosettaQueue::Gateway
 #             # when
 #             @proxy.ack
 #           end
-          
+
 #         end
 #       end
 

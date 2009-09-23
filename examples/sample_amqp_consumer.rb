@@ -14,7 +14,7 @@ module RosettaQueue
 
   Destinations.define do |dest|
     dest.map :foo, "queue.foo"
-  end  
+  end
 
   class MessageHandlerFoo
     include RosettaQueue::MessageHandler
@@ -31,7 +31,7 @@ module RosettaQueue
 #   consumer = RosettaQueue::Consumer.new(MessageHandlerFoo.new)
 # #  Thread.new(consumer) do |cons|
 #     consumer.receive
-# #  end 
+# #  end
 #   puts "sleeping for 10"
 #   sleep 10
 #   puts "shutting consumer down"
@@ -40,6 +40,6 @@ module RosettaQueue
   ThreadedManager.create do |m|
     m.add MessageHandlerFoo.new
     m.start
-  end 
+  end
 
 end

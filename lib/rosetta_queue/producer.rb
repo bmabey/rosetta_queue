@@ -1,12 +1,12 @@
 module RosettaQueue
-  
+
   class Producer < Base
     include MessageHandler
 
     def self.publish(destination, message, options = {})
       RosettaQueue::Adapter.instance.send_message(Destinations.lookup(destination), Filters.process_sending(message), options)
 
-      rescue Exception=>e
+      rescue Exception => e
         RosettaQueue.logger.error("Caught exception in Consumer.publish: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 

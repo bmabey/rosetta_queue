@@ -14,7 +14,7 @@ module RosettaQueue
       def do_receiving_with_handler
         @adapter.receive_with(@handler)
       end
-      
+
       describe "#receive_once" do
 
         it "should return the message from the connection" do
@@ -22,7 +22,7 @@ module RosettaQueue
         end
 
       end
-          
+
       describe "#receive_with" do
 
         it "should look up the destination defined on the class" do
@@ -30,9 +30,9 @@ module RosettaQueue
             Destinations.should_receive(:lookup).with(:foo).and_return("foo")
           }
         end
-      
+
       end
-      
+
     end
   end
 end
