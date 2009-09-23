@@ -13,10 +13,10 @@ Feature: Message Filtering
     Then the consumed message should equal "Foo Hello World"
 
     Examples:
-    | Adapter		| Queue    |  QueueAddress	|
-    | amqp_synch	| foo  	   |  queue.foo		|
-#    | stomp 		| foo  	   |  queue/foo		|
-  
+    | Adapter     | Queue    |  QueueAddress  |
+    | amqp_synch  | foo      |  queue.foo     |
+#| stomp       | foo      |  queue/foo     |
+
   Scenario Outline: sending filter
     Given RosettaQueue is configured for '<Adapter>'
     And a destination is set with queue '<Queue>' and queue address '<QueueAddress>'
@@ -26,6 +26,6 @@ Feature: Message Filtering
     Then the consumed message should equal "Foo Hello World"
 
     Examples:
-    | Adapter		| Queue    |  QueueAddress	|
-    | amqp_synch 	| foo  	   |  queue.foo		|
-#    | stomp 		| foo  	   |  queue/foo		|
+    | Adapter     | Queue    |  QueueAddress  |
+    | amqp_synch  | foo      |  queue.foo     |
+#| stomp       | foo      |  queue/foo     |

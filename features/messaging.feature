@@ -15,11 +15,11 @@ Story: Producing and Consuming
     Then the message should be consumed from '<Queue>'
 
     Examples:
-    | Adapter		| Queue    |  QueueAddress	|
-    | amqp_synch	| foo      |  queue.foo		|
-    | amqp_evented	| bar      |  queue.bar		|
-#    | stomp		| baz      |  /queue/baz  	|
-#    | beanstalk	| baz      |  baz  		|
+    | Adapter       | Queue    |  QueueAddress  |
+    | amqp_synch    | foo      |  queue.foo     |
+    | amqp_evented  | bar      |  queue.bar     |
+    | stomp         | baz      |  /queue/baz    |
+#| beanstalk     | baz      |  baz           |
 
   Scenario Outline: Delete queue
     Given RosettaQueue is configured for '<Adapter>'
@@ -29,8 +29,8 @@ Story: Producing and Consuming
     Then the queue '<Queue>' should no longer exist
 
     Examples:
-    | Adapter	  | Queue    |  QueueAddress	|
-    | amqp_synch  | foo      |  queue.foo 	|
+    | Adapter   | Queue    |  QueueAddress  |
+    | amqp_synch  | foo      |  queue.foo   |
 
 
   Scenario Outline: Publish-Subscribe
@@ -41,7 +41,7 @@ Story: Producing and Consuming
     Then multiple messages should be consumed from '<Queue>'
 
     Examples:
-   | Adapter	  | QueueAddress  | Queue	|
-   | amqp_synch   | fanout.baz 	  | baz		|
-#    | amqp_evented | queue.foo 	  | foo		|
-#    | stomp        | topic/foo     | bar 	|
+   | Adapter    | QueueAddress  | Queue |
+   | amqp_synch   | fanout.baz    | baz   |
+#| amqp_evented | queue.foo     | foo   |
+#| stomp        | topic/foo     | bar   |

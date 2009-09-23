@@ -4,39 +4,39 @@ def eval_consumer_class(queue, log_file="point-to-point.log", klass_name=nil)
   options = {}
   unless @adapter_type == "stomp"
     options = ":ack => true"
-  else 
+  else
     options = ":ack => 'client'"
-  end 
+  end
 
   str = <<-EOC
     class #{klass_name}
       include RosettaQueue::MessageHandler
       subscribes_to :#{queue}
       options #{options}
-    
+
       def on_message(msg)
         begin
           file_path = "#{CONSUMER_LOG_DIR}/#{log_file}"
           File.open(file_path, "w+") do |f|
             f << msg + " from #{klass_name}"
-          end 
+          end
         rescue Exception => e
           puts e.message
-        end 
+        end
       end
     end
   EOC
 
   eval(str)
   Object.const_get(klass_name)
-end 
+end
 
 Given /^consumer logs have been cleared$/ do
     %w[point-to-point pub-sub fooconsumer barconsumer].each do |file_name|
       file_path = "#{CONSUMER_LOG_DIR}/#{file_name}.log"
       File.delete(file_path) if File.exists?(file_path)
       File.open(file_path, "a+")
-    end 
+    end
 end
 
 Given /^RosettaQueue is configured for '(\w+)'$/ do |adapter_type|
@@ -60,7 +60,7 @@ end
 Given /^a destination is set with queue '(.*)' and queue address '(.*)'$/ do |key, queue|
   RosettaQueue::Destinations.define do |dest|
     dest.map key.to_sym, queue
-  end  
+  end
 end
 
 Given /^the message '(.+)' is published to queue '(.+)'$/ do |message, queue_name|
