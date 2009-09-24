@@ -5,7 +5,6 @@ module RosettaQueue
     @dest = {}
 
     class << self
-      attr_reader :dest
 
       def define
         yield self
@@ -16,7 +15,7 @@ module RosettaQueue
       end
 
       def lookup(dest_name)
-        mapping = dest[dest_name.to_sym]
+        mapping = @dest[dest_name.to_sym]
         raise "No destination mapping for '#{dest_name}' has been defined!" unless mapping
         return mapping
       end
