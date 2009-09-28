@@ -68,7 +68,7 @@ module RosettaQueue
           ack = @options[:ack]
           queue.subscribe(@options) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
+            message_handler.handle_message(msg)
             header.ack if ack
           end
         end
@@ -107,7 +107,7 @@ module RosettaQueue
 
           queue.bind(exchange).subscribe(@options) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
+            message_handler.handle_message(msg)
             header.ack if ack
           end
         end

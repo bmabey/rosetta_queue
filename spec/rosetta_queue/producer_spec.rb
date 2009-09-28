@@ -30,12 +30,6 @@ module RosettaQueue
         RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
       end
 
-      # it "should look up the destination defined on the class" do
-      #   Destinations.should_receive(:lookup).with(:test_queue).and_return("/queue/test_queue")
-      #   # when
-      #    @gateway.publish('some message')
-      # end
-
       it "should publish messages to queue with the options defined in the class" do
         # TO DO: REFACTOR #publish METHOD SO THAT YOU PASS IN MESSAGE HANDLER AS WITH CONSUMER
         pending
@@ -48,18 +42,35 @@ module RosettaQueue
     end
 
     describe ".publish" do
-      # it "should look up the destination defined on the class" do
-      #   Destinations.should_receive(:lookup).with(:test_queue).and_return("/queue/test_queue")
-      #   # when
-      #   Producer.publish(:test_queue, "blah")
-      # end
-
       it "should send the message to the adpater along with the options" do
         # expect
         @adapter.should_receive(:send_message).with("/queue/test_queue", "Hello World!", {:persistent => true})
         # when
         Producer.publish(:test_queue, "Hello World!", {:persistent => true})
       end
+
+      it "delgates exception handling to the ExceptionHandler for :publishing" do
+        ExceptionHandler.should_receive(:handle).with(:publishing, anything)
+        Producer.publish(:test_queue, "Hello World!", {:persistent => true})
+      end
+
+      it "wraps the publishing in an ExceptionHandler::handler block" do
+        @adapter.should_not_receive(:send_message)
+        ExceptionHandler.stub!(:handle).and_return("I was wrapped")
+        Producer.publish(:test_queue, "m").should == "I was wrapped"
+      end
+
+      it "provides additional message information to the ExceptionHandler" do
+        ExceptionHandler.should_receive(:handle).with do |_, hash_proc|
+          hash_proc.call.should == {
+          :message => "message",
+          :action => :publishing,
+          :destination => :test_queue,
+          :options => {:persistent => true}}
+        end
+        Producer.publish(:test_queue, "message", {:persistent => true})
+      end
+
     end
 
   end

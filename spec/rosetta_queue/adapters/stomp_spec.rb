@@ -9,7 +9,7 @@ module RosettaQueue
 
       before(:each) do
         @msg = "Hello World!"
-        @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false, :ack => "client"}, :on_message => "")
+        @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false, :ack => "client"}, :handle_message => "")
         @msg_obj = mock("message", :body => @msg, :headers => {"message-id" => 2})
         @conn = mock("Stomp::Connection", :ack => true, :send => true, :subscribe => true, :receive => @msg_obj, :unsubscribe => true, :disconnect => true)
         ::Stomp::Connection.stub!(:open).and_return(@conn)
@@ -69,7 +69,7 @@ module RosettaQueue
         describe "no ack" do
 
           before(:each) do
-            @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false}, :on_message => "")
+            @handler = mock('handler', :destination => :foo, :options_hash => {:persistent => false}, :handle_message => "")
           end
 
           it "should not acknowledge client" do

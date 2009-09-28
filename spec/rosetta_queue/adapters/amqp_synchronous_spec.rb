@@ -20,10 +20,9 @@ module RosettaQueue::Gateway
 
     describe "#do_exchange" do
 
-      it "should filter the message and forward it to the handler" do
+      it "should delegate message handling to the message handler" do
         when_receiving_exchange {
-          ::RosettaQueue::Filters.should_receive(:process_receiving).with(@msg).and_return("Filtered Message")
-          @handler.should_receive(:on_message).with("Filtered Message")
+          @handler.should_receive(:handle_message).with("Hello World!")
         }
       end
     end
@@ -35,7 +34,7 @@ module RosettaQueue::Gateway
       RosettaQueue.logger.stub!(:info)
       @msg = "Hello World!"
       @adapter = AmqpSynchAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
-      @handler = mock("handler", :on_message => true, :destination => :foo, :options_hash => {:durable => true})
+      @handler = mock("handler", :handle_message => true, :destination => :foo, :options_hash => {:durable => true})
     end
 
     describe AmqpSynchAdapter do
@@ -68,7 +67,7 @@ module RosettaQueue::Gateway
         end
 
         before(:each) do
-          @handler = mock("handler", :on_message => true, :destination => :foo, :options_hash => {:durable => true })
+          @handler = mock("handler", :handle_message => true, :destination => :foo, :options_hash => {:durable => true })
         end
 
         it "should pass message handler to exchange strategy" do
@@ -97,7 +96,7 @@ module RosettaQueue::Gateway
         @queue = mock("Bunny::Queue", :pop => @msg, :publish => true, :unsubscribe => true)
         Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected, :stop => nil))
         @queue.stub!(:subscribe).and_yield(@msg)
-        @handler = mock("handler", :on_message => true, :destination => :foo)
+        @handler = mock("handler", :handle_message => true, :destination => :foo)
         @exchange = SynchExchange::DirectExchange.new({:user => 'user', :password => 'pass', :host => 'host', :opts => {:vhost => "foo"}})
       end
 
@@ -170,7 +169,7 @@ module RosettaQueue::Gateway
         @queue = mock("Bunny::Queue", :pop => @msg, :bind => @bound_queue = mock("Bunny::Queue", :pop => @msg), :publish => true, :unbind => true)
         Bunny.stub!(:new).and_return(@conn = mock("Bunny::Client", :queue => @queue, :exchange => @exchange, :status => :connected))
         @queue.stub!(:subscribe).and_yield(@msg)
-        @handler = mock("handler", :on_message => true, :destination => :foo, :options => {:durable => false})
+        @handler = mock("handler", :handle_message => true, :destination => :foo, :options => {:durable => false})
       end
 
       def do_receiving_exchange
@@ -214,7 +213,7 @@ module RosettaQueue::Gateway
 
         it "should forward the message body onto the handler" do
           when_receiving_exchange {
-            @handler.should_receive(:on_message).with("Hello World!")
+            @handler.should_receive(:handle_message).with("Hello World!")
           }
         end
 

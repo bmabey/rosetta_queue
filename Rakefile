@@ -1,10 +1,10 @@
 require 'rubygems'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
- 
+
 Cucumber::Rake::Task.new do |t|
   t.cucumber_opts = "--format pretty"
-end   
+end
 
 desc "Run the specs under spec"
 Spec::Rake::SpecTask.new do |t|

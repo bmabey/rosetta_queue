@@ -22,6 +22,19 @@ module RosettaQueue
       end
     end
 
+    ['sending', 'receiving'].each do |action|
+      describe "#safe_process_#{action}" do
+        it "returns the orginal message if an exception occurs while filtering" do
+          Filters.define do |f|
+            f.send(action) { |message| raise "foo" }
+          end
+
+          Filters.send("safe_process_#{action}", "Bar").should == "Bar"
+        end
+
+      end
+    end
+
 
     describe "#process_sending" do
       it "should process the passed in message with the defined sending filter" do

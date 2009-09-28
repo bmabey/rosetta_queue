@@ -36,7 +36,7 @@ module RosettaQueue
         running do
           msg = receive.body
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-          message_handler.on_message(filter_receiving(msg))
+          message_handler.handle_message(msg)
         end
       end
 

@@ -68,7 +68,7 @@ module RosettaQueue
           @queue = conn.queue(destination, @options)
           @queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
+            message_handler.handle_message(msg)
             @queue.ack if ack
           end
         end
@@ -100,7 +100,7 @@ module RosettaQueue
           @queue.bind(exchange)
           @queue.subscribe(@options) do |msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.on_message(Filters.process_receiving(msg))
+            message_handler.handle_message(msg)
             @queue.ack if ack
           end
         end

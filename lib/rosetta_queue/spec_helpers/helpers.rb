@@ -28,7 +28,7 @@ module RosettaQueue
     # Example:
     # consume_once_with ClientStatusConsumer
     def consume_once_with(consumer)
-      consumer.new.on_message(RosettaQueue::Consumer.receive(consumer.destination))
+      consumer.new.handle_message(RosettaQueue::Consumer.receive(consumer.destination))
     end
 
     # Consumes the first message on queue and returns it.

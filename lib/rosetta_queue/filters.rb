@@ -37,6 +37,22 @@ module RosettaQueue
         @receiving.call(message)
       end
 
+      def safe_process_sending(message)
+        safe(:process_sending, message)
+      end
+
+      def safe_process_receiving(message)
+        safe(:process_receiving, message)
+      end
+
+      private
+
+      def safe(filter_call, message)
+        send(filter_call)
+      rescue StandardError
+        message
+      end
+
     end
   end
 end

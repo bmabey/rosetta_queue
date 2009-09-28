@@ -9,7 +9,7 @@ module RosettaQueue
 
       before(:each) do
         @msg = "Hello World!"
-        @handler = mock('handler', :on_message => "", :destination => :foo)
+        @handler = mock('handler', :handle_message => "", :destination => :foo)
         @msg_obj = mock("message", :body => @msg, :delete => true)
         @conn = mock("Beanstalk::Pool", :put => true, :reserve => @msg_obj)
         ::Beanstalk::Pool.stub!(:new).and_return(@conn)
