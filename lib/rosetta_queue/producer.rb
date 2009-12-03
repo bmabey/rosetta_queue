@@ -11,10 +11,12 @@ module RosettaQueue
            :destination => destination,
            :options => options}
         }) do
-        RosettaQueue::Adapter.instance.send_message(
-          Destinations.lookup(destination),
-          Filters.process_sending(message),
-          options)
+        RosettaQueue::Adapter.open do |a|
+          a.send_message(
+            Destinations.lookup(destination),
+            Filters.process_sending(message),
+            options)
+        end
       end
     end
   end

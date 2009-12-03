@@ -12,7 +12,7 @@ module RosettaQueue
   describe Producer do
 
     before(:each) do
-      @adapter = mock("adapter", :send_message => nil)
+      @adapter = mock("adapter", :send_message => nil, :disconnect => nil)
       RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
       @gateway  = TestProducer.new
 

@@ -27,6 +27,17 @@ module RosettaQueue
         raise AdapterException, "Adapter type was never defined!" unless @adapter_class
         @adapter_class.new({:user => @user, :password => @password, :host => @host, :port => @port, :opts => opts})
       end
+      
+      def open
+        adapter = instance
+        
+        if block_given?
+          yield adapter 
+          adapter.disconnect
+        end
+        
+        adapter
+      end
 
       private
 

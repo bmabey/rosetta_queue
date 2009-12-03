@@ -97,5 +97,43 @@ module RosettaQueue
       end
 
     end
+    
+    describe ".open" do
+      
+      before(:each) do
+        Adapter.define do |a|
+          a.user = "foo"
+          a.password = "bar"
+          a.host = "localhost"
+          a.port = "9000"
+          a.type = "fake"
+        end
+      end
+
+      it "returns an open adapter if no block is given" do
+        adapter = Adapter.open
+        adapter.should be_open
+      end
+      
+      it "yields a newly-instantiated adapter to the block" do
+        ran_block = false
+        
+        Adapter.open do |a|
+          a.should_not be_nil
+          a.should be_instance_of(RosettaQueue::Gateway::FakeAdapter)
+          a.should be_open
+          ran_block = true
+        end
+        
+        ran_block.should be_true
+      end
+      
+      it "closes the adapter after the block is evaluated" do
+        adapter = nil
+        Adapter.open {|a| adapter = a }
+        adapter.should_not be_open
+      end
+
+    end
   end
 end

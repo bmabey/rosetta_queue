@@ -3,8 +3,9 @@ module RosettaQueue
 
     class FakeAdapter
 
-      def initialize
+      def initialize(adapter_settings = {})
         @messages = []
+        @open = true
       end
 
       def send_message(queue, message, headers)
@@ -17,6 +18,14 @@ module RosettaQueue
 
       def queues
         @messages.map {|message| message['queue']}
+      end
+
+      def disconnect
+        @open = false
+      end
+      
+      def open?
+        @open == true
       end
 
     end
