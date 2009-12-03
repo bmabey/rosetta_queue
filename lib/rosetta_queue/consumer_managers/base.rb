@@ -15,8 +15,7 @@ module RosettaQueue
       @consumers  = {}
     end
 
-    def add(message_handler)
-      key = message_handler.class.to_s.underscore.to_sym
+    def add(message_handler, key = message_handler.class.to_s.underscore.to_sym)
       @consumers[key] = Consumer.new(message_handler)
     end
 
