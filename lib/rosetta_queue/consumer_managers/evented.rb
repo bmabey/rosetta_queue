@@ -1,10 +1,11 @@
+require 'eventmachine'
 require 'rosetta_queue/consumer_managers/base'
 require 'mq'
 
 module RosettaQueue
-  
+
   class EventedManager < BaseManager
-    
+
     def start
       EM.run {
         trap_interruptions
@@ -19,20 +20,20 @@ module RosettaQueue
         end
       }
     end
-    
+
     def stop
       RosettaQueue.logger.info("Shutting down event machine...")
       EM.stop
     end
 
     private
-    
+
       def trap_interruptions
         trap("INT") {
           RosettaQueue.logger.warn("Interrupt received.  Shutting down...")
           EM.stop
         }
-        
+
         trap("TERM") {
           RosettaQueue.logger.warn("Interrupt received.  Shutting down...")
           EM.stop

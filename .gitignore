@@ -4,3 +4,4 @@ tmp/*
 *.swp
 log/*
 pkg
+features/support/tmp

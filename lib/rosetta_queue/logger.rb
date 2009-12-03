@@ -6,7 +6,7 @@ module RosettaQueue
   def self.logger=(new_logger)
     @logger = new_logger
   end
-  
+
   def self.logger
     return @logger if @logger
     raise MissingLogger, "No logger has been set for RosettaQueue.  Please define one with RosettaQueue.logger=."
@@ -19,7 +19,7 @@ module RosettaQueue
   class Logger < ::Logger
 
     def format_message(severity, timestamp, progname, msg)
-      "\n[#{timestamp.to_formatted_s(:db)}] #{severity} #{msg}"
+      "[#{timestamp.to_formatted_s(:db)}] #{severity} -- : #{msg}\n"
     end
 
   end

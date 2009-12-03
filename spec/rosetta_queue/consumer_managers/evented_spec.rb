@@ -7,7 +7,7 @@ module RosettaQueue
 
     before(:each) do
       Stomp::Connection.stub!(:open).and_return(nil)
-      @consumer = mock("test_consumer_1", :receive => true, 
+      @consumer = mock("test_consumer_1", :receive => true,
                                           :connection => mock("AmqpAdapter", :subscribe => true, :unsubscribe => nil, :disconnect => nil),
                                           :unsubscribe => true, :disconnect => true)
       Consumer.stub!(:new).and_return(@consumer)
@@ -24,7 +24,7 @@ module RosettaQueue
       end
 
       describe "starting" do
-        
+
         def do_process
           @manager.start
         end
@@ -34,7 +34,7 @@ module RosettaQueue
             @manager.consumers.each_value { |cons| cons.should_receive(:receive) }
           }
         end
-        
+
       end
 
       describe "stopping" do
@@ -42,13 +42,13 @@ module RosettaQueue
         def do_process
           @manager.stop
         end
-        
+
         it "should stop consumers" do
           during_process {
             EM.should_receive(:stop)
           }
         end
-        
+
       end
 
     end

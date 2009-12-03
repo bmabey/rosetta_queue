@@ -3,9 +3,9 @@ module RosettaQueue
   describe "a consumer manager", :shared => true do
 
     def do_process
-      @manager.start        
+      @manager.start
     end
-    
+
     describe ".add" do
 
       def do_process

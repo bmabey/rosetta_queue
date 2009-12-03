@@ -3,7 +3,7 @@ require 'rosetta_queue/adapters/fake'
 
 module RosettaQueue
   module Gateway
-  
+
     describe FakeAdapter do
 
       describe "#queues" do
@@ -16,7 +16,7 @@ module RosettaQueue
           adapter.queues.should == ['queue 1', 'queue 2']
         end
       end
-      
+
       describe "#messages_sent_to" do
 
         it "should return the message bodies that were delivered to the specified queue" do
@@ -41,7 +41,7 @@ module RosettaQueue
           # then
           adapter.messages_sent_to('queue').should == ['Filtered Message']
         end
-        
+
         it "should return all the message's bodies when nil is passed in at the queue" do
           # given
           adapter = FakeAdapter.new
@@ -52,7 +52,7 @@ module RosettaQueue
           # then
           results.should == ['message 1', 'message 2']
         end
-        
+
         it "should return an empty array when no messages have been delivered" do
           # given
           adapter = FakeAdapter.new
@@ -62,11 +62,11 @@ module RosettaQueue
           # then
           results.should == []
         end
-        
+
       end
 
     end
-  
+
   end
 
 end
