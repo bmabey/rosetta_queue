@@ -26,7 +26,7 @@ module RosettaQueue
     describe "#publish" do
 
       before(:each) do
-        @adapter = mock("adpater", :send_message => nil)
+        @adapter = mock("adapter", :send_message => nil)
         RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
       end
 
@@ -42,14 +42,14 @@ module RosettaQueue
     end
 
     describe ".publish" do
-      it "should send the message to the adpater along with the options" do
+      it "should send the message to the adapter along with the options" do
         # expect
         @adapter.should_receive(:send_message).with("/queue/test_queue", "Hello World!", {:persistent => true})
         # when
         Producer.publish(:test_queue, "Hello World!", {:persistent => true})
       end
 
-      it "delgates exception handling to the ExceptionHandler for :publishing" do
+      it "delegates exception handling to the ExceptionHandler for :publishing" do
         ExceptionHandler.should_receive(:handle).with(:publishing, anything)
         Producer.publish(:test_queue, "Hello World!", {:persistent => true})
       end

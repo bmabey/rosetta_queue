@@ -32,11 +32,11 @@ module RosettaQueue
       end
 
       def receive
-        raise "Null Adpater is in use, you can not consume messages!"
+        raise "Null Adapter is in use, you can not consume messages!"
       end
 
       def receive_with(message_handler)
-        raise "Null Adpater is in use, you can not consume messages!"
+        raise "Null Adapter is in use, you can not consume messages!"
       end
 
       def send_message(queue, message, options)
