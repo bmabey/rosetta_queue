@@ -19,8 +19,8 @@ module RosettaQueue
                                        true)
       end
 
-      def disconnect(message_handler)
-        unsubscribe(destination_for(message_handler))
+      def disconnect(message_handler=nil)
+        unsubscribe(destination_for(message_handler)) if message_handler
         @conn.disconnect
       end
 

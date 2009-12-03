@@ -83,21 +83,50 @@ module RosettaQueue
 
       describe "disconnect" do
 
-        def do_disconnecting
-          @adapter.disconnect(@handler)
+        describe "simple disconnection without previously subscribing" do
+
+          def do_disconnecting
+            @adapter.disconnect
+          end
+
+          it "should NOT try to unsubscribe the connection" do
+            when_disconnecting {
+              @conn.should_receive("unsubscribe").never
+            }
+          end
+
+          it "should disconnect connection" do
+            when_disconnecting {
+              @conn.should_receive("disconnect")
+            }
+          end
+
         end
 
-        it "should unsubscribe connection" do
-          when_disconnecting {
-            @conn.should_receive("unsubscribe").with("foo")
-          }
+
+        # LJK 2009-12-03: note this is a leaky abstraction, why does the disconnect
+        # take a message handler?  why can't the adapter remember it when passed in via subscribe?
+        # (I'm not making that larger change, though, because that would require changing AQMP too.)
+        describe "when given a previously-subscribed message handler to unsubscribe from" do
+
+          def do_disconnecting
+            @adapter.disconnect(@handler)
+          end
+
+          it "should unsubscribe connection" do
+            when_disconnecting {
+              @conn.should_receive("unsubscribe").with("foo")
+            }
+          end
+
+          it "should disconnect connection" do
+            when_disconnecting {
+              @conn.should_receive("disconnect")
+            }
+          end
+
         end
 
-        it "should disconnect connection" do
-          when_disconnecting {
-            @conn.should_receive("disconnect")
-          }
-        end
 
       end
 
