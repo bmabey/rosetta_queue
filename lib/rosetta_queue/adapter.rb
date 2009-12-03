@@ -32,8 +32,11 @@ module RosettaQueue
         adapter = instance
         
         if block_given?
-          yield adapter 
-          adapter.disconnect
+          begin
+            yield adapter
+          ensure
+            adapter.disconnect
+          end
         end
         
         adapter
