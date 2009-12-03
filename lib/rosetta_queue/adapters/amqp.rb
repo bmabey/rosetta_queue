@@ -1,3 +1,4 @@
+require 'amqp'
 require 'mq'
 
 # AMQP
