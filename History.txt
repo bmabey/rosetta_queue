@@ -1,11 +1,16 @@
-== 0.4.x (git)
+== 0.5.0 (proposed - the "Resource Cleanup" release)
+ === New Features (Relevance Inc.)
+ * Fixed a socket leak in Producer#publish by using open on the Adapter (at least for Stomp, but probably others too).
+ * Add Adapter#open, which has semantics like File#open (ie auto-disconnecting the socket after the block)
+ * Allow specifying a key when adding handlers to a consumer, to allow multiple instances of same consumer
+ * Add big warnings around Adapter#instance -- its _not_ a singleton, even though its named like one
 
 == 0.4.0
  === New features
  * Allows for custom exception handling logic to be registered for publishing and consuming actions. See ExceptionHandler for more info. (Ben Mabey)
   * RQ was doing a blanket rescue for publishing and consuming and then logging the errors.  If you still want this behaviour you will need to register a block/class to do that. Again, see ExceptionHandler for more details.
  * Added core time extension when ActiveSupport not present. (Chris Wyckoff)
- === Bufixes
+ === Bugfixes
  * Closing the connection after publishing message now instead of unsubscribing. (Chris Wyckoff)
 
 
@@ -16,7 +21,7 @@
   * Added .delete method to Consumer class (Chris Wyckoff - Lead Media Partners)
     * Allows user to purge a queue.
     * Works for AMQP adapters only.
- === Bufixes
+ === Bugfixes
   * client :ack now working. (Chris Wyckoff - Lead Media Partners)
 
 == 0.1.4
