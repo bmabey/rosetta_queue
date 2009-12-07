@@ -129,11 +129,17 @@ module RosettaQueue
       end
       
       it "closes the adapter after the block is evaluated" do
-        adapter = nil
-        Adapter.open {|a| adapter = a }
-        adapter.should_not be_open
+        Adapter.open {|a| "something" }.should_not be_open
       end
 
+      it "closes the adapter even if the block raises an error" do
+        adapter = nil
+        begin
+          Adapter.open {|a| adapter = a; raise("some connection error here!") }
+        rescue => e; 
+        end
+        adapter.should_not be_open
+      end
     end
   end
 end

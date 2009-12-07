@@ -32,6 +32,13 @@ module RosettaQueue
         end
 
       end
+      
+      describe "#disconnect" do
+        
+        it "allows disconnecting" do
+          @adapter.should respond_to(:disconnect)
+        end
+      end
 
     end
   end

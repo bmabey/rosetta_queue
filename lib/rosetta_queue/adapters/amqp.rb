@@ -20,7 +20,8 @@ module RosettaQueue
         exchange_strategy_for(destination, opts).delete(destination)
       end
 
-      def disconnect(message_handler)
+      def disconnect(message_handler=nil)
+        raise(ArgumentError, "Amqp BaseAdapter#disconnect always requires a message_handler") unless message_handler
         destination = destination_for(message_handler)
         exchange_strategy_for(destination).unsubscribe
       end

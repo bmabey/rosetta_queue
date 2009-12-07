@@ -89,7 +89,16 @@ module RosettaQueue::Gateway
       end
     end
 
+    describe "#disconnect" do
 
+      it "requires a message handler to disconnect, due to API inconsistencies between adapters" do
+        lambda {
+          @adapter.disconnect
+        }.should raise_error(ArgumentError)
+      end
+      
+    end
+    
     describe SynchExchange::DirectExchange do
 
       before(:each) do
