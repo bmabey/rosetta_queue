@@ -22,25 +22,6 @@ module RosettaQueue
     it_should_behave_like "a messaging gateway object"
     attr_reader :adapter, :gateway
 
-
-    describe "#publish" do
-
-      before(:each) do
-        @adapter = mock("adapter", :send_message => nil)
-        RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
-      end
-
-      it "should publish messages to queue with the options defined in the class" do
-        # TO DO: REFACTOR #publish METHOD SO THAT YOU PASS IN MESSAGE HANDLER AS WITH CONSUMER
-        pending
-        # expect
-        @adapter.should_receive(:send_message).with("/queue/test_queue", "Hello World!", {:persistent => false})
-        # when
-        @gateway.publish("Hello World!")
-      end
-
-    end
-
     describe ".publish" do
       it "should send the message to the adapter along with the options" do
         # expect
