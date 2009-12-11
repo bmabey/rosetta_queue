@@ -8,7 +8,7 @@ module RosettaQueue
 
     protected
      def connection
-       @conn ||= Adapter.instance
+       @conn ||= Adapter.open
      end
 
   end

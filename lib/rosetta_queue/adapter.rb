@@ -22,17 +22,12 @@ module RosettaQueue
           raise AdapterException, "Adapter type '#{adapter_prefix}' does not match existing adapters!"
       end
 
-      # DANGER: this returns a NEW instance every time!  Adapter is NOT a singleton!  Prefer "open" instead.
-      def instance
-        raise AdapterException, "Adapter type was never defined!" unless @adapter_class
-        @adapter_class.new({:user => @user, :password => @password, :host => @host, :port => @port, :opts => opts})
-      end
-      
       # Yield a new (connected) adapter, run whatever is in the block, and then disconnect after the 
       # block evaluates
       def open
-        adapter = instance
-        
+        raise AdapterException, "Adapter type was never defined!" unless @adapter_class
+        adapter = @adapter_class.new({:user => @user, :password => @password, :host => @host, :port => @port, :opts => opts})
+
         if block_given?
           begin
             yield adapter
@@ -40,7 +35,7 @@ module RosettaQueue
             adapter.disconnect
           end
         end
-        
+
         adapter
       end
 

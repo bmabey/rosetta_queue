@@ -18,7 +18,7 @@ module RosettaQueue
       @message  = mock("message", "headers" => "foo", "body" => "message body")
       @adapter  = mock("adapter", :subscribe => true, :unsubscribe => true, :disconnect => true, :receive_with => TestConsumer.new,
                                   :receive_once => @message.body, :ack => true)
-      Adapter.stub!(:instance).and_return(@adapter)
+      Adapter.stub!(:open).and_yield(@adapter)
       Destinations.stub!(:lookup).and_return("/queue/foo")
     end
 
@@ -40,8 +40,9 @@ module RosettaQueue
       end
 
       it "should pass message handler onto the adapter with #receive" do
+        Adapter.stub!(:open).and_return(@adapter)
         when_receiving {
-          @adapter.should_receive("receive_with").with(@message_handler)
+          @adapter.should_receive(:receive_with).with(@message_handler)
         }
       end
     end

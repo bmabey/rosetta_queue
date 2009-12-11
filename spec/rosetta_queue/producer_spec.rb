@@ -13,7 +13,7 @@ module RosettaQueue
 
     before(:each) do
       @adapter = mock("adapter", :send_message => nil, :disconnect => nil)
-      RosettaQueue::Adapter.stub!(:instance).and_return(@adapter)
+      RosettaQueue::Adapter.stub!(:open).and_yield(@adapter)
       @gateway  = TestProducer.new
 
       Destinations.stub!(:lookup).and_return("/queue/test_queue")

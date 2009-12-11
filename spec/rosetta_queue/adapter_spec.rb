@@ -12,9 +12,9 @@ module RosettaQueue
     describe ".reset" do
       it "should clear all definitions" do
         Adapter.define { |a| a.type = "null"  }
-        Adapter.instance.should be_instance_of(RosettaQueue::Gateway::NullAdapter)
+        Adapter.open.should be_instance_of(RosettaQueue::Gateway::NullAdapter)
         Adapter.reset
-        running { Adapter.instance }.should raise_error(AdapterException)
+        running { Adapter.open }.should raise_error(AdapterException)
       end
     end
 
@@ -31,11 +31,11 @@ module RosettaQueue
     end
 
     describe "adapter not type set" do
-      it "should raise an error when .instance is called" do
+      it "should raise an error when .open is called" do
         # given
         Adapter.define { |a|  }
         # then & when
-        running { Adapter.instance }.should raise_error(AdapterException)
+        running { Adapter.open }.should raise_error(AdapterException)
       end
     end
 
@@ -45,8 +45,8 @@ module RosettaQueue
         Adapter.define { |a| a.type = "null" }
       end
 
-      it "should return adapter instance" do
-        Adapter.instance.class.should == RosettaQueue::Gateway::NullAdapter
+      it "should return adapter open" do
+        Adapter.open.class.should == RosettaQueue::Gateway::NullAdapter
       end
 
     end
@@ -64,7 +64,7 @@ module RosettaQueue
       end
 
       def do_process
-        Adapter.instance
+        Adapter.open
       end
 
       it "should set opts as an empty has unless variable is set" do
@@ -92,7 +92,7 @@ module RosettaQueue
         end
 
         it "should raise an adapter exception" do
-          running { Adapter.instance }.should raise_error("Adapter options should be a hash")
+          running { Adapter.open }.should raise_error("Adapter options should be a hash")
         end
       end
 
@@ -127,7 +127,7 @@ module RosettaQueue
         
         ran_block.should be_true
       end
-      
+
       it "closes the adapter after the block is evaluated" do
         Adapter.open {|a| "something" }.should_not be_open
       end
@@ -136,7 +136,7 @@ module RosettaQueue
         adapter = nil
         begin
           Adapter.open {|a| adapter = a; raise("some connection error here!") }
-        rescue => e; 
+        rescue => e;
         end
         adapter.should_not be_open
       end

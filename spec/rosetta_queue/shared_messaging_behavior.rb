@@ -5,14 +5,15 @@ module RosettaQueue
     it "#unsubscribe should be delegated to the adapter" do
       pending
       # expect
-      adapter.should_receive("unsubscribe")
+      adapter.should_receive(:unsubscribe)
       # when
       gateway.unsubscribe
     end
 
     it "#disconnect should be delegated to the adapter" do
+      Adapter.stub!(:open).and_return(adapter)
       # expect
-      adapter.should_receive("disconnect")
+      adapter.should_receive(:disconnect)
       # when
       gateway.disconnect
     end
