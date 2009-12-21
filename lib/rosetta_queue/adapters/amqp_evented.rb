@@ -17,6 +17,10 @@ module RosettaQueue
           conn.queue(destination).delete(@options)
         end
 
+        def unsubscribe
+          @queue.unsubscribe if @queue
+        end
+        
         protected
 
         def channel
@@ -38,18 +42,17 @@ module RosettaQueue
         def publish(destination, message, options={})
           raise AdapterException, "Messages need to be published in an EventMachine run block (e.g., EM.run { RosettaQueue::Producer.publish(:foo, msg) } " unless EM.reactor_running?
 
-          queue = channel.queue(destination, options)
-          queue.publish(message, options)
+          @queue = channel.queue(destination, options)
+          @queue.publish(message, options)
           RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
-          queue.unsubscribe
         end
 
         def receive(destination, message_handler)
           raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
 
-          queue = channel.queue(destination, @options)
+          @queue = channel.queue(destination, @options)
           ack = @options[:ack]
-          queue.subscribe(@options) do |header, msg|
+          @queue.subscribe(@options) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.handle_message(msg)
             header.ack if ack
@@ -59,9 +62,9 @@ module RosettaQueue
         def receive_once(destination, options={})
           raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
 
-          queue = channel.queue(destination, @options)
+          @queue = channel.queue(destination, @options)
           ack = @options[:ack]
-          queue.pop(@options) do |header, msg|
+          @queue.pop(@options) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             header.ack if ack
             yield Filters.process_receiving(msg)
@@ -76,19 +79,19 @@ module RosettaQueue
         def publish(dest, msg, opts)
           raise AdapterException, "Messages need to be published in an EventMachine run block (e.g., EM.run { RosettaQueue::Producer.publish(:foo, msg) } " unless EM.reactor_running?
 
-          exchange = channel.fanout(fanout_name_for(dest), opts)
-          exchange.publish(msg, opts)
+          @queue = channel.fanout(fanout_name_for(dest), opts)
+          @queue.publish(msg, opts)
           RosettaQueue.logger.info("Publishing to fanout #{dest} :: #{msg}")
         end
 
         def receive(destination, message_handler)
           raise AdapterException, "Consumers need to run in an EventMachine 'run' block.  Try wrapping them inside the evented consumer manager." unless EM.reactor_running?
 
-          queue = channel.queue("queue_#{self.object_id}")
+          @queue = channel.queue("queue_#{self.object_id}")
           exchange = channel.fanout(fanout_name_for(destination), @options)
           ack = @options[:ack]
 
-          queue.bind(exchange).subscribe(@options) do |header, msg|
+          @queue.bind(exchange).subscribe(@options) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             message_handler.handle_message(msg)
             header.ack if ack
@@ -98,11 +101,11 @@ module RosettaQueue
         def receive_once(destination, opts={})
           raise AdapterException, "Consumers need to run in an EventMachine 'run' block. (e.g., EM.run { RosettaQueue::Consumer.receive }" unless EM.reactor_running?
 
-          queue = channel.queue("queue_#{self.object_id}")
+          @queue = channel.queue("queue_#{self.object_id}")
           exchange = channel.fanout(fanout_name_for(destination), opts)
           ack = @options[:ack]
 
-          queue.bind(exchange).pop(opts) do |header, msg|
+          @queue.bind(exchange).pop(opts) do |header, msg|
             RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
             header.ack if ack
             yield Filters.process_receiving(msg)

@@ -103,14 +103,11 @@ module RosettaQueue
 
         end
 
-
-        # LJK 2009-12-03: note this is a leaky abstraction, why does the disconnect
-        # take a message handler?  why can't the adapter remember it when passed in via subscribe?
-        # (I'm not making that larger change, though, because that would require changing AQMP too.)
         describe "when given a previously-subscribed message handler to unsubscribe from" do
 
           def do_disconnecting
-            @adapter.disconnect(@handler)
+            @adapter.receive_with(@handler)
+            @adapter.disconnect
           end
 
           it "should unsubscribe connection" do

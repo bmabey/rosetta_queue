@@ -87,16 +87,33 @@ module RosettaQueue::Gateway
         end
 
       end
-    end
 
-    describe "#disconnect" do
+      describe "#disconnect" do
 
-      it "requires a message handler to disconnect, due to API inconsistencies between adapters" do
-        lambda {
+        it "delegates to cached exchange strategy" do
+          # given
+          @adapter.receive_with(@handler)
+          
+          # expect
+          @exchange_strategy.should_receive(:unsubscribe)
+
+          # when
           @adapter.disconnect
-        }.should raise_error(ArgumentError)
+        end
+
+        context "subscription was never made" do
+
+          it "does not delegate to exchange strategy" do
+            # expect
+            @exchange_strategy.should_not_receive(:unsubscribe)
+
+            # when
+            @adapter.disconnect
+          end
+
+        end
+
       end
-      
     end
     
     describe SynchExchange::DirectExchange do

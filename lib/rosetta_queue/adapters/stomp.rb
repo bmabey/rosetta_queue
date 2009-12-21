@@ -19,8 +19,8 @@ module RosettaQueue
                                        true)
       end
 
-      def disconnect(message_handler=nil)
-        unsubscribe(destination_for(message_handler)) if message_handler
+      def disconnect
+        unsubscribe if @destination
         @conn.disconnect
       end
 
@@ -31,38 +31,38 @@ module RosettaQueue
       end
 
       def receive_once(destination, opts)
-        subscribe(destination, opts)
-        msg = receive(opts).body
-        unsubscribe(destination)
-        RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+        @destination, @options = destination, opts
+        subscribe
+        msg = receive(@options).body
+        unsubscribe
+        RosettaQueue.logger.info("Receiving from #{@destination} :: #{msg}")
         filter_receiving(msg)
       end
 
       def receive_with(message_handler)
-        options = options_for(message_handler)
-        destination = destination_for(message_handler)
-        @conn.subscribe(destination, options)
-
+        @destination, @options = destination_for(message_handler), options_for(message_handler)
+        subscribe
         running do
-          msg = receive(options).body
+          msg = receive(@options).body
           Thread.current[:processing] = true
-          RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
+          RosettaQueue.logger.info("Receiving from #{@destination} :: #{msg}")
           message_handler.handle_message(msg)
           Thread.current[:processing] = false
         end
       end
 
       def send_message(destination, message, options)
-        RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
-        @conn.send(destination, message, options)
+        @destination = destination
+        RosettaQueue.logger.info("Publishing to #{@destination} :: #{message}")
+        @conn.send(@destination, message, options)
       end
 
-      def subscribe(destination, options)
-        @conn.subscribe(destination, options)
+      def subscribe
+        @conn.subscribe(@destination, @options)
       end
 
-      def unsubscribe(destination)
-        @conn.unsubscribe(destination)
+      def unsubscribe
+        @conn.unsubscribe(@destination)
       end
 
       private

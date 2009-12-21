@@ -39,9 +39,8 @@ module RosettaQueue
 
         def publish(destination, message, options={})
           RosettaQueue.logger.info("Publishing to #{destination} :: #{message}")
-          queue = conn.queue(destination, options)
-          queue.publish(message, options)
-          conn.stop
+          @queue = conn.queue(destination, options)
+          @queue.publish(message, options)
         end
 
         def receive(destination, message_handler)
@@ -69,8 +68,8 @@ module RosettaQueue
         include Fanout
 
         def publish(destination, message, options={})
-          exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
-          exchange.publish(message, options)
+          @queue = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
+          @queue.publish(message, options)
           RosettaQueue.logger.info("Publishing to fanout #{destination} :: #{message}")
         end
 
