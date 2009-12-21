@@ -1,9 +1,10 @@
-== 0.5.0 (proposed - the "Resource Cleanup" release)
+== 0.5.0 (the "Resource Cleanup" release)
  === New Features (Relevance Inc.)
- * Fixed a socket leak in Producer#publish by using open on the Adapter (at least for Stomp, but probably others too).
- * Add Adapter#open, which has semantics like File#open (ie auto-disconnecting the socket after the block)
- * Allow specifying a key when adding handlers to a consumer, to allow multiple instances of same consumer
- * Add big warnings around Adapter#instance -- its _not_ a singleton, even though its named like one
+ * Fixed a socket leak in Producer::publish by using open on the Adapter (at least for Stomp, but probably others too).
+ * Add Adapter::open, which has semantics like File::open (ie auto-disconnecting the socket after the block),
+ * Removed Adapter::instance due to it's confusing name (it was not a singleton as the name suggested).
+ * Allow specifying a key when adding handlers to a consumer, to allow multiple instances of same consumer.
+ * Removed dependency on message_handler when calling Adapter#disconnect. (Chris Wyckoff)
 
 == 0.4.0
  === New features
