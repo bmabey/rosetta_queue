@@ -73,16 +73,5 @@ module RosettaQueue
 
     end
 
-    class StompAdapterProxy
-
-      def initialize(adapter, msg)
-        @adapter, @msg = adapter, msg
-      end
-
-      def ack
-        @adapter.ack(@msg)
-      end
-    end
-
   end
 end
