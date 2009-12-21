@@ -1,6 +1,6 @@
 module RosettaQueue
 
-  class Producer < Base
+  class Producer
     include MessageHandler
 
     def self.publish(destination, message, options = {})

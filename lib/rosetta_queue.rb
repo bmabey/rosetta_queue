@@ -4,7 +4,6 @@ require('rosetta_queue/core_ext/string') unless defined? ActiveSupport
 require('rosetta_queue/core_ext/time') unless defined? ActiveSupport
 
 require 'rosetta_queue/adapter'
-require 'rosetta_queue/base'
 require 'rosetta_queue/consumer'
 require 'rosetta_queue/destinations'
 require 'rosetta_queue/exceptions'
