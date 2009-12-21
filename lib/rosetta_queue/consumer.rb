@@ -2,9 +2,9 @@ module RosettaQueue
   class Consumer
 
     def self.receive(destination, options = {})
-      RosettaQueue::Adapter.open { |a| a.receive_once(Destinations.lookup(destination), options) }
+      RosettaQueue::Adapter.open { |a| return a.receive_once(Destinations.lookup(destination), options) }
 
-      rescue Exception=>e
+    rescue Exception=>e
         RosettaQueue.logger.error("Caught exception in Consumer.receive: #{$!}\n" + e.backtrace.join("\n\t"))
     end
 
