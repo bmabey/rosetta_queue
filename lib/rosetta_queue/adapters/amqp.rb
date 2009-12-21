@@ -35,15 +35,53 @@ module RosettaQueue
       def receive_with(message_handler)
         options = options_for(message_handler)
         destination = destination_for(message_handler)
-        exchange_strategy_for(destination, options).receive(destination, message_handler)
+        @exchange_strategy = exchange_strategy_for(destination, options)
+        @exchange_strategy.receive(destination, message_handler)
       end
 
       def send_message(destination, message, options=nil)
-        exchange_strategy_for(destination, options).publish(destination, message)
+        @exchange_strategy = exchange_strategy_for(destination, options)
+        @exchange_strategy.publish(destination, message)
       end
 
       def unsubscribe; end
 
     end
+
+    class AmqpEventedAdapter < Amqp
+
+      def exchange_strategy_for(destination, options)
+        case destination
+        when /^fanout\./
+          @exchange ||= EventedExchange::FanoutExchange.new(@adapter_settings, options)
+        when /^topic\./
+          raise "Sorry.  RosettaQueue can not process AMQP topics yet"
+        when /^queue\./
+          @exchange ||= EventedExchange::DirectExchange.new(@adapter_settings, options)
+        else
+          @exchange ||= EventedExchange::DirectExchange.new(@adapter_settings, options)
+        end
+      end
+    end
+
+
+    # This AMQP adapter utilizes the synchronous AMPQ client 'Bunny'
+    # by celldee (http://github.com/celldee/bunny)
+    class AmqpSynchAdapter < Amqp
+
+      def exchange_strategy_for(destination, options={})
+        case destination
+        when /^fanout\./
+          @exchange ||= SynchExchange::FanoutExchange.new(@adapter_settings, options)
+        when /^topic\./
+          raise "Sorry.  RosettaQueue can not process AMQP topics yet"
+        when /^queue\./
+          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
+        else
+          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
+        end
+      end
+    end
+
   end
 end

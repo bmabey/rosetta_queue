@@ -4,25 +4,6 @@ require File.expand_path(File.dirname(__FILE__) + "/amqp.rb")
 module RosettaQueue
   module Gateway
 
-    # This AMQP adapter utilizes the synchronous AMPQ client 'Bunny'
-    # by celldee (http://github.com/celldee/bunny)
-    class AmqpSynchAdapter < Amqp
-      private
-
-      def exchange_strategy_for(destination, options={})
-        case destination
-        when /^fanout\./
-          @exchange ||= SynchExchange::FanoutExchange.new(@adapter_settings, options)
-        when /^topic\./
-          raise "Sorry.  RosettaQueue can not process AMQP topics yet"
-        when /^queue\./
-          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
-        else
-          @exchange ||= SynchExchange::DirectExchange.new(@adapter_settings, options)
-        end
-      end
-    end
-
     module SynchExchange
 
       class BaseExchange

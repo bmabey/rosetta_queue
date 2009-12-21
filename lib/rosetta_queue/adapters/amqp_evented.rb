@@ -5,23 +5,6 @@ require File.expand_path(File.dirname(__FILE__) + "/amqp.rb")
 module RosettaQueue
   module Gateway
 
-    class AmqpEventedAdapter < Amqp
-      private
-
-      def exchange_strategy_for(destination, options)
-        case destination
-        when /^fanout\./
-          @exchange ||= EventedExchange::FanoutExchange.new(@adapter_settings, options)
-        when /^topic\./
-          raise "Sorry.  RosettaQueue can not process AMQP topics yet"
-        when /^queue\./
-          @exchange ||= EventedExchange::DirectExchange.new(@adapter_settings, options)
-        else
-          @exchange ||= EventedExchange::DirectExchange.new(@adapter_settings, options)
-        end
-      end
-    end
-
     module EventedExchange
 
       class BaseExchange
