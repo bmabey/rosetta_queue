@@ -17,7 +17,6 @@ require 'rosetta_queue/spec_helpers'
 require 'rosetta_queue/consumer_managers/base'
 require 'rosetta_queue/consumer_managers/evented'
 require 'rosetta_queue/consumer_managers/threaded'
-require File.dirname(__FILE__) + '/rosetta_queue/shared_messaging_behavior.rb'
 
 class NullLogger
   def info(*args);  end

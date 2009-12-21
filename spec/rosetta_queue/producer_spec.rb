@@ -19,7 +19,6 @@ module RosettaQueue
       Destinations.stub!(:lookup).and_return("/queue/test_queue")
     end
 
-    it_should_behave_like "a messaging gateway object"
     attr_reader :adapter, :gateway
 
     describe ".publish" do
