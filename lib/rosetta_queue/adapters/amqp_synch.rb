@@ -17,7 +17,6 @@ module RosettaQueue
         end
 
         def unsubscribe
-          @queue.unsubscribe
           conn.stop
         end
 
@@ -44,19 +43,17 @@ module RosettaQueue
         end
 
         def receive(destination, message_handler)
-          ack = @options[:ack]
           @queue = conn.queue(destination, @options)
           @queue.subscribe(@options) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.handle_message(msg)
-            @queue.ack if ack
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg[:payload]}")
+            message_handler.handle_message(msg[:payload])
           end
         end
 
         def receive_once(destination, options = {})
           ack = options[:ack]
           @queue = conn.queue(destination, options)
-          msg = @queue.pop(options)
+          msg = @queue.pop[:payload]
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           @queue.ack if ack
           yield Filters.process_receiving(msg)
@@ -74,14 +71,12 @@ module RosettaQueue
         end
 
         def receive(destination, message_handler)
-          ack = @options[:ack]
           @queue = conn.queue("queue_#{self.object_id}", @options)
           exchange = conn.exchange(fanout_name_for(destination), @options.merge({:type => :fanout}))
           @queue.bind(exchange)
           @queue.subscribe(@options) do |msg|
-            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
-            message_handler.handle_message(msg)
-            @queue.ack if ack
+            RosettaQueue.logger.info("Receiving from #{destination} :: #{msg[:payload]}")
+            message_handler.handle_message(msg[:payload])
           end
         end
 
@@ -90,7 +85,7 @@ module RosettaQueue
           @queue = conn.queue("queue_#{self.object_id}", options)
           exchange = conn.exchange(fanout_name_for(destination), options.merge({:type => :fanout}))
           @queue.bind(exchange)
-          msg = @queue.pop(options)
+          msg = @queue.pop[:payload]
           RosettaQueue.logger.info("Receiving from #{destination} :: #{msg}")
           @queue.ack if ack
           yield Filters.process_receiving(msg)

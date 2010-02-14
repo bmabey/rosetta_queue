@@ -32,7 +32,7 @@ module RosettaQueue::Gateway
 
     before(:each) do
       RosettaQueue.logger.stub!(:info)
-      @msg = "Hello World!"
+      @msg = {:payload => "Hello World!"}
       @adapter = AmqpSynchAdapter.new({:user => "foo", :password => "bar", :host => "localhost"})
       @handler = mock("handler", :handle_message => true, :destination => :foo, :options_hash => {:durable => true})
     end
@@ -142,7 +142,7 @@ module RosettaQueue::Gateway
 
         it "should return the message from the connection" do
           @exchange.receive_once("queue.foo") do |msg|
-              msg.should == @msg
+            msg.should == @msg[:payload]
           end
         end
 
@@ -214,7 +214,7 @@ module RosettaQueue::Gateway
 
         it "should return the message from the connection" do
           @exchange.receive_once("topic.foo") do |msg|
-            msg.should == @msg
+            msg.should == @msg[:payload]
           end
         end
 
