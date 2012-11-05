@@ -14,9 +14,4 @@ require 'rosetta_queue/exception_handler'
 require 'rosetta_queue/producer'
 require 'rosetta_queue/consumer_managers/base'
 require 'rosetta_queue/consumer_managers/threaded'
-
-if defined?(Rails)
-  RosettaQueue.logger = RosettaQueue::Logger.new(File.join(Rails.root, 'log', 'rosetta_queue.log'))
-  require('rosetta_queue/spec_helpers') if Rails.env == "test"
-end
-
+require 'rosetta_queue/railtie' if defined?(Rails)
